@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "target": "ESNext",
+        "strictFunctionTypes": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "moduleResolution": "Node"
+    },
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*"
+    ]
+}
