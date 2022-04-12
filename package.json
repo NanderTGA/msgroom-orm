@@ -1,0 +1,27 @@
+{
+  "name": "msgroom",
+  "version": "0.1.0",
+  "description": "An ORM library for interacting with msgroom servers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/NanderTGA/msgroom"
+  },
+  "keywords": [
+    "msgroom",
+    "orm",
+    "ts",
+    "typescript"
+  ],
+  "author": "NanderTGA (https://nandertga.ddns.net)",
+  "license": "MIT",
+  "dependencies": {
+    "socket.io-client": "^4.4.1"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.3"
+  }
+}
