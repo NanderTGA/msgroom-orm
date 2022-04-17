@@ -10,7 +10,7 @@ export default MsgroomSocket;
  */
 export type hexColor = string;
 
-export type flag = "staff";
+export type flag = "staff" | "bot";
 
 interface User {
     color: hexColor;
