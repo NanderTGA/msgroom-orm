@@ -89,6 +89,9 @@ export interface ClientToServerEvents {
     
     auth: (args: {
         user: string;
+        /**
+         * You can request one from ctrlz
+         */
         apikey?: string;
     }) => void;
 }
