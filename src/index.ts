@@ -16,7 +16,7 @@ socket.on("auth-complete", userID => {
 
     socket.emit("message", {
         type   : "text",
-        content: "**I figured it out 😁**"
+        content: "**I figured it out 😁**" // for giant emoji, make it bold or cursive
     });
 });
 
