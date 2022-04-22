@@ -2,9 +2,12 @@
   "name": "msgroom",
   "version": "0.1.0",
   "description": "An ORM library for interacting with msgroom servers.",
-  "main": "index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && rollup --config"
   },
   "repository": {
     "type": "git",
@@ -22,6 +25,8 @@
     "socket.io-client": "^4.4.1"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.3.2",
+    "rollup": "^2.70.2",
     "typescript": "^4.6.3"
   }
 }
