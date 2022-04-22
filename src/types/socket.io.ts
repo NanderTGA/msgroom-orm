@@ -88,6 +88,7 @@ export interface ClientToServerEvents {
     online: () => void;
     
     auth: (args: {
-        user: string
+        user: string;
+        apikey?: string;
     }) => void;
 }
