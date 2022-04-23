@@ -79,15 +79,24 @@ export interface ClientToServerEvents {
     }) => void;
     
     message: (args: {
+        /**
+         * The type of message, so far I know only text is supported right now.
+         */
         type: "text";
+        /**
+         * The text message you want to send.
+         */
         content: string;
     }) => void;
     
-    "change-user": (newNick: string) => void;
+    "change-user": (/** The new nickname you want. */newNick: string) => void;
     
     online: () => void;
     
     auth: (args: {
+        /**
+         * The username you want to use.
+         */
         user: string;
         /**
          * You can request one from ctrlz

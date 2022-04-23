@@ -1,6 +1,6 @@
 import io from "socket.io-client";
 import { EventEmitter } from "node:events";
-import MsgroomSocket from "./types/socket.io";
+import MsgroomSocket from "./socket.io";
 import axios from "axios";
 import { AuthError, ConnectionError } from "./errors";
 
