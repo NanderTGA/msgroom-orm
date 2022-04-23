@@ -2,6 +2,7 @@ import io from "socket.io-client";
 import { EventEmitter } from "node:events";
 import MsgroomSocket from "./types/socket.io";
 import axios from "axios";
+import { AuthError, ConnectionError } from "./errors";
 
 export default class Client extends EventEmitter {
     socket: MsgroomSocket;
@@ -30,12 +31,14 @@ export default class Client extends EventEmitter {
                     const clientVersionPackageJson = require("../package.json").dependencies["socket.io-client"];
                     // eslint-disable-next-line @typescript-eslint/no-var-requires
                     const clientVersion = require("socket.io-client/package.json").version;
-                    throw new Error(`Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?\nServer version: ${serverVersion}\nClient version according to package.json: ${clientVersionPackageJson}\nInstalled client version: ${clientVersion}\nIf the last 2 version numbers don't match, run "npm install".\nIf the server and client version don't match, contact me ASAP.`);
-                });
+                        throw new ConnectionError(`Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?\nServer version: ${serverVersion}\nClient version according to package.json: ${clientVersionPackageJson}\nInstalled client version: ${clientVersion}\nIf the last 2 version numbers don't match, run "npm install".\nIf the server and client version don't match, contact me ASAP.`);
             })
             .on("auth-complete", userID => {
                 this.socket.emit("online");
                 this.emit("connected", userID);
+            })
+            .on("auth-error", ({ reason }) => {
+                throw new AuthError(reason);
             });
     }
 
