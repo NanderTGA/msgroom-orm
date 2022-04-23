@@ -5,7 +5,10 @@
         "strictFunctionTypes": true,
         "strict": true,
         "esModuleInterop": true,
-        "moduleResolution": "Node"
+        "moduleResolution": "Node",
+        "outDir": "dist",
+        "declaration": true,
+        "declarationDir": ".",
     },
     "exclude": [
         "node_modules",
