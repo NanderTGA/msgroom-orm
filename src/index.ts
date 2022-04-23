@@ -24,10 +24,13 @@ export default class Client extends EventEmitter {
                 this.emit("disconnected");
             })
             .on("connect_error", () => {
-                axios.get(`${server}/socket.io/socket.io.js`).then(res => {
+                axios.get(`${server}/socket.io/socket.io.js`.replace("wss://", "https://")).then(res => {
                     const serverVersion = res.data.split("\n")[1].split(" ")[3];
-                    const clientVersion = require("package.json").dependencies["socket.io-client"];
-                    throw new Error(`Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?\nServer version: ${serverVersion}\nClient version: ${clientVersion}`);
+                    // eslint-disable-next-line @typescript-eslint/no-var-requires
+                    const clientVersionPackageJson = require("../package.json").dependencies["socket.io-client"];
+                    // eslint-disable-next-line @typescript-eslint/no-var-requires
+                    const clientVersion = require("socket.io-client/package.json").version;
+                    throw new Error(`Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?\nServer version: ${serverVersion}\nClient version according to package.json: ${clientVersionPackageJson}\nInstalled client version: ${clientVersion}\nIf the last 2 version numbers don't match, run "npm install".\nIf the server and client version don't match, contact me ASAP.`);
                 });
             })
             .on("auth-complete", userID => {
@@ -62,8 +65,3 @@ socket.on("auth-complete", userID => {
 socket.emit("auth", {
     user: "testBIGEmoji"
 });*/
-axios.get(`wss://devel.windows96.net:4096/socket.io/socket.io.js`.replace("wss://", "https://")).then(res => {
-                    const serverVersion = res.data.split("\n")[1].split(" ")[3];
-                    const clientVersion = require("../package.json").dependencies["socket.io-client"];
-                    throw new Error(`Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?\nServer version: ${serverVersion}\nClient version: ${clientVersion}`);
-                });
