@@ -16,6 +16,7 @@ export default class Client extends EventEmitter {
 
         this.socket = io(server);
         this.socket
+        // connecting to the server
             .on("connect", () => {
                 this.socket.emit("auth", {
                     user: name
@@ -40,6 +41,7 @@ export default class Client extends EventEmitter {
             .on("auth-error", ({ reason }) => {
                 throw new AuthError(reason);
             });
+        //main events
     }
 
     get server() {
