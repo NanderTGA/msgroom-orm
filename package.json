@@ -1,7 +1,7 @@
 {
   "name": "msgroom",
   "version": "0.1.0",
-  "description": "An ORM library for interacting with msgroom servers.",
+  "description": "An ORM for interacting with msgroom servers.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,9 @@
     "msgroom",
     "orm",
     "ts",
-    "typescript"
+    "typescript",
+    "w96",
+    "windows-96"
   ],
   "author": "NanderTGA (https://nandertga.ddns.net)",
   "license": "MIT",
