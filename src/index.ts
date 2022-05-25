@@ -26,13 +26,18 @@ export default class Client extends EventEmitter {
                 this.emit("disconnected");
             })
             .on("connect_error", () => {
-                axios.get(`${server}/socket.io/socket.io.js`.replace("wss://", "https://")).then(res => {
-                    const serverVersion = res.data.split("\n")[1].split(" ")[3];
-                    // eslint-disable-next-line @typescript-eslint/no-var-requires
-                    const clientVersionPackageJson = require("../package.json").dependencies["socket.io-client"];
-                    // eslint-disable-next-line @typescript-eslint/no-var-requires
-                    const clientVersion = require("socket.io-client/package.json").version;
+                axios.get(`${server}/socket.io/socket.io.js`.replace("wss://", "https://"))
+                    .then(res => {
+                        const serverVersion = res.data.split("\n")[1].split(" ")[3];
+                        // eslint-disable-next-line @typescript-eslint/no-var-requires
+                        const clientVersionPackageJson = require("../package.json").dependencies["socket.io-client"];
+                        // eslint-disable-next-line @typescript-eslint/no-var-requires
+                        const clientVersion = require("socket.io-client/package.json").version;
                         throw new ConnectionError(`Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?\nServer version: ${serverVersion}\nClient version according to package.json: ${clientVersionPackageJson}\nInstalled client version: ${clientVersion}\nIf the last 2 version numbers don't match, run "npm install".\nIf the server and client version don't match, contact me ASAP.`);
+                    })
+                    .catch(e => {
+                        throw new ConnectionError(`Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?\n${e.message}`); //TODO
+                    });
             })
             .on("auth-complete", userID => {
                 this.socket.emit("online");
@@ -52,6 +57,14 @@ export default class Client extends EventEmitter {
         this.socket.disconnect();
         this.socket = io(server);
         this.#server = server;
+    }
+
+    get name() {
+        return this.#name;
+    }
+
+    set name(name: string) {
+        this.socket.emit("change-user", name);
     }
 }
 
