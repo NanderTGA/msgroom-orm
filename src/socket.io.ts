@@ -8,7 +8,7 @@ export default MsgroomSocket;
  * Hexadecimal color string
  * @example "#ff0000"
  */
-export type hexColor = string;
+export type hexColor = `#${string}`;
 
 export type flag = "staff" | "bot";
 
