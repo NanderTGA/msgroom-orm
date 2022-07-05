@@ -5,7 +5,7 @@ import axios from "axios";
 import { AuthError, ConnectionError } from "./errors";
 
 export default class Client extends EventEmitter {
-    socket: MsgroomSocket;
+    private socket: MsgroomSocket;
     #name: string;
     #server: string;
     
