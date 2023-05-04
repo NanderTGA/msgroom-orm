@@ -1,10 +1,13 @@
 import io from "socket.io-client";
+import MsgroomSocket, { User } from "./socket.io";
+
 import { EventEmitter } from "node:events";
-import MsgroomSocket from "./socket.io";
-import axios from "axios";
+import TypedEmitter from "typed-emitter";
+import ClientEvents from "./events";
+
 import { AuthError, ConnectionError } from "./errors";
 
-export default class Client extends EventEmitter {
+export default class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket: MsgroomSocket;
     #name: string;
     #server: string;
