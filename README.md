@@ -2,7 +2,7 @@
 
 ## A Msgroom client and server
 
-**This is __not__ the official msgroom package!**
+**This is <ins>not</ins> the official msgroom package!**
 
 (Very WIP right now)
 Available on npm: `npm i msgroom`
