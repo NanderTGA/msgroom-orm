@@ -8,14 +8,14 @@
         "moduleResolution"   : "Node",
         "outDir"             : "./dist",
         "declaration"        : true,
-        "declarationDir"     : "./dist"
+        "declarationDir"     : "./dist",
     },
     "exclude": [
         "node_modules",
         "**/node_modules/*",
-        "dist"
+        "dist",
     ],
     "include": [
-        "src/**/*.ts"
-    ]
+        "src/**/*.ts",
+    ],
 }
