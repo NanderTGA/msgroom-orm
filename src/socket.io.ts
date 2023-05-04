@@ -24,58 +24,58 @@ export interface User {
     user: string;
 }
 
+export type Message = {
+    color: hexColor;
+    content: string;
+    date: string;
+    id: string;
+    session_id: string;
+    type: "text";
+    user: string;
+};
+
+export type NickChangeInfo = {
+    oldUser: string;
+    newUser: string;
+    id: string;
+    session_id: string;
+};
+
+export type UserLeaveInfo = {
+    id: string;
+    session_id: string;
+    user: string;
+};
+
+export type SysMessage = {
+    message: string;
+    type: "info" | "error" | "success";
+    isHtml: boolean;
+};
+
+export type UserUpdateInfo = {
+    type: "tag-add";
+    tag?: "staff" | string;
+    tagLabel?: string;
+    user: string;
+};
 
 /**
  * used for receiving events from the server
  */
 export interface ServerToClientEvents {
     "auth-complete": (userID: string) => void;
-    
-    message: (message: {
-        color: hexColor;
-        content: string;
-        date: string;
-        id: string;
-        session_id: string;
-        type: "text";
-        user: string
-    }) => void;
-    
-    "sys-message": (message: {
-        message: string;
-        type: "info" | "error" | "success"
-        isHtml: boolean;
-    }) => void;
-    
-    "nick-changed": (args: {
-        oldUser: string;
-        newUser: string;
-        id: string;
-        session_id: string;
-    }) => void;
-    
+    message: (message: Message) => void;
+    "sys-message": (sysMessage: SysMessage) => void;
+    "nick-changed": (nickChangeInfo: NickChangeInfo) => void;
     "user-join": (args: User) => void;
-    
-    "user-leave": (args: {
-        id: string;
-        session_id: string;
-        user: string;
-    }) => void;
-    
-    "user-update": (args: {
-        type: "tag-add";
-        tag?: "staff" | string;
-        tagLabel?: string;
-        user: string
-    }) => void;
-    
-    online: (members: User[]) => void;
-    
+    "user-leave": (userLeaveInfo: UserLeaveInfo) => void;
+    "user-update": (userUpdateInfo: UserUpdateInfo) => void;
+    online: (users: User[]) => void;
     "auth-error": (error: {
         reason: string;
     }) => void;
-    
-    "werror": (reason: string) => void;
+    "werror": (/** A generic error, which doesn't cause disconnects. For example ratelimiting errors would send this event. */ reason: string) => void;
 }
 
 /**
