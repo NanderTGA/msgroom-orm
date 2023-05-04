@@ -28,6 +28,7 @@
   "devDependencies": {
     "eslint": "^8.39.0",
     "rimraf": "^5.0.0",
+    "typed-emitter": "^2.1.0",
     "typescript": "^5.0.4"
   }
 }
