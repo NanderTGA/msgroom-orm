@@ -1,4 +1,4 @@
-import { Message, NickChangeInfo, SysMessage } from "./socket.io";
+import { Message, NickChangeInfo, SysMessage, User } from "./socket.io";
 
 type ClientEvents = {
     disconnected: () => void;
@@ -9,6 +9,7 @@ type ClientEvents = {
     "sys-message-info": (sysMessage: SysMessage) => void;
     "sys-message-error": (sysMessage: SysMessage) => void;
     "sys-message-success": (sysMessage: SysMessage) => void;
+    "user-join": (user: User) => void;
 };
 
 export default ClientEvents;

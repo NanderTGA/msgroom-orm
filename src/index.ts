@@ -80,6 +80,10 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     this.#users[changedUser].user = nickChangeInfo.newUser;
 
                     this.emit("nick-change", nickChangeInfo);
+                })
+                .on("user-join", user => {
+                    this.#users.push(user);
+                    this.emit("user-join", user);
                 });
             //#endregion
             
