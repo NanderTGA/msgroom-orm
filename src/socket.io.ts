@@ -58,7 +58,7 @@ export type UserUpdateInfo = {
     user: string;
 
     type: "tag-add";
-    tag?: "staff" | string;
+    tag?: flag;
     tagLabel?: string;
 };
 
