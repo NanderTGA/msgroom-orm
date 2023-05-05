@@ -74,7 +74,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     this.emit(`sys-message-${sysMessage.type}`, sysMessage);
                 })
                 .on("nick-changed", nickChangeInfo => {
-                    const changedUser = this.#users.findIndex( user => user.id == nickChangeInfo.id);
+                    const changedUser = this.#users.findIndex( user => user.id == nickChangeInfo.id && nickChangeInfo.session_id == user.id && nickChangeInfo.oldUser == user.user);
                     if (changedUser == -1) return;
 
                     this.#users[changedUser].user = nickChangeInfo.newUser;
