@@ -56,7 +56,7 @@ export type SysMessage = {
 export type UserUpdateInfo = {
     /** The session ID of the affected user. */
     user: string;
-    
+
     type: "tag-add";
     tag?: "staff" | string;
     tagLabel?: string;
