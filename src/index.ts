@@ -74,10 +74,10 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     this.emit(`sys-message-${sysMessage.type}`, sysMessage);
                 })
                 .on("nick-changed", nickChangeInfo => {
-                    const changedUser = this.#users.findIndex( user => user.id == nickChangeInfo.id && nickChangeInfo.session_id == user.id && nickChangeInfo.oldUser == user.user);
-                    if (changedUser == -1) return;
+                    const changedUserIndex = this.#users.findIndex( user => user.id == nickChangeInfo.id && nickChangeInfo.session_id == user.id && nickChangeInfo.oldUser == user.user);
+                    if (changedUserIndex == -1) return;
 
-                    this.#users[changedUser].user = nickChangeInfo.newUser;
+                    this.#users[changedUserIndex].user = nickChangeInfo.newUser;
 
                     this.emit("nick-change", nickChangeInfo);
                 })
@@ -86,9 +86,22 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     this.emit("user-join", user);
                 })
                 .on("user-leave", userLeaveInfo => {
-                    const leftUser = this.#users.findIndex( user => user.id == userLeaveInfo.id && user.session_id == userLeaveInfo.session_id && user.user == userLeaveInfo.user);
-                    this.emit("user-leave", this.#users[leftUser]);
-                    delete this.#users[leftUser];
+                    const leftUserIndex = this.#users.findIndex( user => user.id == userLeaveInfo.id && user.session_id == userLeaveInfo.session_id && user.user == userLeaveInfo.user);
+                    this.emit("user-leave", this.#users[leftUserIndex]);
+                    delete this.#users[leftUserIndex];
+                })
+                .on("user-update", userUpdateInfo => {
+                    const updatedUserIndex = this.#users.findIndex( user => user.session_id == userUpdateInfo.user);
+                    
+                    switch (userUpdateInfo.type) {
+                        case "tag-add":
+                            if (!userUpdateInfo.tag || !userUpdateInfo.tagLabel) return;
+                            if (userUpdateInfo.tag.trim() == "") return;
+
+                            if (this.#users[updatedUserIndex].flags.includes(userUpdateInfo.tag)) this.#users[updatedUserIndex].flags.push(userUpdateInfo.tag);
+
+                            this.emit("tag-add", this.#users[updatedUserIndex], userUpdateInfo.tag, userUpdateInfo.tagLabel);
+                    }
                 });
             //#endregion
             

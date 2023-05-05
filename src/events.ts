@@ -11,6 +11,7 @@ type ClientEvents = {
     "sys-message-success": (sysMessage: SysMessage) => void;
     "user-join": (user: User) => void;
     "user-leave": (user: User) => void;
+    "tag-add": (user: User, newTag: string, newTagLabel: string) => void
 };
 
 export default ClientEvents;
