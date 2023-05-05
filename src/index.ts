@@ -19,13 +19,22 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         this.#server = server;
     }
 
-    async connect(name: string = this.#name, server = this.#server): Promise<string> {
+    /**
+     * Connect to a msgroom server. This should be the first function you run after creating a new instance of this class.
+     * @param name The username you want to use.
+     * @param server A URL to the server you want to connect to.
+     * @param apikey You can request one from ctrlz.
+     * @returns A promise which resolves to your userID.
+     */
+    async connect(name: string = this.#name, server = this.#server, apikey?: string): Promise<string> {
         return new Promise( (resolve, reject) => {
             this.#name = name;
             this.#server = server;
 
+            let userID: string;
+
             this.socket = io(this.#server);
-            this.socket // no you can't remove this part, that would break the types
+            this.socket // no you can't remove this line, that would break the types
 
             //#region connecting to the server
                 .on("connect", () => {
@@ -39,19 +48,20 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 .on("connect_error", () => {
                     throw new ConnectionError(`Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?`);
                 })
-                .on("auth-complete", userID => {
+                .on("auth-complete", authenticatedUserID => {
                     this.socket.emit("online");
-                    resolve(userID);
+                    userID = authenticatedUserID;
                 })
                 .on("auth-error", ({ reason }) => {
                     reject(new AuthError(reason));
                 })
-            //#endregion
-
-            //main events
                 .on("online", users => {
                     this.#users = users;
+                    resolve(userID);
                 })
+            //#endregion
+
+            //#region main events
                 .on("werror", reason => {
                     this.emit("werror", reason);
                 })
@@ -62,8 +72,16 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     const changedUser = this.#users.findIndex( user => user.id == nickChangeInfo.id);
                     if (changedUser == -1) return;
 
-                    //TODO
+                    this.#users[changedUser].user = nickChangeInfo.newUser;
+
+                    this.emit("nick-change", nickChangeInfo);
                 });
+            //#endregion
+            
+            this.socket.emit("auth", {
+                user: name,
+                apikey,
+            });
         });
     }
 
