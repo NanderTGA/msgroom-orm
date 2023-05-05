@@ -68,7 +68,7 @@ export interface ServerToClientEvents {
     message: (message: Message) => void;
     "sys-message": (sysMessage: SysMessage) => void;
     "nick-changed": (nickChangeInfo: NickChangeInfo) => void;
-    "user-join": (args: User) => void;
+    "user-join": (user: User) => void;
     "user-leave": (userLeaveInfo: UserLeaveInfo) => void;
     "user-update": (userUpdateInfo: UserUpdateInfo) => void;
     online: (users: User[]) => void;
@@ -82,14 +82,14 @@ export interface ServerToClientEvents {
  * used to send events to the server
  */
 export interface ClientToServerEvents {
-    "admin-action": (args: {
+    "admin-action": (options: {
         /**
          * We currently have no idea what this could be, apart from what the type must be according to the code of the official msgroom client.
          */
         args: string[];
     }) => void;
     
-    message: (args: {
+    message: (options: {
         /**
          * The type of message, so far I know only text is supported right now.
          */
@@ -104,7 +104,7 @@ export interface ClientToServerEvents {
     
     online: () => void;
     
-    auth: (args: {
+    auth: (options: {
         /**
          * The username you want to use.
          */
