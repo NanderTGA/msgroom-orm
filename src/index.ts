@@ -107,6 +107,14 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
             content: message,
         }));
     }
+
+    /**
+     * We currently have no idea what this could be, apart from what the type must be according to the code of the official msgroom client.
+     * @param args The arguments to pass to the `admin-action` event.
+     */
+    adminAction(...args: string[]): void {
+        this.socket.emit("admin-action", { args });
+    }
 }
 
 const client = new Client("test");
