@@ -57,6 +57,7 @@ export type UserUpdateInfo = {
     type: "tag-add";
     tag?: "staff" | string;
     tagLabel?: string;
+    /** The session ID of the affected user. */
     user: string;
 };
 
