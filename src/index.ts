@@ -67,6 +67,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 })
                 .on("message", message => {
                     this.emit("message", message);
+                    //TODO commands
                 })
                 .on("nick-changed", nickChangeInfo => {
                     const changedUser = this.#users.findIndex( user => user.id == nickChangeInfo.id);
@@ -117,11 +118,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     }
 }
 
-const client = new Client("test");
-
-client.on("connected", userID => {
-    client.sendMessage();
-});
-
-/*const userID = await client.connect()
-client.sendMessage("hi there")*/
+/*const client = new Client("test");
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+const userID = await client.connect();
+client.sendMessage("hi there");*/
