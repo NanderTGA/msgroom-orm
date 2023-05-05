@@ -69,6 +69,10 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     this.emit("message", message);
                     //TODO commands
                 })
+                .on("sys-message", sysMessage => {
+                    this.emit("sys-message", sysMessage);
+                    this.emit(`sys-message-${sysMessage.type}`, sysMessage);
+                })
                 .on("nick-changed", nickChangeInfo => {
                     const changedUser = this.#users.findIndex( user => user.id == nickChangeInfo.id);
                     if (changedUser == -1) return;
