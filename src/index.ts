@@ -84,6 +84,11 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 .on("user-join", user => {
                     this.#users.push(user);
                     this.emit("user-join", user);
+                })
+                .on("user-leave", userLeaveInfo => {
+                    const leftUser = this.#users.findIndex( user => user.id == userLeaveInfo.id && user.session_id == userLeaveInfo.session_id && user.user == userLeaveInfo.user);
+                    this.emit("user-leave", this.#users[leftUser]);
+                    delete this.#users[leftUser];
                 });
             //#endregion
             

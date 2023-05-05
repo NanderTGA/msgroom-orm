@@ -10,6 +10,7 @@ type ClientEvents = {
     "sys-message-error": (sysMessage: SysMessage) => void;
     "sys-message-success": (sysMessage: SysMessage) => void;
     "user-join": (user: User) => void;
+    "user-leave": (user: User) => void;
 };
 
 export default ClientEvents;
