@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node-terminal",
+            "name": "Debug Current JS File (node)",
+            "request": "launch",
+            "command": "node -- ${fileBasenameNoExtension}",
+            "cwd": "${fileDirname}"
+        },
+        {
+            "type": "node-terminal",
+            "name": "Debug Current TS File (ts-node)",
+            "request": "launch",
+            "command": "npx ts-node -- ${fileBasenameNoExtension}",
+            "cwd": "${fileDirname}"
+        },
+        {
+            "type": "node-terminal",
+            "name": "Debug Current Test File (npm run test)",
+            "request": "launch",
+            "command": "npm run test -- ${fileBasenameNoExtension}",
+            "cwd": "${fileDirname}"
+        },
+    ]
+}
