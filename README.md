@@ -1,8 +1,9 @@
-# msgroom-orm
+# msgroom
 
-## A Msgroom client and server
+## A Msgroom client
 
-**This is <ins>not</ins> the official msgroom package!**
+**NOTE: This is <ins>not</ins> the official msgroom package!**
 
-(Very WIP right now)
 Available on npm: `npm i msgroom`
+
+There are plans to include a msgroom server in the future.
