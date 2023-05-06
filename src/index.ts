@@ -157,9 +157,3 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         this.socket.emit("admin-action", { args });
     }
 }
-
-/*const client = new Client("test");
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-const userID = await client.connect();
-client.sendMessage("hi there");*/
