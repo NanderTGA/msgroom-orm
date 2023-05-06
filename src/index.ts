@@ -142,7 +142,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     }
 
     sendMessage(...messages: string[]): void {
-        const message = messages.join("");
+        const message = messages.join(" ");
         this.socket.emit("message", {
             type   : "text",
             content: message,
