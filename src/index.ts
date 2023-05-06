@@ -7,16 +7,31 @@ import ClientEvents from "./events";
 
 import { AuthError, ConnectionError } from "./errors";
 
+type LogFunction = (...args: string[]) => void;
+
 export default class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket!: MsgroomSocket;
     #name: string;
     #server: string;
     #users: User[] = [];
+    commands: Record<string, (reply: LogFunction, ...args: string[]) => void> = {
+        help: (reply, ...args) => {
+            reply("**List of available commands:**", Object.keys(this.commands).join(", "));
+        },
+    };
+
+    /**
+     * List of prefixes to be used for commands.
+     * Do note these *will be pasted directly in a regular expression*,
+     * so **make sure to escape any special characters!**
+     */
+    public commandPrefixes: string[];
     
-    constructor(name: string, server = "wss://devel.windows96.net:4096") {
+    constructor(name: string, commandPrefixes: string[] = [], server = "wss://devel.windows96.net:4096") {
         super();
         this.#name = name;
         this.#server = server;
+        this.commandPrefixes = commandPrefixes;
     }
 
     /**
@@ -67,7 +82,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 })
                 .on("message", message => {
                     this.emit("message", message);
-                    //TODO commands
+                    this.processCommands(message.content);
                 })
                 .on("sys-message", sysMessage => {
                     this.emit("sys-message", sysMessage);
@@ -155,5 +170,23 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
      */
     adminAction(...args: string[]): void {
         this.socket.emit("admin-action", { args });
+    }
+
+    processCommands(message: string, reply?: LogFunction) {
+        if (!reply) reply = (...args: string[]) => this.sendMessage(...args);
+
+        const regex = new RegExp(`^(${this.commandPrefixes.join("|")})`, "i");
+        if (!regex.test(message)) return;
+        
+        const commandArguments = message.replace(regex, "").split(" ");
+        
+        const command = commandArguments[0];
+        commandArguments.splice(0, 1);
+
+        try {
+            this.commands[command](reply, ...commandArguments);
+        } catch (error) {
+            reply(`An error occured while executing ${command}: *${error as string}*`);
+        }
     }
 }
