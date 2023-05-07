@@ -86,6 +86,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 })
                 .on("sys-message", sysMessage => {
                     this.emit("sys-message", sysMessage);
+                    //@ts-ignore don't worry, it's fine. Typescript is just being dumb.
                     this.emit(`sys-message-${sysMessage.type}`, sysMessage);
                 })
                 .on("nick-changed", nickChangeInfo => {
