@@ -143,6 +143,10 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         });
     }
 
+    disconnect() {
+        this.socket?.disconnect();
+    }
+
     get server() {
         return this.#server;
     }
