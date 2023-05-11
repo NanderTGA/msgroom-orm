@@ -2,7 +2,6 @@ import Client from ".";
 
 void (async () => {
     const client = new Client("[!] TestBot", [ "!" ]);
-    await client.connect();
 
     client.on("message", message => {
         if (message.id == client.userID) return;
@@ -25,4 +24,6 @@ void (async () => {
     client.commands.repeat = (reply, ...args) => {
         reply(args.join(" "));
     };
+    
+    await client.connect();
 })();
