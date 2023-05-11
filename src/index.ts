@@ -194,8 +194,11 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         const command = commandArguments[0];
         commandArguments.splice(0, 1);
 
+        const commandHandler = this.commands[command];
+        if (!commandHandler) return reply("That command doesn't exist.");
+
         try {
-            this.commands[command](reply, ...commandArguments);
+            commandHandler(reply, ...commandArguments);
         } catch (error) {
             reply(`An error occured while executing ${command}: *${error as string}*`);
         }
