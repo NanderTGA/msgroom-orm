@@ -19,6 +19,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
             reply("**List of available commands:**", Object.keys(this.commands).join(", "));
         },
     };
+    #userID?: string;
+    
 
     constructor(
         name: string,
@@ -41,9 +43,9 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
      * @param name The username you want to use.
      * @param server A URL to the server you want to connect to.
      * @param apikey You can request one from ctrlz.
-     * @returns A promise which resolves to your userID.
+     * @returns A promise which resolves when the connection has successfully been established.
      */
-    async connect(name: string = this.#name, server = this.#server, apikey?: string): Promise<string> {
+    async connect(name: string = this.#name, server = this.#server, apikey?: string): Promise<void> {
         return new Promise( (resolve, reject) => {
             this.#name = name;
             this.#server = server;
@@ -76,7 +78,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 })
                 .on("online", users => {
                     this.#users = users;
-                    resolve(userID);
+                    this.#userID = userID;
+                    resolve();
                 })
             //#endregion
 
@@ -164,6 +167,11 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
 
     get users() {
         return this.#users;
+    }
+
+    get userID(): string {
+        if (!this.#userID) throw new NotConnectedError();
+        return this.#userID;
     }
 
     sendMessage(...messages: string[]): void {
