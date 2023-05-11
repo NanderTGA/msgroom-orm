@@ -1,7 +1,7 @@
 import Client from ".";
 
 void (async () => {
-    const client = new Client("[g!] TestBot", [ "g!" ]);
+    const client = new Client("[!] TestBot", [ "!" ]);
     const userID = await client.connect();
 
     client.on("message", message => {
