@@ -2,10 +2,10 @@ import Client from ".";
 
 void (async () => {
     const client = new Client("[!] TestBot", [ "!" ]);
-    const userID = await client.connect();
+    await client.connect();
 
     client.on("message", message => {
-        if (message.id == userID) return;
+        if (message.id == client.userID) return;
         const monkey: Record<string, string> = {
             "hey"        : "hey",
             "gn"         : "gn",
