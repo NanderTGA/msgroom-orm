@@ -21,4 +21,8 @@ void (async () => {
     client.commands.ping = reply => {
         reply("pong");
     };
+
+    client.commands.repeat = (reply, ...args) => {
+        reply(args.join(" "));
+    };
 })();
