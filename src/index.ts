@@ -5,12 +5,12 @@ import { EventEmitter } from "node:events";
 import TypedEmitter from "typed-emitter";
 import ClientEvents from "./events";
 
-import { AuthError, ConnectionError } from "./errors";
+import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 
 type LogFunction = (...args: string[]) => void;
 
 export default class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
-    private socket!: MsgroomSocket;
+    private socket?: MsgroomSocket;
     #name: string;
     #server: string;
     #users: User[] = [];
@@ -55,6 +55,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
 
             //#region connecting to the server
                 .on("connect", () => {
+                    if (!this.socket) throw new NotConnectedError();
                     this.socket.emit("auth", {
                         user: name,
                     });
@@ -63,9 +64,10 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     this.emit("disconnected");
                 })
                 .on("connect_error", () => {
-                    throw new ConnectionError(`Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?`);
+                    throw new ConnectionError();
                 })
                 .on("auth-complete", authenticatedUserID => {
+                    if (!this.socket) throw new NotConnectedError();
                     this.socket.emit("online");
                     userID = authenticatedUserID;
                 })
@@ -156,6 +158,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     }
 
     set name(name: string) {
+        if (!this.socket) throw new NotConnectedError();
         this.socket.emit("change-user", name);
     }
 
@@ -164,6 +167,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     }
 
     sendMessage(...messages: string[]): void {
+        if (!this.socket) throw new NotConnectedError();
+
         const message = messages.join(" ");
         this.socket.emit("message", {
             type   : "text",
@@ -176,12 +181,11 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
      * @param args The arguments to pass to the `admin-action` event.
      */
     adminAction(...args: string[]): void {
+        if (!this.socket) throw new NotConnectedError();
         this.socket.emit("admin-action", { args });
     }
 
-    processCommands(message: string, reply?: LogFunction) {
-        if (!reply) reply = (...args: string[]) => this.sendMessage(...args);
-
+    processCommands(message: string, reply: LogFunction = (...args: string[]) => this.sendMessage(...args)) {
         const regex = new RegExp(`^(${this.commandPrefixes.join("|")})`, "i");
         if (!regex.test(message)) return;
         
