@@ -20,14 +20,16 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         },
     };
 
-    /**
-     * List of prefixes to be used for commands.
-     * Do note these *will be pasted directly in a regular expression*,
-     * so **make sure to escape any special characters!**
-     */
-    public commandPrefixes: string[];
-    
-    constructor(name: string, commandPrefixes: string[] = [], server = "wss://devel.windows96.net:4096") {
+    constructor(
+        name: string,
+        /**
+         * List of prefixes to be used for commands.
+         * Do note these *will be pasted directly in a regular expression*,
+         * so **make sure to escape any special characters!**
+         */
+        public commandPrefixes: string[] = [],
+        server = "wss://devel.windows96.net:4096",
+    ) {
         super();
         this.#name = name;
         this.#server = server;
