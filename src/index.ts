@@ -9,7 +9,7 @@ import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 
 type LogFunction = (...args: string[]) => void;
 
-export default class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
+class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
     #name: string;
     #server: string;
@@ -19,8 +19,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
             reply("**List of available commands:**", Object.keys(this.commands).join(", "));
         },
     };
-    #userID?: string;
     
+    static default = Client;
 
     constructor(
         name: string,
@@ -211,4 +211,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
             reply(`An error occured while executing ${command}: *${error as string}*`);
         }
     }
+
 }
+
+export = Client;
