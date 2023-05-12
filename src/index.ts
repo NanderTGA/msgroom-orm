@@ -13,7 +13,12 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     private socket?: MsgroomSocket;
     #name: string;
     #server: string;
+
     #users: User[] = [];
+    #userID?: string;
+    blockedIDs = new Set<string>();
+    blockedSessionIDs = new Set<string>();
+
     commands: Record<string, (reply: LogFunction, ...args: string[]) => void> = {
         help: (reply, ...args) => {
             reply("**List of available commands:**", Object.keys(this.commands).join(", "));
@@ -88,6 +93,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     this.emit("werror", reason);
                 })
                 .on("message", message => {
+                    if (this.isBlocked(message)) return;
+
                     this.emit("message", message);
                     this.processCommands(message.content);
                 })
@@ -103,11 +110,15 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     });
                     if (changedUserIndex == -1) return;
 
+                    if (this.isBlocked(this.#users[changedUserIndex])) return;
+
                     this.#users[changedUserIndex].user = nickChangeInfo.newUser;
 
                     this.emit("nick-change", nickChangeInfo);
                 })
                 .on("user-join", user => {
+                    if (this.isBlocked(user)) return;
+
                     if (!user) return;
                     this.#users.push(user);
                     this.emit("user-join", user);
@@ -119,6 +130,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     });
                     if (leftUserIndex == -1) return;
 
+                    if (this.isBlocked(this.#users[leftUserIndex])) return;
+
                     this.emit("user-leave", this.#users[leftUserIndex]);
                     delete this.#users[leftUserIndex];
                 })
@@ -128,6 +141,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                         return user.session_id == userUpdateInfo.user;
                     });
                     if (updatedUserIndex == -1) return;
+
+                    if (this.isBlocked(this.#users[updatedUserIndex])) return;
                     
                     switch (userUpdateInfo.type) {
                         case "tag-add":
@@ -212,6 +227,23 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         }
     }
 
+    public isBlocked(userID: string, userSessionID?: string): boolean
+    public isBlocked(userIDOrObject: { id?: string, sessionID?: string, session_id?: string }): boolean
+    public isBlocked(
+        userIDOrObject?: string | { id?: string, sessionID?: string, session_id?: string },
+        userSessionID?: string,
+    ): boolean {
+        let blocked = false;
+
+        if (typeof userIDOrObject == "string") blocked ||= this.blockedIDs.has(userIDOrObject);
+        else if (!(typeof userIDOrObject == "undefined")) blocked   ||= this.blockedIDs.has(userIDOrObject.id as string)
+                                                                    ||  this.blockedSessionIDs.has(userIDOrObject.sessionID as string)
+                                                                    ||  this.blockedSessionIDs.has(userIDOrObject.session_id as string);
+
+        if (typeof userSessionID == "string") blocked ||= this.blockedSessionIDs.has(userSessionID);
+
+        return blocked;
+    }
 }
 
 export = Client;

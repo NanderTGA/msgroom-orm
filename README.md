@@ -55,3 +55,36 @@ client.commands.repeat = (reply, ...args) => {
 You can, after defining these commands, use them by sending a message like this:
 
 ![example command usage](https://github.com/NanderTGA/msgroom-orm/blob/master/example%20command%20usage.png?raw=true)
+
+### Blocking users
+
+Blocking users is very simple, you just add their ID or session ID to `client.blockedIDs` or `client.blockedSessionIDs` respectively.
+These 2 properties are [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)s.
+Any events caused by blocked users will be ignored, so you likely won't need this method.
+
+You can then check if a user is blocked using `client.isblocked()`.
+This method accepts either
+
+- An ID, and optionally a session id:
+
+```js
+client.isBlocked("user-id-here", "session-id-here")
+```
+
+- Or an object containing one or more of the following:
+
+```js
+client.isBlocked({
+    id: "user-id-here",
+    sessionID: "session-id-here",
+    session_id: "session-id-here"
+})
+```
+
+for example:
+
+```js
+client.isBlocked("bad-user-id", "some session id") // false
+client.blockedIDs.add("bad-user-id")
+client.isBlocked("bad-user-id", "some session id") // true
+```
