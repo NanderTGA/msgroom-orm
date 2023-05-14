@@ -106,42 +106,32 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     this.emit(`sys-message-${sysMessage.type}`, sysMessage);
                 })
                 .on("nick-changed", nickChangeInfo => {
-                    const changedUserIndex = this.#users.findIndex( user => {
-                        if (!user) return;
-                        return user.id == nickChangeInfo.id && nickChangeInfo.session_id == user.id && nickChangeInfo.oldUser == user.user;
-                    });
-                    if (changedUserIndex == -1) return;
+                    if (this.isBlocked(nickChangeInfo)) return;
 
-                    if (this.isBlocked(this.#users[changedUserIndex])) return;
+                    const changedUserIndex = this.#users.findIndex( user => user.id == nickChangeInfo.id && nickChangeInfo.session_id == user.id && nickChangeInfo.oldUser == user.user );
+                    if (changedUserIndex == -1) return;
 
                     this.#users[changedUserIndex].user = nickChangeInfo.newUser;
 
                     this.emit("nick-change", nickChangeInfo);
                 })
                 .on("user-join", user => {
-                    if (this.isBlocked(user)) return;
+                    if (!user || this.isBlocked(user)) return;
 
-                    if (!user) return;
                     this.#users.push(user);
                     this.emit("user-join", user);
                 })
                 .on("user-leave", userLeaveInfo => {
-                    const leftUserIndex = this.#users.findIndex( user => {
-                        if (!user) return false;
-                        return user.id == userLeaveInfo.id && user.session_id == userLeaveInfo.session_id && user.user == userLeaveInfo.user;
-                    });
-                    if (leftUserIndex == -1) return;
+                    if (!userLeaveInfo || this.isBlocked(userLeaveInfo)) return;
 
-                    if (this.isBlocked(this.#users[leftUserIndex])) return;
+                    const leftUserIndex = this.#users.findIndex( user => user.id == userLeaveInfo.id && user.session_id == userLeaveInfo.session_id && user.user == userLeaveInfo.user );
+                    if (leftUserIndex == -1) return;
 
                     this.emit("user-leave", this.#users[leftUserIndex]);
                     delete this.#users[leftUserIndex];
                 })
                 .on("user-update", userUpdateInfo => {
-                    const updatedUserIndex = this.#users.findIndex( user => {
-                        if (!user) return false;
-                        return user.session_id == userUpdateInfo.user;
-                    });
+                    const updatedUserIndex = this.#users.findIndex( user => user.session_id == userUpdateInfo.user );
                     if (updatedUserIndex == -1) return;
 
                     if (this.isBlocked(this.#users[updatedUserIndex])) return;
@@ -169,11 +159,11 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.socket?.disconnect();
     }
 
-    get server() {
+    get server(): string {
         return this.#server;
     }
 
-    get name() {
+    get name(): string {
         return this.#name;
     }
 
@@ -182,7 +172,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.socket.emit("change-user", name);
     }
 
-    get users() {
+    get users(): User[] {
         return this.#users;
     }
 
