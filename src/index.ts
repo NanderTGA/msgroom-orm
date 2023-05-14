@@ -221,7 +221,10 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         if (!commandHandler) return reply("That command doesn't exist.");
 
         try {
-            commandHandler(reply, ...commandArguments);
+            const commandResult = commandHandler(reply, ...commandArguments);
+            if (!commandResult) return;
+            if (typeof commandResult == "string") return reply(commandResult);
+            return reply(...commandResult);
         } catch (error) {
             reply(`An error occured while executing ${command}: *${error as string}*`);
         }
