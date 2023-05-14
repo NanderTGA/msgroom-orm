@@ -20,9 +20,9 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     blockedIDs = new Set<string>();
     blockedSessionIDs = new Set<string>();
 
-    commands: Record<string, (reply: LogFunction, ...args: string[]) => void> = {
+    commands: Record<string, (reply: LogFunction, ...args: string[]) => string | string[] | void> = {
         help: (reply, ...args) => {
-            reply("**List of available commands:**", Object.keys(this.commands).join(", "));
+            return [ "**List of available commands:**", Object.keys(this.commands).join(", ") ];
         },
     };
     
