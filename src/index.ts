@@ -1,5 +1,6 @@
 import io from "socket.io-client";
 import MsgroomSocket, { User } from "./socket.io";
+import { decode as decodeHTML } from "he";
 
 import { EventEmitter } from "node:events";
 import TypedEmitter from "typed-emitter";
@@ -94,6 +95,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                 })
                 .on("message", message => {
                     if (this.isBlocked(message)) return;
+                    message.content = decodeHTML(message.content);
 
                     this.emit("message", message);
                     this.processCommands(message.content);

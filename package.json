@@ -27,10 +27,12 @@
   "author": "NanderTGA (https://nandertga.ddns.net)",
   "license": "MIT",
   "dependencies": {
-    "typed-emitter": "^2.1.0",
-    "socket.io-client": "^4.6.1"
+    "he": "^1.2.0",
+    "socket.io-client": "^4.6.1",
+    "typed-emitter": "^2.1.0"
   },
   "devDependencies": {
+    "@types/he": "^1.2.0",
     "eslint": "^8.40.0",
     "rimraf": "^5.0.0",
     "typescript": "^5.0.4"
