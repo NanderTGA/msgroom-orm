@@ -2,6 +2,8 @@
 
 ## A Msgroom client
 
+[![Wallaby.js](https://img.shields.io/badge/wallaby.js-powered-blue.svg?style=flat&logo=github)](https://wallabyjs.com/oss/)
+
 **NOTE: This is <ins>not</ins> the official msgroom package!**
 
 Available on npm: `npm i msgroom`
