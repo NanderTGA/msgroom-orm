@@ -14,8 +14,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "github.com/NanderTGA/msgroom"
+    "url": "git+https://github.com/NanderTGA/msgroom-orm.git"
   },
+  "bugs": {
+    "url": "https://github.com/NanderTGA/msgroom-orm/issues"
+  },
+  "homepage": "https://github.com/NanderTGA/msgroom-orm#readme",
   "keywords": [
     "msgroom",
     "orm",
