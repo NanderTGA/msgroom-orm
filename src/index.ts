@@ -19,6 +19,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     #userID?: string;
     blockedIDs = new Set<string>();
     blockedSessionIDs = new Set<string>();
+    commandPrefixes: string[];
 
     commands: Record<string, (reply: LogFunction, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void)> = {
         help: (reply, ...args) => {
@@ -28,20 +29,17 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     
     static default = Client;
 
-    constructor(
-        name: string,
-        /**
-         * List of prefixes to be used for commands.
-         * Do note these *will be pasted directly in a regular expression*,
-         * so **make sure to escape any special characters!**
-         */
-        public commandPrefixes: string[] = [],
-        server = "wss://devel.windows96.net:4096",
-    ) {
+    /**
+     * Creates a new msgroom client.
+     * @param name The username to use.
+     * @param commandPrefixes List of prefixes to be used for commands. Do note these *will be pasted directly in a regular expression*, so **make sure to escape any special characters!**
+     * @param server The server to connect to.
+     */
+    constructor(name: string, commandPrefixes: string | string[] = [], server = "wss://devel.windows96.net:4096") {
         super();
         this.#name = name;
         this.#server = server;
-        this.commandPrefixes = commandPrefixes;
+        this.commandPrefixes = typeof commandPrefixes == "string" ? [ commandPrefixes ] : commandPrefixes;
     }
 
     /**
