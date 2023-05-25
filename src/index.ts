@@ -98,7 +98,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     message.content = decodeHTML(message.content);
 
                     this.emit("message", message);
-                    this.processCommands(message.content);
+                    void this.processCommands(message.content);
                 })
                 .on("sys-message", sysMessage => {
                     this.emit("sys-message", sysMessage);
@@ -200,7 +200,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.socket.emit("admin-action", { args });
     }
 
-    processCommands(message: string, reply: LogFunction = (...args: string[]) => this.sendMessage(...args)) {
+    async processCommands(message: string, reply: LogFunction = (...args: string[]) => this.sendMessage(...args)) {
         const regex = new RegExp(`^(${this.commandPrefixes.join("|")})`, "i");
         if (!regex.test(message)) return;
         
@@ -213,7 +213,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         if (!commandHandler) return reply("That command doesn't exist.");
 
         try {
-            const commandResult = commandHandler(reply, ...commandArguments);
+            const commandResult = await commandHandler(reply, ...commandArguments);
+
             if (!commandResult) return;
             if (typeof commandResult == "string") return reply(commandResult);
             return reply(...commandResult);
