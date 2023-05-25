@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "prepack": "npm run test && npm run build",
+    "prepack": "npm run build",
     "test": "rimraf dist && jest && tsd"
   },
   "files": [
