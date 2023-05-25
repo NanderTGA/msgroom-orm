@@ -45,12 +45,10 @@ This property should be a function that is called with
 Some examples:
 
 ```js
-client.commands.ping = reply => {
-    reply("pong");
-};
+client.commands.ping = () => "pong";
 
 client.commands.repeat = (reply, ...args) => {
-    reply(args.join(" "));
+    return args.join(" ");
 };
 ```
 
@@ -62,9 +60,9 @@ You can, after defining these commands, use them by sending a message like this:
 
 Blocking users is very simple, you just add their ID or session ID to `client.blockedIDs` or `client.blockedSessionIDs` respectively.
 These 2 properties are [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)s.
-Any events caused by blocked users will be ignored, so you likely won't need this method.
 
 You can then check if a user is blocked using `client.isblocked()`.
+Any events caused by blocked users will be ignored, so you likely won't need this method.
 This method accepts either
 
 - An ID, and optionally a session id:
