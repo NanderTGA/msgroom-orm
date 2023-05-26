@@ -75,6 +75,9 @@ export interface ServerToClientEvents {
     "user-update": (userUpdateInfo: UserUpdateInfo) => void;
     online: (users: User[]) => void;
     "auth-error": (error: {
+        /**
+         * "there is no auth-error lol" - ctrlz
+         */
         reason: string;
     }) => void;
     "werror": (/** A generic error, which doesn't cause disconnects. For example ratelimiting errors would send this event. */ reason: string) => void;
