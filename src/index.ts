@@ -15,7 +15,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     #name: string;
     #server: string;
 
-    #users: User[] = [];
+    users: User[] = [];
     #userID?: string;
     blockedIDs = new Set<string>();
     blockedSessionIDs = new Set<string>();
@@ -81,7 +81,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     reject(new AuthError(reason));
                 })
                 .on("online", users => {
-                    this.#users = users;
+                    this.users = users;
                     this.#userID = userID;
                     resolve();
                 })
@@ -106,42 +106,42 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                 .on("nick-changed", nickChangeInfo => {
                     if (this.isBlocked(nickChangeInfo)) return;
 
-                    const changedUserIndex = this.#users.findIndex( user => user.id == nickChangeInfo.id && nickChangeInfo.session_id == user.id && nickChangeInfo.oldUser == user.user );
+                    const changedUserIndex = this.users.findIndex( user => user.id == nickChangeInfo.id && nickChangeInfo.session_id == user.id && nickChangeInfo.oldUser == user.user );
                     if (changedUserIndex == -1) return;
 
-                    this.#users[changedUserIndex].user = nickChangeInfo.newUser;
+                    this.users[changedUserIndex].user = nickChangeInfo.newUser;
 
                     this.emit("nick-change", nickChangeInfo);
                 })
                 .on("user-join", user => {
                     if (!user || this.isBlocked(user)) return;
 
-                    this.#users.push(user);
+                    this.users.push(user);
                     this.emit("user-join", user);
                 })
                 .on("user-leave", userLeaveInfo => {
                     if (!userLeaveInfo || this.isBlocked(userLeaveInfo)) return;
 
-                    const leftUserIndex = this.#users.findIndex( user => user.id == userLeaveInfo.id && user.session_id == userLeaveInfo.session_id && user.user == userLeaveInfo.user );
+                    const leftUserIndex = this.users.findIndex( user => user.id == userLeaveInfo.id && user.session_id == userLeaveInfo.session_id && user.user == userLeaveInfo.user );
                     if (leftUserIndex == -1) return;
 
-                    this.emit("user-leave", this.#users[leftUserIndex]);
-                    delete this.#users[leftUserIndex];
+                    this.emit("user-leave", this.users[leftUserIndex]);
+                    this.users.splice(leftUserIndex, 1);
                 })
                 .on("user-update", userUpdateInfo => {
-                    const updatedUserIndex = this.#users.findIndex( user => user.session_id == userUpdateInfo.user );
+                    const updatedUserIndex = this.users.findIndex( user => user.session_id == userUpdateInfo.user );
                     if (updatedUserIndex == -1) return;
 
-                    if (this.isBlocked(this.#users[updatedUserIndex])) return;
+                    if (this.isBlocked(this.users[updatedUserIndex])) return;
                     
                     switch (userUpdateInfo.type) {
                         case "tag-add":
                             if (!userUpdateInfo.tag || !userUpdateInfo.tagLabel) return;
                             if (userUpdateInfo.tag.trim() == "") return;
 
-                            if (this.#users[updatedUserIndex].flags.includes(userUpdateInfo.tag)) this.#users[updatedUserIndex].flags.push(userUpdateInfo.tag);
+                            if (this.users[updatedUserIndex].flags.includes(userUpdateInfo.tag)) this.users[updatedUserIndex].flags.push(userUpdateInfo.tag);
 
-                            this.emit("tag-add", this.#users[updatedUserIndex], userUpdateInfo.tag, userUpdateInfo.tagLabel);
+                            this.emit("tag-add", this.users[updatedUserIndex], userUpdateInfo.tag, userUpdateInfo.tagLabel);
                     }
                 });
             //#endregion
@@ -168,10 +168,6 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     set name(name: string) {
         if (!this.socket) throw new NotConnectedError();
         this.socket.emit("change-user", name);
-    }
-
-    get users(): User[] {
-        return this.#users;
     }
 
     get userID(): string {
