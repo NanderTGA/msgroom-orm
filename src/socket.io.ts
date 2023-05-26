@@ -80,7 +80,10 @@ export interface ServerToClientEvents {
          */
         reason: string;
     }) => void;
-    "werror": (/** A generic error, which doesn't cause disconnects. For example ratelimiting errors would send this event. */ reason: string) => void;
+    "werror": (
+        /** A generic error, which doesn't cause disconnects. For example ratelimiting errors would send this event. Is currently never called by the server. */
+        reason: string
+    ) => void;
 }
 
 /**
