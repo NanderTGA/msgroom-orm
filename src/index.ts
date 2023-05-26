@@ -51,6 +51,9 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
      */
     async connect(name: string = this.#name, server = this.#server, apikey?: string): Promise<void> {
         return new Promise( (resolve, reject) => {
+            if (name.length > 18) throw new Error("Username is longer than 18 characters.");
+            if (name.length < 1) throw new Error("Username should be 1 character or more.");
+            
             this.#name = name;
             this.#server = server;
 
@@ -167,6 +170,10 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
 
     set name(name: string) {
         if (!this.socket) throw new NotConnectedError();
+
+        if (name.length > 18) throw new Error("Username is longer than 18 characters.");
+        if (name.length < 1) throw new Error("Username should be 1 character or more.");
+
         this.socket.emit("change-user", name);
     }
 
