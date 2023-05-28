@@ -224,8 +224,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         }
     }
 
-    public isBlocked(userID: string, userSessionID?: string): boolean
-    public isBlocked(userIDOrObject: { id?: string, sessionID?: string, session_id?: string }): boolean
+    public isBlocked(userID: string, userSessionID?: string): boolean;
+    public isBlocked(userIDOrObject: { id?: string, sessionID?: string, session_id?: string }): boolean;
     public isBlocked(
         userIDOrObject?: string | { id?: string, sessionID?: string, session_id?: string },
         userSessionID?: string,
