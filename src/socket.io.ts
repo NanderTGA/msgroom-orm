@@ -70,8 +70,8 @@ export interface ServerToClientEvents {
     message: (message: Message) => void;
     "sys-message": (sysMessage: SysMessage) => void;
     "nick-changed": (nickChangeInfo: NickChangeInfo) => void;
-    "user-join": (user?: User) => void;
-    "user-leave": (userLeaveInfo?: UserLeaveInfo) => void;
+    "user-join": (user: User) => void;
+    "user-leave": (userLeaveInfo: UserLeaveInfo) => void;
     "user-update": (userUpdateInfo: UserUpdateInfo) => void;
     online: (users: User[]) => void;
     "auth-error": (error: {

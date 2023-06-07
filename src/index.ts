@@ -121,13 +121,13 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     this.emit("nick-change", nickChangeInfo);
                 })
                 .on("user-join", user => {
-                    if (!user || this.isBlocked(user)) return;
+                    if (this.isBlocked(user)) return;
 
                     this.users.push(user);
                     this.emit("user-join", user);
                 })
                 .on("user-leave", userLeaveInfo => {
-                    if (!userLeaveInfo || this.isBlocked(userLeaveInfo)) return;
+                    if (this.isBlocked(userLeaveInfo)) return;
 
                     const leftUserIndex = this.users.findIndex( user => user.id == userLeaveInfo.id && user.session_id == userLeaveInfo.session_id && user.user == userLeaveInfo.user );
                     if (leftUserIndex == -1) return;
