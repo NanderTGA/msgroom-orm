@@ -4,7 +4,6 @@
 name: Build package and upload to npm
 
 on:
-  workflow_dispatch:
   release:
     types: [created]
 
