@@ -26,9 +26,16 @@ void (async () => {
     };
 
     client.commands.subCommandTest = {
-        sub1: () => "first subcommand",
-        sub2: () => "another subcommand",
-        ""  : () => "nothing?",
+        sub1         : () => "first subcommand",
+        sub2         : () => "another subcommand",
+        undefined    : () => "nothing?",
+        subSubCommand: {
+            stuff : () => "some stuff here",
+            stuff2: {
+                undefined: () => "no subcommand",
+                sub      : () => "yes subcommand",
+            },
+        },
     };
     
     await client.connect();
