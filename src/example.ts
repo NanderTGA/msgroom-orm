@@ -24,6 +24,12 @@ void (async () => {
     client.commands.repeat = (reply, ...args) => {
         reply(args.join(" "));
     };
+
+    client.commands.subCommandTest = {
+        sub1: () => "first subcommand",
+        sub2: () => "another subcommand",
+        ""  : () => "nothing?",
+    };
     
     await client.connect();
 })();

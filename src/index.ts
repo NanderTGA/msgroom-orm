@@ -9,6 +9,10 @@ import ClientEvents from "./events";
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 
 type LogFunction = (...args: string[]) => void;
+type CommandHandler = (reply: LogFunction, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void);
+type CommandHandlerMap = {
+    [key: string]: CommandHandler | CommandHandlerMap
+};
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
@@ -21,7 +25,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     blockedSessionIDs = new Set<string>();
     commandPrefixes: string[];
 
-    commands: Record<string, (reply: LogFunction, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void)> = {
+    commands: CommandHandlerMap = {
         help: (reply, ...args) => {
             return [ "**List of available commands:**", Object.keys(this.commands).join(", ") ];
         },
@@ -201,6 +205,19 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.socket.emit("admin-action", { args });
     }
 
+    getCommand(command: string, commandArguments: string[]): [ CommandHandler, string[] ] | undefined {
+        let currentGottenHandler: CommandHandler | CommandHandlerMap = this.commands;
+
+        while (typeof currentGottenHandler != "undefined") {
+            currentGottenHandler = currentGottenHandler[command];
+            if (!currentGottenHandler) return;
+            if (typeof currentGottenHandler == "function") return [ currentGottenHandler, commandArguments ];
+
+            command = commandArguments[0];
+            commandArguments.splice(0, 1);
+        }
+    }
+
     async processCommands(message: string, reply: LogFunction = (...args: string[]) => this.sendMessage(...args)) {
         const regex = new RegExp(`^(${this.commandPrefixes.join("|")})`, "i");
         if (!regex.test(message)) return;
@@ -210,11 +227,13 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         const command = commandArguments[0];
         commandArguments.splice(0, 1);
 
-        const commandHandler = this.commands[command];
-        if (!commandHandler) return reply("That command doesn't exist.");
+        const gottenCommand = this.getCommand(command, commandArguments);
+        // We can safely assume there is at least one prefix, because otherwise this method wouldn't be called.
+        if (!gottenCommand) return reply(`That command doesn't exist. Run ${this.commandPrefixes[0]}help for a list of commands.`);
+        const [ commandHandler, commandHandlerArguments ] = gottenCommand;
 
         try {
-            const commandResult = await commandHandler(reply, ...commandArguments);
+            const commandResult = await commandHandler(reply, ...commandHandlerArguments);
 
             if (!commandResult) return;
             if (typeof commandResult == "string") return reply(commandResult);
