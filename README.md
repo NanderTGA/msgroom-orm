@@ -87,3 +87,27 @@ client.isBlocked("bad-user-id", "some session id") // false
 client.blockedIDs.add("bad-user-id")
 client.isBlocked("bad-user-id", "some session id") // true
 ```
+
+### Subcommands
+
+You can now also define subcommands like this:
+
+```js
+client.commands.someSubommand = {
+    subcommand: () => "You used the subcommand!", // user ran `!someSubcommand subcommand`
+    undefined: () => "You didn't use any subcommands!", // user ran `!someSubcommand`
+    anotherSubcommand: () => "You used another subcommand!", // user ran `!someSubcommand anotherSubcommand`
+}
+```
+
+You can also nest subcommands like this:
+
+```js
+client.commands.something = {
+    someSubcommand: {
+        someSubSubcommand: () => "Look at that, a sub-subcommand" // user ran `!something someSubcommand someSubSubcommand`
+    }
+}
+```
+
+It comes down to one thing: you can now put an object with subcommands (like shown above) anywhere you can put a command handler function
