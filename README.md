@@ -34,8 +34,7 @@ A map of events can be found in `src/events.ts` or in `dist/events.d.ts`.
 
 ### Defining commands
 
-Commands are defined in a very simple way;
-You simply define a property on `client.commands`.
+To define a command, define a property on `client.commands`.
 The name of the property will be the name of your command.
 This property should be a function that is called with
 
@@ -58,10 +57,10 @@ You can, after defining these commands, use them by sending a message like this:
 
 ### Blocking users
 
-Blocking users is very simple, you just add their ID or session ID to `client.blockedIDs` or `client.blockedSessionIDs` respectively.
+To block a user, add their ID or session ID to `client.blockedIDs` or `client.blockedSessionIDs` respectively.
 These 2 properties are [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)s.
 
-You can then check if a user is blocked using `client.isblocked()`.
+You can then check if a user is blocked using `client.isBlocked()`.
 Any events caused by blocked users will be ignored, so you likely won't need this method.
 This method accepts either
 
