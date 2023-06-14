@@ -190,6 +190,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         if (!this.socket) throw new NotConnectedError();
 
         const message = messages.join(" ");
+        if (message.length > 2048) return void this.emit("werror", "message too long");
+
         this.socket.emit("message", {
             type   : "text",
             content: message,
