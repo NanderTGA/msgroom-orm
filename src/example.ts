@@ -4,7 +4,7 @@ void (async () => {
     const client = new Client("[!] TestBot", [ "!" ]);
 
     client.on("message", message => {
-        if (message.id == client.userID) return;
+        if (message.author.ID == client.userID) return;
         const monkey: Record<string, string> = {
             "hey"        : "hey",
             "gn"         : "gn",
