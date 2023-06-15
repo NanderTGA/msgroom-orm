@@ -1,12 +1,13 @@
 import io from "socket.io-client";
-import MsgroomSocket, { User } from "./socket.io";
+import MsgroomSocket from "./socket.io";
 import { decode as decodeHTML } from "he";
 
 import { EventEmitter } from "node:events";
 import TypedEmitter from "typed-emitter";
-import ClientEvents from "./events";
+import ClientEvents, { User } from "./events";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
+import { transformUser } from "./transforms";
 
 type LogFunction = (...args: string[]) => void;
 type CommandHandler = (reply: LogFunction, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void);
@@ -88,7 +89,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     reject(new AuthError(reason));
                 })
                 .on("online", users => {
-                    this.users = users;
+                    this.users = users.map(transformUser);
                     this.#userID = userID;
                     resolve();
                 })
