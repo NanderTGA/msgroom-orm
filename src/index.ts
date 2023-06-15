@@ -1,13 +1,12 @@
 import io from "socket.io-client";
 import MsgroomSocket from "./socket.io";
-import { decode as decodeHTML } from "he";
 
 import { EventEmitter } from "node:events";
 import TypedEmitter from "typed-emitter";
 import ClientEvents, { User } from "./events";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
-import { transformUser } from "./transforms";
+import { transformMessage, transformUser } from "./transforms";
 
 type LogFunction = (...args: string[]) => void;
 type CommandHandler = (reply: LogFunction, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void);
@@ -99,9 +98,9 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                 .on("werror", reason => {
                     this.emit("werror", reason);
                 })
-                .on("message", message => {
-                    if (this.isBlocked(message)) return;
-                    message.content = decodeHTML(message.content);
+                .on("message", rawMessage => {
+                    const message = transformMessage(rawMessage, this.users);
+                    if (this.isBlocked(message.author)) return;
 
                     this.emit("message", message);
                     void this.processCommands(message.content);
@@ -247,17 +246,16 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     }
 
     public isBlocked(userID: string, userSessionID?: string): boolean;
-    public isBlocked(userIDOrObject: { id?: string, sessionID?: string, session_id?: string }): boolean;
+    public isBlocked(userIDOrObject: { ID?: string, sessionID?: string }): boolean;
     public isBlocked(
-        userIDOrObject?: string | { id?: string, sessionID?: string, session_id?: string },
+        userIDOrObject?: string | { ID?: string, sessionID?: string },
         userSessionID?: string,
     ): boolean {
         let blocked = false;
 
         if (typeof userIDOrObject == "string") blocked ||= this.blockedIDs.has(userIDOrObject);
-        else if (!(typeof userIDOrObject == "undefined")) blocked   ||= this.blockedIDs.has(userIDOrObject.id as string)
-                                                                    ||  this.blockedSessionIDs.has(userIDOrObject.sessionID as string)
-                                                                    ||  this.blockedSessionIDs.has(userIDOrObject.session_id as string);
+        else if (!(typeof userIDOrObject == "undefined")) blocked   ||= this.blockedIDs.has(userIDOrObject.ID as string)
+                                                                    ||  this.blockedSessionIDs.has(userIDOrObject.sessionID as string);
 
         if (typeof userSessionID == "string") blocked ||= this.blockedSessionIDs.has(userSessionID);
 

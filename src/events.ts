@@ -8,12 +8,21 @@ export interface User {
     nickname: string;
 }
 
+export type Message = {
+    type: "text";
+
+    color: hexColor;
+    content: string;
+    date: Date;
+    author: User;
+};
+
 type ClientEvents = {
     /** Fired on disconnect. */
     disconnected: () => void;
 
     /** Fired when a message is received. */
-    message: (message: RawMessage) => void;
+    message: (message: Message) => void;
 
     /**
      * Fired when a "GUI error" occures.
