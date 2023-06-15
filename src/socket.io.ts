@@ -16,7 +16,7 @@ export type hexColor = `#${string}`;
 
 export type flag = "staff" | "bot";
 
-export interface User {
+export interface RawUser {
     color: hexColor;
     flags: flag[];
     id: string;
@@ -24,7 +24,7 @@ export interface User {
     user: string;
 }
 
-export type Message = {
+export type RawMessage = {
     color: hexColor;
     content: string;
     date: string;
@@ -34,26 +34,26 @@ export type Message = {
     user: string;
 };
 
-export type NickChangeInfo = {
+export type RawNickChangeInfo = {
     oldUser: string;
     newUser: string;
     id: string;
     session_id: string;
 };
 
-export type UserLeaveInfo = {
+export type RawUserLeaveInfo = {
     id: string;
     session_id: string;
     user: string;
 };
 
-export type SysMessage = {
+export type RawSysMessage = {
     message: string;
     type: "info" | "error" | "success";
     isHtml: boolean;
 };
 
-export type UserUpdateInfo = {
+export type RawUserUpdateInfo = {
     /** The session ID of the affected user. */
     user: string;
 
@@ -67,13 +67,13 @@ export type UserUpdateInfo = {
  */
 export interface ServerToClientEvents {
     "auth-complete": (userID: string) => void;
-    message: (message: Message) => void;
-    "sys-message": (sysMessage: SysMessage) => void;
-    "nick-changed": (nickChangeInfo: NickChangeInfo) => void;
-    "user-join": (user: User) => void;
-    "user-leave": (userLeaveInfo: UserLeaveInfo) => void;
-    "user-update": (userUpdateInfo: UserUpdateInfo) => void;
-    online: (users: User[]) => void;
+    message: (message: RawMessage) => void;
+    "sys-message": (sysMessage: RawSysMessage) => void;
+    "nick-changed": (nickChangeInfo: RawNickChangeInfo) => void;
+    "user-join": (user: RawUser) => void;
+    "user-leave": (userLeaveInfo: RawUserLeaveInfo) => void;
+    "user-update": (userUpdateInfo: RawUserUpdateInfo) => void;
+    online: (users: RawUser[]) => void;
     "auth-error": (error: {
         /**
          * "there is no auth-error lol" - ctrlz
