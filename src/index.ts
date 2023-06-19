@@ -107,7 +107,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                 })
                 .on("sys-message", sysMessage => {
                     this.emit("sys-message", sysMessage);
-                    //@ts-ignore don't worry, it's fine. Typescript is just being dumb.
+                    //@ts-ignore Don't worry, it's fine. Think about it, you'll understand.
                     this.emit(`sys-message-${sysMessage.type}`, sysMessage);
                 })
                 .on("nick-changed", nickChangeInfo => {
