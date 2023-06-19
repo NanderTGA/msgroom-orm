@@ -6,7 +6,8 @@ import TypedEmitter from "typed-emitter";
 import ClientEvents, { User } from "./events";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
-import { transformMessage, transformUser } from "./transforms";
+import { transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
+import getUser from "./utils/getUser";
 
 type LogFunction = (...args: string[]) => void;
 type CommandHandler = (reply: LogFunction, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void);
@@ -105,50 +106,55 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     this.emit("message", message);
                     void this.processCommands(message.content);
                 })
-                .on("sys-message", sysMessage => {
+                .on("sys-message", rawSysMessage => {
+                    const sysMessage = transformSysMessage(rawSysMessage);
                     this.emit("sys-message", sysMessage);
                     //@ts-ignore Don't worry, it's fine. Think about it, you'll understand.
                     this.emit(`sys-message-${sysMessage.type}`, sysMessage);
                 })
-                .on("nick-changed", nickChangeInfo => {
-                    if (this.isBlocked(nickChangeInfo)) return;
+                .on("nick-changed", rawNickChangeInfo => {
+                    const nickChangeInfo = transformNickChangeInfo(rawNickChangeInfo, this.users);
+                    if (this.isBlocked(nickChangeInfo.user)) return;
 
-                    const changedUserIndex = this.users.findIndex( user => user.id == nickChangeInfo.id && nickChangeInfo.session_id == user.id && nickChangeInfo.oldUser == user.user );
-                    if (changedUserIndex == -1) return;
+                    // does changing nickChangeInfo.user work too?? test this
+                    //TODO test using devtools and such
 
-                    this.users[changedUserIndex].user = nickChangeInfo.newUser;
+                    console.log(nickChangeInfo.user.nickname, "<-- old nick");
+                    nickChangeInfo.user.nickname = nickChangeInfo.newNickname;
+                    console.log(nickChangeInfo.user.nickname, "<-- new nick");
 
                     this.emit("nick-change", nickChangeInfo);
                 })
-                .on("user-join", user => {
+                .on("user-join", rawUser => {
+                    const user = transformUser(rawUser);
                     if (this.isBlocked(user)) return;
 
                     this.users.push(user);
                     this.emit("user-join", user);
                 })
                 .on("user-leave", userLeaveInfo => {
-                    if (this.isBlocked(userLeaveInfo)) return;
-
-                    const leftUserIndex = this.users.findIndex( user => user.id == userLeaveInfo.id && user.session_id == userLeaveInfo.session_id && user.user == userLeaveInfo.user );
+                    const user = getUser(this.users, userLeaveInfo.session_id);
+                    const leftUserIndex = this.users.indexOf(user);
                     if (leftUserIndex == -1) return;
+                    
+                    if (this.isBlocked(user)) return;
 
-                    this.emit("user-leave", this.users[leftUserIndex]);
+                    this.emit("user-leave", user);
                     this.users.splice(leftUserIndex, 1);
                 })
                 .on("user-update", userUpdateInfo => {
-                    const updatedUserIndex = this.users.findIndex( user => user.session_id == userUpdateInfo.user );
-                    if (updatedUserIndex == -1) return;
+                    const user = getUser(this.users, userUpdateInfo.user);
 
-                    if (this.isBlocked(this.users[updatedUserIndex])) return;
+                    if (this.isBlocked(user)) return;
                     
                     switch (userUpdateInfo.type) {
                         case "tag-add":
                             if (!userUpdateInfo.tag || !userUpdateInfo.tagLabel) return;
                             if (userUpdateInfo.tag.trim() == "") return;
 
-                            if (this.users[updatedUserIndex].flags.includes(userUpdateInfo.tag)) this.users[updatedUserIndex].flags.push(userUpdateInfo.tag);
+                            if (user.flags.includes(userUpdateInfo.tag)) user.flags.push(userUpdateInfo.tag);
 
-                            this.emit("tag-add", this.users[updatedUserIndex], userUpdateInfo.tag, userUpdateInfo.tagLabel);
+                            this.emit("tag-add", user, userUpdateInfo.tag, userUpdateInfo.tagLabel);
                     }
                 });
             //#endregion
