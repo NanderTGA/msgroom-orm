@@ -17,6 +17,26 @@ export type Message = {
     author: User;
 };
 
+export type NickChangeInfo = {
+    user: User;
+    oldNickname: string;
+    newNickname: string;
+};
+
+type SysMessageType = "info" | "error" | "success";
+
+export type SysMessage<Type extends SysMessageType = "info" | "error" | "success"> = {
+    type: Type;
+    message: string;
+    isHTML: boolean;
+};
+
+export type TagAddInfo = {
+    user: User;
+    tag?: flag;
+    tagLabel?: string;
+};
+
 type ClientEvents = {
     /** Fired on disconnect. */
     disconnected: () => void;
@@ -32,19 +52,19 @@ type ClientEvents = {
     werror: (reason: string | "message too long") => void;
 
     /** Fired when someone changes their nickname. */
-    "nick-change": (nickChangeInfo: RawNickChangeInfo) => void;
+    "nick-change": (nickChangeInfo: NickChangeInfo) => void;
 
     /** Fired when any system message is received */
-    "sys-message": (sysMessage: RawSysMessage) => void;
+    "sys-message": (sysMessage: SysMessage) => void;
 
     /** Fired when a system message is received of type `info` */
-    "sys-message-info": (sysMessage: RawSysMessage & { type: "info" }) => void;
+    "sys-message-info": (sysMessage: SysMessage<"info">) => void;
 
     /** Fired when a system message is received of type `error` */
-    "sys-message-error": (sysMessage: RawSysMessage & { type: "error" }) => void;
+    "sys-message-error": (sysMessage: SysMessage<"error">) => void;
 
     /** Fired when a system message is received of type `success` */
-    "sys-message-success": (sysMessage: RawSysMessage & { type: "success" }) => void;
+    "sys-message-success": (sysMessage: SysMessage<"success">) => void;
 
     /** Fired when a user joins. */
     "user-join": (user: User) => void;
