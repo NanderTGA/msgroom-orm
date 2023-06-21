@@ -110,12 +110,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     const nickChangeInfo = transformNickChangeInfo(rawNickChangeInfo, this.users);
                     if (this.isBlocked(nickChangeInfo.user)) return;
 
-                    // does changing nickChangeInfo.user work too?? test this
-                    //TODO test using devtools and such
-
-                    console.log(nickChangeInfo.user.nickname, "<-- old nick");
                     nickChangeInfo.user.nickname = nickChangeInfo.newNickname;
-                    console.log(nickChangeInfo.user.nickname, "<-- new nick");
 
                     this.emit("nick-change", nickChangeInfo);
                 })
