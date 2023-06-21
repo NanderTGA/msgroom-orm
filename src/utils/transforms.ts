@@ -1,5 +1,5 @@
-import { Message, NickChangeInfo, SysMessage, User } from "../events";
-import { RawMessage, RawNickChangeInfo, RawSysMessage, RawUser } from "../socket.io";
+import { Message, NickChangeInfo, SysMessage, User } from "../types/events";
+import { RawMessage, RawNickChangeInfo, RawSysMessage, RawUser } from "../types/socket.io";
 
 import { decode as decodeHTML } from "he";
 import getUser from "./getUser";

@@ -1,4 +1,4 @@
-import { User } from "../events";
+import { User } from "../types/events";
 
 export default function getUser(onlineUsers: User[], sessionID: string): User {
     return onlineUsers.find( user => user.sessionID == sessionID) || {
