@@ -1,5 +1,7 @@
-import { describe, it, expect } from "@jest/globals";
+import { test, it, expect } from "@jest/globals";
 import Client from "../src/index";
+import testCommand from "../src/utils/testCommand";
+import { CommandHandler } from "../src/types/types";
 
 const client = new Client("test", [ "!", "g!" ], "wss://dabestmsgroomserver.com");
 
@@ -12,8 +14,13 @@ it("should correctly set properties", () => {
 });
 
 it("should validate nicknames correctly", () => {
-    expect( () => client.validateNickname("") ).toThrow();
-    expect( () => client.validateNickname("dfssqdfsdfqdfqfdqdfqdsfqsfd") ).toThrow();
-    expect( () => client.validateNickname("dfssqdfsdfqdfqfdqdg") ).toThrow();
-    client.validateNickname("dfssqdfsdfqdfqfdqd");
+    expect( () => client.validateNickname("") ).toThrow(); // < 1 character
+    expect( () => client.validateNickname("dfssqdfsdfqdfqfdqdfqdsfqsfd") ).toThrow(); // > 18 characters
+    expect( () => client.validateNickname("dfssqdfsdfqdfqfdqdg") ).toThrow(); // > 18 characters
+    client.validateNickname("dfssqdfsdfqdfqfdqd"); // 18 characters
+});
+
+test("built-in help command", async () => {
+    const helpOutput = await testCommand(client, "help", client.commands.help as CommandHandler);
+    expect(helpOutput).toStrictEqual([ "**List of available commands:** help" ]); // assuming no other commands are defined
 });
