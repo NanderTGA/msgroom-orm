@@ -39,6 +39,10 @@ void (async () => {
             },
         },
     };
+
+    client.commands.testError = () => {
+        throw new Error("fuck");
+    };
     
     await client.connect();
 
