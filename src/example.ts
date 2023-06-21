@@ -1,4 +1,5 @@
 import Client from ".";
+import { formatWithOptions } from "node:util";
 
 void (async () => {
     const client = new Client("[!] TestBot", [ "!" ]);
@@ -19,13 +20,13 @@ void (async () => {
 
     client.on("werror", reason => console.warn("Received werror:", reason));
 
-    client.commands.ping = reply => {
-        reply("pong");
+    client.commands.ping = () => "Pong!";
+
+    client.commands.repeat = (context, ...args) => {
+        context.send(args.join(" "));
     };
 
-    client.commands.repeat = (reply, ...args) => {
-        reply(args.join(" "));
-    };
+    client.commands.showContext = context => formatWithOptions({ compact: false, colors: false }, context);
 
     client.commands.subCommandTest = {
         sub1         : () => "first subcommand",

@@ -7,7 +7,7 @@ import ClientEvents, { User } from "./types/events";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
-import { CommandHandlerMap, CommandHandler, LogFunction } from "./types/types";
+import { CommandHandlerMap, CommandHandler, LogFunction, CommandContext } from "./types/types";
 import { formatWithOptions } from "node:util";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
@@ -118,7 +118,11 @@ Here's a list of all available commands. For more information on a command, run 
                     if (this.isBlocked(message.author)) return;
 
                     this.emit("message", message);
-                    void this.processCommands(message.content);
+                    void this.processCommands(message.content, {
+                        message,
+                        send : (...args) => this.sendMessage(...args),
+                        reply: (...args) => this.sendMessage(`@${message.author.nickname}`, ...args),
+                    });
                 })
                 .on("sys-message", rawSysMessage => {
                     const sysMessage = transformSysMessage(rawSysMessage);
@@ -239,20 +243,20 @@ Here's a list of all available commands. For more information on a command, run 
         }
     }
 
-    async runCommand(commandName: string, commandHandler: CommandHandler, commandHandlerArguments: string[], reply: LogFunction) {
+    async runCommand(commandName: string, commandHandler: CommandHandler, commandHandlerArguments: string[], context: CommandContext) {
         try {
-            const commandResult = await commandHandler(reply, ...commandHandlerArguments);
+            const commandResult = await commandHandler(context, ...commandHandlerArguments);
 
             if (!commandResult) return;
-            if (typeof commandResult == "string") return reply(commandResult);
-            return reply(...commandResult);
+            if (typeof commandResult == "string") return context.send(commandResult);
+            return context.send(...commandResult);
         } catch (error) {
             const formattedError = formatWithOptions({ compact: true, colors: false }, error);
-            reply(`An error occured while executing ${commandName}: *${formattedError}*`);
+            context.send(`An error occured while executing ${commandName}: *${formattedError}*`);
         }
     }
 
-    async processCommands(message: string, reply: LogFunction = (...args: string[]) => this.sendMessage(...args)) {
+    async processCommands(message: string, context: CommandContext) {
         const regex = new RegExp(`^(${this.commandPrefixes.join("|")})`, "i");
         if (!regex.test(message)) return;
         
@@ -263,10 +267,10 @@ Here's a list of all available commands. For more information on a command, run 
 
         const gottenCommand = this.getCommand(commandName, commandArguments);
         // We can safely assume there is at least one prefix, because otherwise this method wouldn't be called.
-        if (!gottenCommand) return reply(`That command doesn't exist. Run ${this.commandPrefixes[0]}help for a list of commands.`);
+        if (!gottenCommand) return context.send(`That command doesn't exist. Run ${this.commandPrefixes[0]}help for a list of commands.`);
 
         const [ commandHandler, commandHandlerArguments ] = gottenCommand;
-        await this.runCommand(commandName, commandHandler, commandHandlerArguments, reply);
+        await this.runCommand(commandName, commandHandler, commandHandlerArguments, context);
     }
 
     public isBlocked(userID: string, userSessionID?: string): boolean;
