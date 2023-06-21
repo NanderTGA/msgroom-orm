@@ -1,6 +1,6 @@
 import { test, it, expect } from "@jest/globals";
 import Client from "../src/index";
-import testCommand from "../src/utils/testCommand";
+import getCommandOutput from "../src/utils/testCommand";
 import { CommandHandler } from "../src/types/types";
 
 const client = new Client("test", [ "!", "g!" ], "wss://dabestmsgroomserver.com");
@@ -21,6 +21,6 @@ it("should validate nicknames correctly", () => {
 });
 
 test("built-in help command", async () => {
-    const helpOutput = await testCommand(client, "help", client.commands.help as CommandHandler);
+    const helpOutput = await getCommandOutput(client, "help", client.commands.help as CommandHandler);
     expect(helpOutput).toStrictEqual([ "**List of available commands:** help" ]); // assuming no other commands are defined
 });
