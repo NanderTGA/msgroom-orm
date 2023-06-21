@@ -33,8 +33,8 @@ export type SysMessage<Type extends SysMessageType = "info" | "error" | "success
 
 export type TagAddInfo = {
     user: User;
-    tag?: flag;
-    tagLabel?: string;
+    newTag: string;
+    newTagLabel: string
 };
 
 type ClientEvents = {
@@ -73,7 +73,7 @@ type ClientEvents = {
     "user-leave": (user: User) => void;
 
     /** Fired when a user gets a new tag. */
-    "tag-add": (user: User, newTag: string, newTagLabel: string) => void;
+    "tag-add": (tagAddInfo: TagAddInfo) => void;
 };
 
 export default ClientEvents;

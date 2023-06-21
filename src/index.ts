@@ -138,12 +138,15 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     
                     switch (userUpdateInfo.type) {
                         case "tag-add":
-                            if (!userUpdateInfo.tag || !userUpdateInfo.tagLabel) return;
-                            if (userUpdateInfo.tag.trim() == "") return;
+                            if (!userUpdateInfo.tag?.trim() || !userUpdateInfo.tagLabel) return;
 
-                            if (user.flags.includes(userUpdateInfo.tag)) user.flags.push(userUpdateInfo.tag);
+                            if (!user.flags.includes(userUpdateInfo.tag)) user.flags.push(userUpdateInfo.tag);
 
-                            this.emit("tag-add", user, userUpdateInfo.tag, userUpdateInfo.tagLabel);
+                            this.emit("tag-add", {
+                                user,
+                                newTag     : userUpdateInfo.tag,
+                                newTagLabel: userUpdateInfo.tagLabel,
+                            });
                     }
                 });
             //#endregion
