@@ -1,19 +1,14 @@
 import io from "socket.io-client";
-import MsgroomSocket from "./socket.io";
+import MsgroomSocket from "./types/socket.io";
 
 import { EventEmitter } from "node:events";
 import TypedEmitter from "typed-emitter";
-import ClientEvents, { User } from "./events";
+import ClientEvents, { User } from "./types/events";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
 import getUser from "./utils/getUser";
-
-type LogFunction = (...args: string[]) => void;
-type CommandHandler = (reply: LogFunction, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void);
-type CommandHandlerMap = {
-    [key: string]: CommandHandler | CommandHandlerMap
-};
+import { CommandHandlerMap, CommandHandler, LogFunction } from "./types/types";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
