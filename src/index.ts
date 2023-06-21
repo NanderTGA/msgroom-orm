@@ -9,6 +9,7 @@ import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
 import getUser from "./utils/getUser";
 import { CommandHandlerMap, CommandHandler, LogFunction } from "./types/types";
+import { formatWithOptions } from "node:util";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
@@ -230,7 +231,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
             if (typeof commandResult == "string") return reply(commandResult);
             return reply(...commandResult);
         } catch (error) {
-            reply(`An error occured while executing ${commandName}: *${error as string}*`);
+            const formattedError = formatWithOptions({ compact: true, colors: false }, error);
+            reply(`An error occured while executing ${commandName}: *${formattedError}*`);
         }
     }
 
