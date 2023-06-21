@@ -1,4 +1,4 @@
-import { RawMessage, RawNickChangeInfo, RawSysMessage, flag, hexColor } from "./socket.io";
+import { flag, hexColor } from "./socket.io";
 
 export interface User {
     color: hexColor;
