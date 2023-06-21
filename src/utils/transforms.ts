@@ -2,7 +2,6 @@ import { Message, NickChangeInfo, SysMessage, User } from "../types/events";
 import { RawMessage, RawNickChangeInfo, RawSysMessage, RawUser } from "../types/socket.io";
 
 import { decode as decodeHTML } from "he";
-import getUser from "./getUser";
 
 export function transformUser(rawUser: RawUser): User {
     return {
@@ -14,20 +13,20 @@ export function transformUser(rawUser: RawUser): User {
     };
 }
 
-export function transformMessage(rawMessage: RawMessage, onlineUsers: User[]): Message {
+export function transformMessage(rawMessage: RawMessage, onlineUsers: Record<string, User>): Message {
     return {
         type: rawMessage.type,
 
         color  : rawMessage.color,
         content: decodeHTML(rawMessage.content),
         date   : new Date(rawMessage.date),
-        author : getUser(onlineUsers, rawMessage.session_id),
+        author : onlineUsers[rawMessage.session_id],
     };
 }
 
-export function transformNickChangeInfo(rawNickChangeInfo: RawNickChangeInfo, onlineUsers: User[]): NickChangeInfo {
+export function transformNickChangeInfo(rawNickChangeInfo: RawNickChangeInfo, onlineUsers: Record<string, User>): NickChangeInfo {
     return {
-        user: getUser(onlineUsers, rawNickChangeInfo.session_id),
+        user: onlineUsers[rawNickChangeInfo.session_id],
 
         oldNickname: rawNickChangeInfo.oldUser,
         newNickname: rawNickChangeInfo.newUser,

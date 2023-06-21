@@ -7,7 +7,6 @@ import ClientEvents, { User } from "./types/events";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
-import getUser from "./utils/getUser";
 import { CommandHandlerMap, CommandHandler, LogFunction } from "./types/types";
 import { formatWithOptions } from "node:util";
 
@@ -16,7 +15,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     #name: string;
     #server: string;
 
-    users: User[] = [];
+    users: Record<string, User> = {};
     #userID?: string;
     blockedIDs = new Set<string>();
     blockedSessionIDs = new Set<string>();
@@ -84,7 +83,10 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     reject(new AuthError(reason));
                 })
                 .on("online", users => {
-                    this.users = users.map(transformUser);
+                    users
+                        .map(transformUser)
+                        .forEach( user => this.users[user.sessionID] = user);
+
                     this.#userID = userID;
                     resolve();
                 })
@@ -119,21 +121,18 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     const user = transformUser(rawUser);
                     if (this.isBlocked(user)) return;
 
-                    this.users.push(user);
+                    this.users[user.sessionID] = user;
                     this.emit("user-join", user);
                 })
                 .on("user-leave", userLeaveInfo => {
-                    const user = getUser(this.users, userLeaveInfo.session_id);
-                    const leftUserIndex = this.users.indexOf(user);
-                    if (leftUserIndex == -1) return;
-                    
+                    const user = this.users[userLeaveInfo.session_id];
                     if (this.isBlocked(user)) return;
 
                     this.emit("user-leave", user);
-                    this.users.splice(leftUserIndex, 1);
+                    delete this.users[userLeaveInfo.session_id];
                 })
                 .on("user-update", userUpdateInfo => {
-                    const user = getUser(this.users, userUpdateInfo.user);
+                    const user = this.users[userUpdateInfo.user];
 
                     if (this.isBlocked(user)) return;
                     
