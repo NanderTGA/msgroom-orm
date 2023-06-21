@@ -23,7 +23,24 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
 
     commands: CommandHandlerMap = {
         help: (reply, ...args) => {
-            return [ "**List of available commands:**", Object.keys(this.commands).join(", ") ];
+            let output =  `**The current ${this.commandPrefixes.length > 1 ? "prefixes are" : "prefix is"} \`${this.commandPrefixes.join("`, `")}\`
+Here's a list of all available commands. For more information on a command, run \`${this.commandPrefixes[0]}help <command>\`**`;
+            
+            function iterateOverCommandHandlerMap(commandHandlerMap: CommandHandlerMap | CommandHandler, commandHandlerMapName: string, prefix: string) {
+                if (typeof commandHandlerMap == "function") {
+                    if (commandHandlerMapName != "undefined") output += "\n" + prefix;
+                    return;
+                }
+
+                if (commandHandlerMapName) output += "\n" + prefix;
+                
+                Object.keys(commandHandlerMap)
+                    .forEach( key => iterateOverCommandHandlerMap(commandHandlerMap[key], key, `${prefix}${key} `) );
+            }
+
+            iterateOverCommandHandlerMap(this.commands, "", this.commandPrefixes[0]);
+
+            return output.trim();
         },
     };
     
