@@ -224,20 +224,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         }
     }
 
-    async processCommands(message: string, reply: LogFunction = (...args: string[]) => this.sendMessage(...args)) {
-        const regex = new RegExp(`^(${this.commandPrefixes.join("|")})`, "i");
-        if (!regex.test(message)) return;
-        
-        const commandArguments = message.replace(regex, "").split(" ");
-        
-        const command = commandArguments[0];
-        commandArguments.splice(0, 1);
-
-        const gottenCommand = this.getCommand(command, commandArguments);
-        // We can safely assume there is at least one prefix, because otherwise this method wouldn't be called.
-        if (!gottenCommand) return reply(`That command doesn't exist. Run ${this.commandPrefixes[0]}help for a list of commands.`);
-        const [ commandHandler, commandHandlerArguments ] = gottenCommand;
-
+    async runCommand(commandName: string, commandHandler: CommandHandler, commandHandlerArguments: string[], reply: LogFunction) {
         try {
             const commandResult = await commandHandler(reply, ...commandHandlerArguments);
 
@@ -245,8 +232,25 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
             if (typeof commandResult == "string") return reply(commandResult);
             return reply(...commandResult);
         } catch (error) {
-            reply(`An error occured while executing ${command}: *${error as string}*`);
+            reply(`An error occured while executing ${commandName}: *${error as string}*`);
         }
+    }
+
+    async processCommands(message: string, reply: LogFunction = (...args: string[]) => this.sendMessage(...args)) {
+        const regex = new RegExp(`^(${this.commandPrefixes.join("|")})`, "i");
+        if (!regex.test(message)) return;
+        
+        const commandArguments = message.replace(regex, "").split(" ");
+        
+        const commandName = commandArguments[0];
+        commandArguments.splice(0, 1);
+
+        const gottenCommand = this.getCommand(commandName, commandArguments);
+        // We can safely assume there is at least one prefix, because otherwise this method wouldn't be called.
+        if (!gottenCommand) return reply(`That command doesn't exist. Run ${this.commandPrefixes[0]}help for a list of commands.`);
+
+        const [ commandHandler, commandHandlerArguments ] = gottenCommand;
+        await this.runCommand(commandName, commandHandler, commandHandlerArguments, reply);
     }
 
     public isBlocked(userID: string, userSessionID?: string): boolean;
