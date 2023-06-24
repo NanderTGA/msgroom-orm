@@ -223,6 +223,7 @@ Here's a list of all available commands. For more information on a command, run 
 
     /**
      * We currently have no idea what this could be, apart from what the type must be according to the code of the official msgroom client.
+     * Only msgroom staff know the list of commands.
      * @param args The arguments to pass to the `admin-action` event.
      */
     adminAction(...args: string[]): void {
