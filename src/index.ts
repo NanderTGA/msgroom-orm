@@ -274,7 +274,8 @@ Here's a list of all available commands. For more information on a command, run 
         await this.runCommand(commandName, commandHandler, commandHandlerArguments, context);
     }
 
-    validateCommandName(this: void, commandName: string) {
+    validateCommandName(this: void, commandName?: string) {
+        if (typeof commandName != "string") throw new TypeError("A commandName must be a string.");
         if (commandName.indexOf(" ") >= 0) throw new Error("You cannot have spaces in a command name, this will cause your command to be unable to be invoked. Use subcommands instead.");
     }
 
