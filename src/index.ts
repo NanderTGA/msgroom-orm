@@ -42,15 +42,16 @@ Commands are case-sensitive!**
 
                     if (typeof commandHandlerMapEntry.handler == "function") {
                         const command = commandHandlerMapEntry as Command;
-                        if (commandHandlerMapName != "undefined") output += `\n${prefix}*${command.description || "No description provided"}*`;
+                        if (commandHandlerMapName != "undefined") output += `\n${prefix}*${command.description || "No description provided."}*`;
                         return;
                     }
 
                     const commandHandlerMap = commandHandlerMapEntry as CommandHandlerMap;
-                    if (commandHandlerMapName) output += "\n" + prefix;
+                    if (commandHandlerMapName) output += `\n${prefix}*${commandHandlerMap.undefined?.description as string || "No description provided."}*`;
                 
-                    Object.keys(commandHandlerMapEntry)
-                        .forEach( key => iterateOverCommandHandlerMap(commandHandlerMap[key], key, `${prefix}${key} `) );
+                    for (const key in commandHandlerMapEntry) {
+                        iterateOverCommandHandlerMap(commandHandlerMap[key], key, `${prefix}${key} `);
+                    }
                 };
 
                 iterateOverCommandHandlerMap(this.commands, "", this.commandPrefixes[0]);
