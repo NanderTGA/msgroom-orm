@@ -82,7 +82,7 @@ export interface ServerToClientEvents {
     }) => void;
     "werror": (
         /** A generic error, which doesn't cause disconnects. For example ratelimiting errors would send this event. Is currently never called by the server. */
-        reason: string
+        reason: string | "You are doing this too much - please wait!"
     ) => void;
 }
 

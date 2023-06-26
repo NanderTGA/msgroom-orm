@@ -49,7 +49,7 @@ type ClientEvents = {
      * This is can be any error which doesn't disconnect you as a result.
      * Currently never called by the official server.
      */
-    werror: (reason: string | "message too long") => void;
+    werror: (reason: string | "message too long" | "You are doing this too much - please wait!") => void;
 
     /** Fired when someone changes their nickname. */
     "nick-change": (nickChangeInfo: NickChangeInfo) => void;
