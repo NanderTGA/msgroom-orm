@@ -19,7 +19,12 @@ export default async function getCommandOutput(client: Client, commandName: stri
         type   : "text",
     };
 
-    await client.runCommand(commandName, commandHandler, commandHandlerArguments, {
+    await client.runCommand({
+        name       : commandName,
+        aliases    : [],
+        description: "",
+        handler    : commandHandler,
+    }, commandHandlerArguments, {
         message: fakeMessage,
         send   : (...messages) => {
             const message = messages.join(" ");

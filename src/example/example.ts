@@ -1,11 +1,13 @@
-import Client from ".";
+import Client from "..";
+import Command from "../utils/Command";
+
 import { formatWithOptions } from "node:util";
 
 void (async () => {
     const client = new Client("[!] TestBot", [ "!" ]);
 
     client.on("message", message => {
-        if (message.author.ID == client.userID) return;
+        if (message.author.ID == client.ID) return;
         const monkey: Record<string, string> = {
             "hey"        : "hey",
             "gn"         : "gn",
@@ -20,30 +22,41 @@ void (async () => {
 
     client.on("werror", reason => console.warn("Received werror:", reason));
 
-    client.commands.ping = () => "Pong!";
+    client.commands.ping = new Command("Replies with Pong!", [], () => "Pong!");
 
-    client.commands.repeat = (context, ...args) => {
-        context.send(args.join(" "));
-    };
+    client.commands.repeat = new Command("Repeats what you said.", [], (context, ...args) => {
+        if (context.message.author.ID != client.ID) return "This command has been disabled for everyone who doesn't have the same ID as this bot due to abuse.";
+        return args.join(" ");
+    });
 
-    client.commands.showContext = context => formatWithOptions({ compact: false, colors: false }, context);
+    client.commands.sendTest = new Command("Uses `context.send()` and `context.reply()` to send some replies.", [], context => {
+        context.send("Sent!");
+        context.reply("Replied!");
+    });
+
+    client.commands.showContext = new Command("Returns the context argument.", [], context => formatWithOptions({ compact: false, colors: false }, context));
+
+    client.commands.testError = new Command("Throws an error.", [ "errorTest" ], () => {
+        throw new Error("fuck");
+    });
 
     client.commands.subCommandTest = {
-        sub1         : () => "first subcommand",
-        sub2         : () => "another subcommand",
-        undefined    : () => "nothing?",
+        sub1         : new Command("", [], () => "first subcommand"),
+        sub2         : new Command("", [], () => "another subcommand"),
+        undefined    : new Command("", [], () => "nothing?"),
         subSubCommand: {
-            stuff : () => "some stuff here",
+            stuff : new Command("", [], () => "some stuff here"),
             stuff2: {
-                undefined: () => "no subcommand",
-                sub      : () => "yes subcommand",
+                undefined: new Command("", [], () => {
+                    throw new Error("Hey, when did this command start throwing errors?");
+                }),
+                sub      : new Command("", [], () => "yes subcommand"),
+                testError: client.commands.testError,
             },
         },
     };
 
-    client.commands.testError = () => {
-        throw new Error("fuck");
-    };
+    await client.addCommandsFromDirectory();
     
     await client.connect();
 

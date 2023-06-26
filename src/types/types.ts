@@ -1,9 +1,19 @@
 import { Message } from "./events";
+import type Command from "../utils/Command";
+import type Client from "..";
 
 export type LogFunction = (...args: string[]) => void;
 export type CommandHandler = (context: CommandContext, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void);
 export type CommandHandlerMap = {
-    [key: string]: CommandHandler | CommandHandlerMap;
+    [command: string]: CommandHandlerMapEntry;
+};
+export type CommandHandlerMapEntry = Command | CommandHandlerMap;
+
+export type CommandWithName = Command & { name: string };
+export type ModuleInitializeFunctionReturnType = Promise<CommandWithName | CommandHandlerMap> | CommandWithName | CommandHandlerMap;
+export type ModuleInitializeFunction = (client: Client) => ModuleInitializeFunctionReturnType;
+export type CommandFileExports = {
+    default: ModuleInitializeFunction
 };
 
 export type CommandContext = {

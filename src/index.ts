@@ -1,14 +1,21 @@
 import io from "socket.io-client";
 import MsgroomSocket from "./types/socket.io";
 
+import { resolve } from "path";
+import { fileURLToPath } from "url";
+import { formatWithOptions, promisify } from "node:util";
+
+import { walk } from "@nodelib/fs.walk";
+const walkAsync = promisify(walk);
+
 import { EventEmitter } from "node:events";
 import TypedEmitter from "typed-emitter";
 import ClientEvents, { User } from "./types/events";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
-import { CommandHandlerMap, CommandHandler, LogFunction, CommandContext } from "./types/types";
-import { formatWithOptions } from "node:util";
+import { CommandHandlerMap, CommandContext, CommandHandlerMapEntry, CommandFileExports, CommandWithName } from "./types/types";
+import Command from "./utils/Command";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
@@ -16,32 +23,54 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     #server: string;
 
     users: Record<string, User> = {};
-    #userID?: string;
+    #ID?: string;
     blockedIDs = new Set<string>();
     blockedSessionIDs = new Set<string>();
     commandPrefixes: string[];
 
     commands: CommandHandlerMap = {
-        help: (reply, ...args) => {
-            let output =  `**The current ${this.commandPrefixes.length > 1 ? "prefixes are" : "prefix is"} \`${this.commandPrefixes.join("`, `")}\`
-Here's a list of all available commands. For more information on a command, run \`${this.commandPrefixes[0]}help <command>\`**`;
+        help: new Command("Shows information about a command.", [], (context, ...args) => {
+            if (args.length < 1) {
+                let output =  `
+**The current ${this.commandPrefixes.length > 1 ? "prefixes are" : "prefix is"} \`${this.commandPrefixes.join("`, `")}\`
+Here's a list of all available commands. For more information on a command, run \`${this.commandPrefixes[0]}help <command>\`
+Commands are case-sensitive!**
+`;
             
-            function iterateOverCommandHandlerMap(commandHandlerMap: CommandHandlerMap | CommandHandler, commandHandlerMapName: string, prefix: string) {
-                if (typeof commandHandlerMap == "function") {
-                    if (commandHandlerMapName != "undefined") output += "\n" + prefix;
-                    return;
-                }
+                const iterateOverCommandHandlerMap = (commandHandlerMapEntry: CommandHandlerMapEntry, commandHandlerMapName: string, prefix: string) => {
+                    this.validateCommandName(commandHandlerMapName);
 
-                if (commandHandlerMapName) output += "\n" + prefix;
+                    if (typeof commandHandlerMapEntry.handler == "function") {
+                        const command = commandHandlerMapEntry as Command;
+                        if (commandHandlerMapName != "undefined") output += `\n${prefix}*${command.description || "No description provided"}*`;
+                        return;
+                    }
+
+                    const commandHandlerMap = commandHandlerMapEntry as CommandHandlerMap;
+                    if (commandHandlerMapName) output += "\n" + prefix;
                 
-                Object.keys(commandHandlerMap)
-                    .forEach( key => iterateOverCommandHandlerMap(commandHandlerMap[key], key, `${prefix}${key} `) );
+                    Object.keys(commandHandlerMapEntry)
+                        .forEach( key => iterateOverCommandHandlerMap(commandHandlerMap[key], key, `${prefix}${key} `) );
+                };
+
+                iterateOverCommandHandlerMap(this.commands, "", this.commandPrefixes[0]);
+
+                return output.trim();
             }
 
-            iterateOverCommandHandlerMap(this.commands, "", this.commandPrefixes[0]);
+            const commandName = args[0];
+            args.splice(0, 1);
 
-            return output.trim();
-        },
+            const commandAndArguments = this.getCommand(commandName, args);
+            if (!commandAndArguments) return "The command you specified cannot be found.";
+            const [ command ] = commandAndArguments;
+
+            return  `
+**Command:** ${command.name}
+**Aliases:** ${command.aliases.length > 0 ? command.aliases.join(", ") : "*This command does not have any aliases*"}
+**Description:** ${command.description || "*No description provided*" }
+                    `;
+        }),
     };
     
     static default = Client;
@@ -67,7 +96,7 @@ Here's a list of all available commands. For more information on a command, run 
      * @returns A promise which resolves when the connection has successfully been established.
      */
     async connect(name: string = this.#name, server = this.#server, apikey?: string): Promise<void> {
-        return new Promise( (resolve, reject) => {
+        return new Promise<void>( (resolve, reject) => {
             this.validateNickname(name);
             
             this.#name = name;
@@ -104,7 +133,7 @@ Here's a list of all available commands. For more information on a command, run 
                         .map(transformUser)
                         .forEach( user => this.users[user.sessionID] = user);
 
-                    this.#userID = userID;
+                    this.#ID = userID;
                     resolve();
                 });
             //#endregion
@@ -207,9 +236,9 @@ Here's a list of all available commands. For more information on a command, run 
         this.socket.emit("change-user", name);
     }
 
-    get userID(): string {
-        if (!this.#userID) throw new NotConnectedError();
-        return this.#userID;
+    get ID(): string {
+        if (!this.#ID) throw new NotConnectedError();
+        return this.#ID;
     }
 
     sendMessage(...messages: string[]): void {
@@ -234,29 +263,54 @@ Here's a list of all available commands. For more information on a command, run 
         this.socket.emit("admin-action", { args });
     }
 
-    getCommand(command: string, commandArguments: string[]): [ CommandHandler, string[] ] | undefined {
-        let currentGottenHandler: CommandHandler | CommandHandlerMap = this.commands;
+    getCommand(command: string, commandArguments: string[]): [ CommandWithName, string[] ] | undefined {
+        let currentGottenCommand: CommandHandlerMapEntry = this.commands[command];
+        let commandName = command;
 
-        while (typeof currentGottenHandler != "undefined") {
-            currentGottenHandler = currentGottenHandler[command];
-            if (!currentGottenHandler) return;
-            if (typeof currentGottenHandler == "function") return [ currentGottenHandler, commandArguments ];
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            if (typeof currentGottenCommand == "undefined") {
+                // right now there are 2 possibilities:
+                // either the command doesn't exist
+                // or it does exist but as an alias to another command
+                // oh god this is going to be a pain
+                console.log("undefined", currentGottenCommand, commandName);
+
+                //Object.values()
+
+                return;
+            }
+
+
+            if (typeof currentGottenCommand.handler == "function") {
+                const gottenCommand = currentGottenCommand as Command;
+                return [ {
+                    name       : commandName,
+                    description: gottenCommand.description,
+                    aliases    : gottenCommand.aliases,
+                    handler    : gottenCommand.handler,
+                }, commandArguments ];
+            }
 
             command = commandArguments[0];
             commandArguments.splice(0, 1);
+
+            currentGottenCommand = (currentGottenCommand as CommandHandlerMap)[command];
+            commandName += "." + command;
         }
     }
 
-    async runCommand(commandName: string, commandHandler: CommandHandler, commandHandlerArguments: string[], context: CommandContext) {
+    async runCommand(command: CommandWithName, commandHandlerArguments: string[], context: CommandContext) {
         try {
-            const commandResult = await commandHandler(context, ...commandHandlerArguments);
+            const commandResult = await command.handler(context, ...commandHandlerArguments);
 
             if (!commandResult) return;
             if (typeof commandResult == "string") return context.send(commandResult);
             return context.send(...commandResult);
+
         } catch (error) {
             const formattedError = formatWithOptions({ compact: true, colors: false }, error);
-            context.send(`An error occured while executing ${commandName}: *${formattedError}*`);
+            context.send(`An error occured while executing ${command.name}: *${formattedError}*`);
         }
     }
 
@@ -273,13 +327,62 @@ Here's a list of all available commands. For more information on a command, run 
         // We can safely assume there is at least one prefix, because otherwise this method wouldn't be called.
         if (!gottenCommand) return context.send(`That command doesn't exist. Run ${this.commandPrefixes[0]}help for a list of commands.`);
 
-        const [ commandHandler, commandHandlerArguments ] = gottenCommand;
-        await this.runCommand(commandName, commandHandler, commandHandlerArguments, context);
+        const [ command, commandHandlerArguments ] = gottenCommand;
+        await this.runCommand(command, commandHandlerArguments, context);
     }
 
     validateCommandName(this: void, commandName?: string) {
         if (typeof commandName != "string") throw new TypeError("A commandName must be a string.");
         if (commandName.indexOf(" ") >= 0) throw new Error("You cannot have spaces in a command name, this will cause your command to be unable to be invoked. Use subcommands instead.");
+    }
+
+    async addCommandsFromFile(file: string | URL): Promise<void> {
+        if (typeof file != "string") file = file.href;
+        //! This call to import() is replaced with something else by typescript, which uses require() under the hood! (because we're targeting commonJS)
+        const { default: defaultFileExport } = await import(file) as CommandFileExports;
+        if (!defaultFileExport) throw new Error(
+            `${file} doesn't have a default export. The default export should be a function taking an instance of Client as the only argument and should return (a promise which resolves to) a CommandHandlerMapEntry.
+
+If it returns a Command (any object which has a property named "handler" that resolves to a function), it will be registered accordingly to client.commands.
+Do note that if you're returning a Command directly from a function, you also need to provide a property called name to provide the name of your command.
+
+If it returns an object, it will be assumed to be a CommandHandlerMap and all of its properties will be assigned to client.commands using Object.assign().`,
+        );
+
+        const importedCommands = await defaultFileExport(this);
+
+        if (typeof importedCommands.handler == "function") {
+            const command = importedCommands as CommandWithName;
+            if (!command.name) throw new Error("You must provide a name for your command!");
+            this.validateCommandName(command.name);
+
+            // We don't need the name property
+            this.commands[command.name] = {
+                description: command.description,
+                aliases    : command.aliases,
+                handler    : command.handler,
+            };
+            return;
+        }
+
+        const commandHandlerMap = importedCommands as CommandHandlerMap;
+        Object.keys(commandHandlerMap).forEach(this.validateCommandName);
+        Object.assign(this.commands, importedCommands);
+    }
+
+    async addCommandsFromDirectory(directory?: string | URL): Promise<void> {
+        if (!directory) {
+            if (!require.main) throw new Error("You cannot leave out the directory argument in this context!");
+            directory = resolve(require.main.path, "./commands");
+        }
+        if (typeof directory != "string") directory = fileURLToPath(directory);
+
+        const files = await walkAsync(directory);
+        const modules = files
+            .filter( file => file.name.endsWith(".js"))
+            .map( file => this.addCommandsFromFile(file.path));
+
+        await Promise.all(modules);
     }
 
     public isBlocked(userID: string, userSessionID?: string): boolean;
