@@ -1,5 +1,4 @@
 node_modules/
 *.js
 !.eslint*
-!rollup.config.js
 dist/
