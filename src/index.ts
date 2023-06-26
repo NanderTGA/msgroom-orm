@@ -106,8 +106,17 @@ Here's a list of all available commands. For more information on a command, run 
 
                     this.#userID = userID;
                     resolve();
-                })
+                });
             //#endregion
+
+            this.socket.emit("auth", {
+                user: name,
+                apikey,
+            });
+
+        }).then( () => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.socket!
 
             //#region main events
                 .on("werror", reason => {
@@ -154,9 +163,8 @@ Here's a list of all available commands. For more information on a command, run 
                 })
                 .on("user-update", userUpdateInfo => {
                     const user = this.users[userUpdateInfo.user];
-
                     if (this.isBlocked(user)) return;
-                    
+
                     switch (userUpdateInfo.type) {
                         case "tag-add":
                             if (!userUpdateInfo.tag?.trim() || !userUpdateInfo.tagLabel) return;
@@ -170,12 +178,7 @@ Here's a list of all available commands. For more information on a command, run 
                             });
                     }
                 });
-            //#endregion
-            
-            this.socket.emit("auth", {
-                user: name,
-                apikey,
-            });
+        //#endregion
         });
     }
 
