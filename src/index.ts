@@ -21,6 +21,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     private socket?: MsgroomSocket;
     #name: string;
     #server: string;
+    printErrors: boolean;
 
     users: Record<string, User> = {};
     #ID?: string;
@@ -80,13 +81,22 @@ Commands are case-sensitive!**
      * Creates a new msgroom client.
      * @param name The username to use.
      * @param commandPrefixes List of prefixes to be used for commands. Do note these *will be pasted directly in a regular expression*, so **make sure to escape any special characters!**
-     * @param server The server to connect to.
+     * @param options Extra options.
+     * @param options.server The server to connect to.
+     * @param options.printErrors Whether to print errors to the console.
      */
-    constructor(name: string, commandPrefixes: string | string[] = [], server = "wss://devel.windows96.net:4096") {
+    constructor(
+        name: string,
+        commandPrefixes: string | string[] = [],
+        options: { server?: string, printErrors?: boolean } = {},
+    ) {
         super();
+
         this.#name = name;
-        this.#server = server;
         this.commandPrefixes = typeof commandPrefixes == "string" ? [ commandPrefixes ] : commandPrefixes;
+
+        this.#server = options.server || "wss://msgroom.windows96.net";
+        this.printErrors = options.printErrors || false;
     }
 
     /**
@@ -310,8 +320,16 @@ Commands are case-sensitive!**
             return context.send(...commandResult);
 
         } catch (error) {
-            const formattedError = formatWithOptions({ compact: true, colors: false }, error);
-            context.send(`An error occured while executing ${command.name}: *${formattedError}*`);
+            context.send(`An error occured while executing ${command.name}: *${error as string}*`);
+
+            if (this.printErrors) console.error(`
+An error occured at ${context.message.date.toString()}.
+Message: ${context.message.content}
+User: ${context.message.author.nickname}
+User's ID: ${context.message.author.ID}
+User's session ID: ${context.message.author.sessionID}
+Full error:
+`, error);
         }
     }
 

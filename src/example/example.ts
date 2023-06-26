@@ -4,7 +4,7 @@ import Command from "../utils/Command";
 import { formatWithOptions } from "node:util";
 
 void (async () => {
-    const client = new Client("[!] TestBot", [ "!" ]);
+    const client = new Client("[!] TestBot", [ "!" ], { printErrors: true });
 
     client.on("message", message => {
         if (message.author.ID == client.ID) return;
