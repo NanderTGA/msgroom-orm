@@ -167,7 +167,7 @@ Commands are case-sensitive!**
                     if (this.isBlocked(message.author)) return;
 
                     this.emit("message", message);
-                    void this.processCommands(message.content, {
+                    void this.processCommands({
                         message,
                         send : (...args) => this.sendMessage(...args),
                         reply: (...args) => this.sendMessage(`@${message.author.nickname}`, ...args),
@@ -333,7 +333,8 @@ Full error:
         }
     }
 
-    async processCommands(message: string, context: CommandContext) {
+    async processCommands(context: CommandContext) {
+        const message = context.message.content;
         const regex = new RegExp(`^(${this.commandPrefixes.join("|")})`, "i");
         if (!regex.test(message)) return;
         
