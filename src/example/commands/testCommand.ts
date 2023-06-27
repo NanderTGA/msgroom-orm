@@ -4,6 +4,9 @@ import Command from "../../utils/Command";
 
 export default function(client: Client): ModuleInitializeFunctionReturnType {
     return {
-        test: new Command("", [], () => "test"),
+        name       : "test",
+        description: "some test command",
+        aliases    : [ "tset" ],
+        handler    : () => "test",
     };
 }
