@@ -20,7 +20,7 @@ jobs:
         with:
           data: |
             {
-              "name": "msgroom-nightly"
+              "name": "msgroom-nightly",
               "version": "$(node -e "const semver = require('semver'); const newVersion = semver.valid(semver.coerce(process.env.PACKAGE_VERSION)) + '-' + process.env.GITHUB_SHA; console.log(newVersion)")"
             }
           
