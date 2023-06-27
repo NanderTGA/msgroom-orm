@@ -5,6 +5,9 @@ on:
 
 jobs:
   test_and_build:
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
