@@ -42,7 +42,7 @@ describe("Error throwing", () => {
         const client = new Client("TestBot");
 
         expect( () => client.name = "fuck" ).toThrow(NotConnectedError);
-        expect( () => client.userID ).toThrow(NotConnectedError);
+        expect( () => client.ID ).toThrow(NotConnectedError);
         expect( () => client.sendMessage("a") ).toThrow(NotConnectedError);
         expect( () => client.adminAction("a") ).toThrow(NotConnectedError);
     });

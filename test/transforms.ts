@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 
 import { transformUser, transformMessage, transformNickChangeInfo, transformSysMessage } from "../src/utils/transforms";
-import { User } from "../src/events";
+import { User } from "../src/types/events";
 
 const someoneUser: User = {
     color    : "#ff0000",
@@ -31,7 +31,7 @@ describe("Test transforms", () => {
             session_id: "some session id",
             type      : "text",
             user      : "Someone",
-        }, [ someoneUser ])).toStrictEqual({
+        }, { "some session id": someoneUser  })).toStrictEqual({
             type   : "text",
             color  : "#ff0000",
             content: "hi there",
@@ -46,7 +46,7 @@ describe("Test transforms", () => {
             session_id: "some session id",
             oldUser   : "oldOne",
             newUser   : "Someone",
-        }, [ someoneUser ])).toStrictEqual({
+        }, { "some session id": someoneUser  })).toStrictEqual({
             oldNickname: "oldOne",
             newNickname: "Someone",
             user       : someoneUser,
