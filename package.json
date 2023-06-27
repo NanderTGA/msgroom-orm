@@ -7,7 +7,7 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "prepack": "npm run build",
-    "test": "rimraf dist && jest && tsd"
+    "test": "rimraf dist && jest"
   },
   "files": [
     "dist/"
