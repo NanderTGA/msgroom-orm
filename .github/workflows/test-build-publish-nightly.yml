@@ -1,0 +1,37 @@
+name: Test and build
+on:
+  push:
+  pull_request:
+
+jobs:
+  test_and_build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 19
+      - run: npm ci
+
+      - uses: rexdefuror/read-package-json@v1.0.5
+
+      - name: Set a new version based on the current version and the (full) git sha
+        uses: jaywcjlove/github-action-package@v1.3.1
+        with:
+          data: |
+            {
+              "name": "msgroom-nightly"
+              "version": "$(node -e "const semver = require('semver'); const newVersion = semver.valid(semver.coerce(process.env.PACKAGE_VERSION)) + '-' + process.env.GITHUB_SHA; console.log(newVersion)")"
+            }
+          
+
+      - run: npm test
+      - run: npm pack
+      - uses: actions/upload-artifact@v3.1.2
+        with:
+          path: msgroom-*.tgz
+
+      - name: debugging purposes only, remove this
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          path: package.json
