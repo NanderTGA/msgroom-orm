@@ -15,13 +15,17 @@ jobs:
 
       - uses: rexdefuror/read-package-json@v1.0.5
 
-      - name: Set a new version based on the current version and the (full) git sha
+      - name: Craft a new version based on the current version and the (full) git sha
+        id: craft_new_version
+        run: echo "::set-output name=VERSION::$(node -e "const semver = require('semver'); const newVersion = semver.valid(semver.coerce(process.env.PACKAGE_VERSION)) + '-' + process.env.GITHUB_SHA; console.log(newVersion)")"
+
+      - name: Set the new version
         uses: jaywcjlove/github-action-package@v1.3.1
         with:
           data: |
             {
               "name": "msgroom-nightly",
-              "version": "$(node -e "const semver = require('semver'); const newVersion = semver.valid(semver.coerce(process.env.PACKAGE_VERSION)) + '-' + process.env.GITHUB_SHA; console.log(newVersion)")"
+              "version": "${{ steps.craft_new_version.outputs.VERSION }}"
             }
           
 
