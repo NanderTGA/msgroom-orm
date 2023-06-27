@@ -9,21 +9,7 @@ on:
     types: [created]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 19
-      - run: npm ci
-      - run: npm run build
-      - run: npm pack
-      - uses: actions/upload-artifact@v3.1.2
-        with:
-          path: msgroom-*.tgz
-
-  publish-npm:
+  build_and_publish:
     permissions:
       contents: read
       id-token: write
@@ -35,7 +21,10 @@ jobs:
           node-version: 19
           registry-url: https://registry.npmjs.org/
       - run: npm ci
-      - run: npm run build
+      - run: npm pack
+      - uses: actions/upload-artifact@v3.1.2
+        with:
+          path: msgroom-*.tgz
       - run: npm publish --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
