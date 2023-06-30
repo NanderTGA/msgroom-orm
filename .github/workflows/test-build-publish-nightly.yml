@@ -56,14 +56,11 @@ jobs:
       - name: Publish the nightly build to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM_NIGHTLY }}
-        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != null }}
+        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != '' }}
         run: npm publish --provenance
       
       - name: Send warn if there's no NPM token provided
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM_NIGHTLY }}
-        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN == null }}
+        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN == '' }}
         run: echo "::warning::No NPM token provided"
-      
-      - name: Test thing
-        run: echo "${{ env.THIS_DOES_NOT_EXIST == '' }}"
