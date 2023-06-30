@@ -320,10 +320,10 @@ Commands are case-sensitive!**
             return context.send(...commandResult);
 
         } catch (error) {
-            context.send(`An error occured while executing ${command.name}: *${error as string}*`);
+            context.send(`An error occurred while executing ${command.name}: *${error as string}*`);
 
             if (this.printErrors) console.error(`
-An error occured at ${context.message.date.toString()}.
+An error occurred at ${context.message.date.toString()}.
 Message: ${context.message.content}
 User: ${context.message.author.nickname}
 User's ID: ${context.message.author.ID}
