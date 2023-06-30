@@ -2,10 +2,10 @@ import Client from "..";
 import { Message } from "../types/events";
 import { CommandHandler } from "../types/types";
 
-export default async function getCommandOutput(client: Client, commandName: string, commandHandler: CommandHandler, commandHandlerArguments: string[] = []): Promise<Awaited<ReturnType<CommandHandler>>> {
+export default async function getCommandOutput(client: Client, command: string, message?: Omit<Message, "content">): Promise<Awaited<ReturnType<CommandHandler>>> {
     const output: string[] = [];
 
-    const fakeMessage: Message = {
+    const fakeMessage = message || {
         author: {
             color    : "#ff0000",
             flags    : [],
@@ -13,20 +13,17 @@ export default async function getCommandOutput(client: Client, commandName: stri
             sessionID: "some-session-id",
             nickname : "Someone",
         },
-        color  : "#ff0000",
-        content: "[NOT PROVIDED]",
-        date   : new Date(),
-        type   : "text",
+        color: "#ff0000",
+        date : new Date(),
+        type : "text",
     };
 
-    await client.runCommand({
-        name       : commandName,
-        aliases    : [],
-        description: "",
-        handler    : commandHandler,
-    }, commandHandlerArguments, {
-        message: fakeMessage,
-        send   : (...messages) => {
+    await client.processCommands({
+        message: {
+            ...fakeMessage,
+            content: command,
+        },
+        send: (...messages) => {
             const message = messages.join(" ");
             output.push(message);
         },
