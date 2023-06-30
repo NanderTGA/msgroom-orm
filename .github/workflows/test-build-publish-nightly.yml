@@ -54,7 +54,16 @@ jobs:
           path: msgroom-*.tgz
 
       - name: Publish the nightly build to npm
-        if: '!cancelled()'
-        run: npm publish --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM_NIGHTLY }}
+        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != null }}
+        run: npm publish --provenance
+      
+      - name: Send warn if there's no NPM token provided
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM_NIGHTLY }}
+        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN == null }}
+        run: echo "::warning::No NPM token provided"
+      
+      - name: Test thing
+        run: echo "${{ env.THIS_DOES_NOT_EXIST }}"
