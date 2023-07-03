@@ -2,7 +2,7 @@ import Client from "..";
 import { Message } from "../types/events";
 import { CommandHandler } from "../types/types";
 
-export default async function getCommandOutput(client: Client, command: string, message?: Omit<Message, "content">): Promise<Awaited<ReturnType<CommandHandler>>> {
+export default async function getCommandOutput(client: Client, command: string, message?: Omit<Message, "content">): Promise<string[]> {
     const output: string[] = [];
 
     const fakeMessage = message || {
