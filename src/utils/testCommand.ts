@@ -2,7 +2,7 @@ import Client from "..";
 import { Message } from "../types/events";
 import { CommandHandler } from "../types/types";
 
-export default async function getCommandOutput(client: Client, command: string, message?: Omit<Message, "content">): Promise<string[]> {
+export default async function getCommandOutput(client: Client, command: string, message?: Omit<Message, "content">): Promise<string> {
     const output: string[] = [];
 
     const fakeMessage = message || {
@@ -33,5 +33,5 @@ export default async function getCommandOutput(client: Client, command: string, 
         },
     });
 
-    return output;
+    return output.join("\n");
 }
