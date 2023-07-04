@@ -3,7 +3,7 @@ import MsgroomSocket from "./types/socket.io";
 
 import { resolve } from "path";
 import { fileURLToPath } from "url";
-import { formatWithOptions, promisify } from "node:util";
+import { promisify } from "node:util";
 
 import { walk } from "@nodelib/fs.walk";
 const walkAsync = promisify(walk);
