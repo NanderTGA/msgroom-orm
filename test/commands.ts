@@ -1,15 +1,22 @@
 import { test, it, expect } from "@jest/globals";
 import Client from "../src/index";
 import getCommandOutput from "../src/utils/testCommand";
-import Command from "../src/utils/Command";
 
 
 const client = new Client("test", [ "!", "g!" ], { server: "wss://dabestmsgroomserver.com" });
 
-client.commands.something = new Command("does stuff", [ "stuff" ], () => "ok I did some stuff");
-client.commands.throwError = new Command("does exactly what you think it does", [ "inYourFace" ], () => {
-    throw new Error("fuck");
-});
+client.commands.something = {
+    description: "does stuff",
+    aliases    : [ "stuff" ],
+    handler    : () => "ok I did some stuff",
+};
+client.commands.throwError = {
+    description: "does exactly what you think it does",
+    aliases    : [ "inYourFace" ],
+    handler    : () => {
+        throw new Error("fuck");
+    },
+};
 
 it("should correctly set properties", () => {
     expect(client.name).toBe("test");

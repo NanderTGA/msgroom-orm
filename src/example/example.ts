@@ -1,5 +1,4 @@
 import Client from "..";
-import Command from "../utils/Command";
 
 import { formatWithOptions } from "node:util";
 
@@ -22,35 +21,53 @@ void (async () => {
 
     client.on("werror", reason => console.warn("Received werror:", reason));
 
-    client.commands.ping = new Command("Replies with Pong!", [], () => "Pong!");
+    client.commands.ping = {
+        description: "Replies with Pong!",
+        handler    : () => "Pong!",
+    };
 
-    client.commands.repeat = new Command("Repeats what you said.", [], (context, ...args) => {
-        if (context.message.author.ID != client.ID) return "This command has been disabled for everyone who doesn't have the same ID as this bot due to abuse.";
-        return args.join(" ");
-    });
+    client.commands.repeat = {
+        description: "Repeats what you said.",
+        handler    : (context, ...args) => {
+            if (context.message.author.ID != client.ID) return "This command has been disabled for everyone who doesn't have the same ID as this bot due to abuse.";
+            return args.join(" ");
+        },
+    };
 
-    client.commands.sendTest = new Command("Uses `context.send()` and `context.reply()` to send some replies.", [], context => {
-        context.send("Sent!");
-        context.reply("Replied!");
-    });
+    client.commands.sendTest = {
+        description: "Uses `context.send()` and `context.reply()` to send some replies.",
+        handler    : context => {
+            context.send("Sent!");
+            context.reply("Replied!");
+        },
+    };
 
-    client.commands.showContext = new Command("Returns the context argument.", [], context => formatWithOptions({ compact: false, colors: false }, context));
+    client.commands.showContext = {
+        description: "Returns the context argument.",
+        handler    : context => formatWithOptions({ compact: false, colors: false }, context),
+    };
 
-    client.commands.testError = new Command("Throws an error.", [ "errorTest" ], () => {
-        throw new Error("fuck");
-    });
+    client.commands.testError = {
+        description: "Throws an error.",
+        aliases    : [ "errorTest" ],
+        handler    : () => {
+            throw new Error("fuck");
+        },
+    };
 
     client.commands.subCommandTest = {
-        sub1         : new Command("", [], () => "first subcommand"),
-        sub2         : new Command("", [], () => "another subcommand"),
-        undefined    : new Command("", [], () => "nothing?"),
+        sub1         : { handler: () => "first subcommand" },
+        sub2         : { handler: () => "another subcommand" },
+        undefined    : { handler: () => "nothing?" },
         subSubCommand: {
-            stuff : new Command("", [], () => "some stuff here"),
+            stuff : { handler: () => "some stuff here" },
             stuff2: {
-                undefined: new Command("", [], () => {
-                    throw new Error("Hey, when did this command start throwing errors?");
-                }),
-                sub      : new Command("", [], () => "yes subcommand"),
+                undefined: {
+                    handler: () => {
+                        throw new Error("Hey, when did this command start throwing errors?");
+                    },
+                },
+                sub      : { handler: () => "yes subcommand" },
                 testError: client.commands.testError,
             },
         },

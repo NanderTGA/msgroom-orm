@@ -14,8 +14,7 @@ import ClientEvents, { User } from "./types/events";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
-import { CommandHandlerMap, CommandContext, CommandHandlerMapEntry, CommandFileExports, CommandWithName } from "./types/types";
-import Command from "./utils/Command";
+import { CommandHandlerMap, CommandContext, CommandHandlerMapEntry, CommandFileExports, CommandWithName, Command } from "./types/types";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
@@ -30,49 +29,54 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     commandPrefixes: string[];
 
     commands: CommandHandlerMap = {
-        help: new Command("Shows information about a command.", [], (context, ...args) => {
-            if (args.length < 1) {
-                let output =  `
+        help: {
+            description: "Shows information about a command.",
+            handler    : (context, ...args) => {
+                if (args.length < 1) {
+                    let output =  `
 **The current ${this.commandPrefixes.length > 1 ? "prefixes are" : "prefix is"} \`${this.commandPrefixes.join("`, `")}\`
 Here's a list of all available commands. For more information on a command, run \`${this.commandPrefixes[0]}help <command>\`
 Commands are case-sensitive!**
 `;
             
-                const iterateOverCommandHandlerMap = (commandHandlerMapEntry: CommandHandlerMapEntry, commandHandlerMapName: string, prefix: string) => {
-                    this.validateCommandName(commandHandlerMapName);
+                    const iterateOverCommandHandlerMap = (commandHandlerMapEntry: CommandHandlerMapEntry, commandHandlerMapName: string, prefix: string) => {
+                        this.validateCommandName(commandHandlerMapName);
 
-                    if (typeof commandHandlerMapEntry.handler == "function") {
-                        const command = commandHandlerMapEntry as Command;
-                        if (commandHandlerMapName != "undefined") output += `\n${prefix}- *${command.description || "No description provided."}*`;
-                        return;
-                    }
+                        if (typeof commandHandlerMapEntry.handler == "function") {
+                            const command = commandHandlerMapEntry as Command;
+                            if (commandHandlerMapName != "undefined") output += `\n${prefix}- *${command.description || "No description provided."}*`;
+                            return;
+                        }
 
-                    const commandHandlerMap = commandHandlerMapEntry as CommandHandlerMap;
-                    if (commandHandlerMapName) output += `\n${prefix}- *${commandHandlerMap.undefined?.description as string || "No description provided."}*`;
+                        const commandHandlerMap = commandHandlerMapEntry as CommandHandlerMap;
+                        if (commandHandlerMapName) output += `\n${prefix}- *${commandHandlerMap.undefined?.description as string || "No description provided."}*`;
                 
-                    for (const key in commandHandlerMapEntry) {
-                        iterateOverCommandHandlerMap(commandHandlerMap[key], key, `${prefix}${key} `);
-                    }
-                };
+                        for (const key in commandHandlerMapEntry) {
+                            iterateOverCommandHandlerMap(commandHandlerMap[key], key, `${prefix}${key} `);
+                        }
+                    };
 
-                iterateOverCommandHandlerMap(this.commands, "", this.commandPrefixes[0]);
+                    iterateOverCommandHandlerMap(this.commands, "", this.commandPrefixes[0]);
 
-                return output.trim();
-            }
+                    return output.trim();
+                }
 
-            const commandName = args[0];
-            args.splice(0, 1);
+                const commandName = args[0];
+                args.splice(0, 1);
 
-            const commandAndArguments = this.getCommand(commandName, args);
-            if (!commandAndArguments) return "The command you specified cannot be found.";
-            const [ command ] = commandAndArguments;
+                const commandAndArguments = this.getCommand(commandName, args);
+                if (!commandAndArguments) return "The command you specified cannot be found.";
+                const [ command ] = commandAndArguments;
 
-            return  `
+                const aliases = command.aliases || [];
+
+                return  `
 **Command:** ${command.name}
-**Aliases:** ${command.aliases.length > 0 ? command.aliases.join(", ") : "*This command does not have any aliases*"}
+**Aliases:** ${aliases.length > 0 ? aliases.join(", ") : "*This command does not have any aliases*"}
 **Description:** ${command.description || "*No description provided*" }
                     `;
-        }),
+            },
+        },
     };
     
     static default = Client;

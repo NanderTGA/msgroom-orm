@@ -1,9 +1,13 @@
 import { Message } from "./events";
-import type Command from "../utils/Command";
 import type Client from "..";
 
 export type LogFunction = (...args: string[]) => void;
 export type CommandHandler = (context: CommandContext, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void);
+export type Command = {
+    description?: string;
+    aliases?: string[]
+    handler: CommandHandler;
+};
 export type CommandHandlerMap = {
     [command: string]: CommandHandlerMapEntry;
 };
