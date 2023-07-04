@@ -45,7 +45,7 @@ type ClientEvents = {
     message: (message: Message) => void;
 
     /**
-     * Fired when a "GUI error" occures.
+     * Fired when a "GUI error" occurs.
      * This is can be any error which doesn't disconnect you as a result.
      * Currently never called by the official server.
      */
