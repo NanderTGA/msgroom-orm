@@ -260,7 +260,10 @@ Commands are case-sensitive!**
         if (!this.socket) throw new NotConnectedError();
 
         const message = messages.join(" ");
-        if (message.length > 2048) return void this.emit("werror", "message too long");
+        if (message.length > 2048) {
+            if (this.printErrors) console.warn("A message was too long and cannot be sent, it will be printed below:\n", message);
+            return void this.emit("werror", "message too long");
+        }
 
         this.socket.emit("message", {
             type   : "text",
