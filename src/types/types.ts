@@ -8,6 +8,7 @@ export type Command = {
     aliases?: string[]
     handler: CommandHandler;
 };
+export type NormalizedCommand = Required<Command>;
 export type CommandHandlerMap = {
     [command: string]: CommandHandlerMapEntry;
 };
@@ -20,6 +21,15 @@ export type CommandFileExports = {
     default: ModuleInitializeFunction
 };
 
+export type WalkFunction = (
+    commandOrMap: {
+        commandHandlerMap?: CommandHandlerMap,
+        command?: NormalizedCommand
+    },
+    name: string,
+    fullCommand: string[]
+) => void;
+
 export type CommandContext = {
     /** The message that triggered the command */
     message: Message;
@@ -27,6 +37,6 @@ export type CommandContext = {
     /** Will send a message. */
     send: LogFunction;
 
-    /** Will tag the user. */
+    /** Like send(), but will tag the user. */
     reply: LogFunction;
 };

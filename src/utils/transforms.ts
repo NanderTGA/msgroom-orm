@@ -1,5 +1,6 @@
 import { Message, NickChangeInfo, SysMessage, User } from "../types/events";
 import { RawMessage, RawNickChangeInfo, RawSysMessage, RawUser } from "../types/socket.io";
+import { Command, NormalizedCommand } from "../types/types";
 
 import { decode as decodeHTML } from "he";
 
@@ -39,5 +40,13 @@ export function transformSysMessage(rawSysMessage: RawSysMessage): SysMessage {
 
         message: rawSysMessage.message,
         isHTML : rawSysMessage.isHtml,
+    };
+}
+
+export function normalizeCommand(command: Command): NormalizedCommand {
+    return {
+        description: command.description || "No description provided.",
+        aliases    : command.aliases || [],
+        handler    : command.handler,
     };
 }
