@@ -342,7 +342,7 @@ Full error:
 
     async processCommands(context: CommandContext) {
         const message = context.message.content;
-        const regex = new RegExp(`^(${this.commandPrefixes.join("|")})`, "i"); // I checked and we should we safe from ReDoS
+        const regex = new RegExp(`^(${this.commandPrefixes.join(")|(")})`, "i"); // I checked and we should we safe from ReDoS
         if (!regex.test(message)) return;
         
         const commandArguments = message.replace(regex, "").split(" ");
