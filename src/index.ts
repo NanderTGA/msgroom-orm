@@ -15,7 +15,7 @@ import ClientEvents, { User } from "./types/events";
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
 import {
-    CommandHandlerMap, CommandContext, CommandHandlerMapEntry, CommandFileExports, CommandWithName,
+    CommandMap, CommandContext, CommandMapEntry, CommandFileExports, CommandWithName,
     Command, WalkFunction,
 } from "./types/types";
 
@@ -31,7 +31,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     blockedSessionIDs = new Set<string>();
     commandPrefixes: string[];
 
-    commands: CommandHandlerMap = {
+    commands: CommandMap = {
         help: {
             description: "Shows information about a command.",
             handler    : (context, ...args) => {
@@ -44,14 +44,14 @@ Commands are case-sensitive!**
 
                     const commandList: string[] = [];
 
-                    this.walkCommandHandlerMapEntry(this.commands, ({ command, commandHandlerMap }, name, fullCommand) => {
+                    this.walkCommandMapEntry(this.commands, ({ command, commandMap }, name, fullCommand) => {
                         if (command && name == "undefined") return;
-                        if (commandHandlerMap && !name) return;
+                        if (commandMap && !name) return;
                         
                         let description: string;
                         if (command) description = command.description;
-                        else if (commandHandlerMap) { //TODO #43
-                            const subUndefinedDescription = commandHandlerMap.undefined?.description;
+                        else if (commandMap) { //TODO #43
+                            const subUndefinedDescription = commandMap.undefined?.description;
                             if (typeof subUndefinedDescription == "string") description = subUndefinedDescription;
                             else description = "No description provided.";
                         } else description = "No description provided.";
@@ -285,7 +285,7 @@ Commands are case-sensitive!**
     }
 
     getCommand(command: string, commandArguments: string[]): [ CommandWithName, string[] ] | undefined {
-        let currentGottenCommand: CommandHandlerMapEntry = this.commands[command];
+        let currentGottenCommand: CommandMapEntry = this.commands[command];
         let commandName = command;
 
         // eslint-disable-next-line no-constant-condition
@@ -317,7 +317,7 @@ Commands are case-sensitive!**
             command = commandArguments[0];
             commandArguments.splice(0, 1);
 
-            currentGottenCommand = (currentGottenCommand as CommandHandlerMap)[command];
+            currentGottenCommand = (currentGottenCommand as CommandMap)[command];
             commandName += "." + command;
         }
     }
@@ -362,8 +362,8 @@ Full error:
         await this.runCommand(command, commandHandlerArguments, context);
     }
 
-    walkCommandHandlerMapEntry(
-        commandHandlerMapEntry: CommandHandlerMapEntry,
+    walkCommandMapEntry(
+        commandMapEntry: CommandMapEntry,
         walkFunction: WalkFunction,
         name = "",
         fullCommand: string[] = [],
@@ -374,20 +374,20 @@ Full error:
         fullCommand = Array.from(fullCommand);
         if (name) fullCommand.push(name);
 
-        if (typeof commandHandlerMapEntry.handler == "function") {
-            const command = commandHandlerMapEntry as Command;
+        if (typeof commandMapEntry.handler == "function") {
+            const command = commandMapEntry as Command;
             const normalizedCommand = normalizeCommand(command);
             return walkFunction({ command: normalizedCommand }, name, fullCommand);
         }
 
-        const commandHandlerMap = commandHandlerMapEntry as CommandHandlerMap;
-        walkFunction({ commandHandlerMap }, name, fullCommand);
+        const commandMap = commandMapEntry as CommandMap;
+        walkFunction({ commandMap }, name, fullCommand);
 
-        for (const commandHandlerMapEntry in commandHandlerMap) {
-            this.walkCommandHandlerMapEntry(
-                commandHandlerMap[commandHandlerMapEntry],
+        for (const commandMapEntry in commandMap) {
+            this.walkCommandMapEntry(
+                commandMap[commandMapEntry],
                 walkFunction,
-                commandHandlerMapEntry,
+                commandMapEntry,
                 fullCommand,
             );
         }
@@ -403,12 +403,12 @@ Full error:
         //! This call to import() is replaced with something else by typescript, which uses require() under the hood! (because we're targeting commonJS)
         const { default: defaultFileExport } = await import(file) as CommandFileExports;
         if (!defaultFileExport) throw new Error(
-            `${file} doesn't have a default export. The default export should be a function taking an instance of Client as the only argument and should return (a promise which resolves to) a CommandHandlerMapEntry.
+            `${file} doesn't have a default export. The default export should be a function taking an instance of Client as the only argument and should return (a promise which resolves to) a CommandMapEntry.
 
 If it returns a Command (any object which has a property named "handler" that resolves to a function), it will be registered accordingly to client.commands.
 Do note that if you're returning a Command directly from a function, you also need to provide a property called name to provide the name of your command.
 
-If it returns an object, it will be assumed to be a CommandHandlerMap and all of its properties will be assigned to client.commands using Object.assign().`,
+If it returns an object, it will be assumed to be a CommandMap and all of its properties will be assigned to client.commands using Object.assign().`,
         );
 
         const importedCommands = await defaultFileExport(this);
@@ -427,8 +427,8 @@ If it returns an object, it will be assumed to be a CommandHandlerMap and all of
             return;
         }
 
-        const commandHandlerMap = importedCommands as CommandHandlerMap;
-        Object.keys(commandHandlerMap).forEach(this.validateCommandName);
+        const commandMap = importedCommands as CommandMap;
+        Object.keys(commandMap).forEach(this.validateCommandName);
         Object.assign(this.commands, importedCommands);
     }
 

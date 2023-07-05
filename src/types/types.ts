@@ -9,13 +9,13 @@ export type Command = {
     handler: CommandHandler;
 };
 export type NormalizedCommand = Required<Command>;
-export type CommandHandlerMap = {
-    [command: string]: CommandHandlerMapEntry;
+export type CommandMap = {
+    [command: string]: CommandMapEntry;
 };
-export type CommandHandlerMapEntry = Command | CommandHandlerMap;
+export type CommandMapEntry = Command | CommandMap;
 
 export type CommandWithName = Command & { name: string };
-export type ModuleInitializeFunctionReturnType = Promise<CommandWithName | CommandHandlerMap> | CommandWithName | CommandHandlerMap;
+export type ModuleInitializeFunctionReturnType = Promise<CommandWithName | CommandMap> | CommandWithName | CommandMap;
 export type ModuleInitializeFunction = (client: Client) => ModuleInitializeFunctionReturnType;
 export type CommandFileExports = {
     default: ModuleInitializeFunction
@@ -23,7 +23,7 @@ export type CommandFileExports = {
 
 export type WalkFunction = (
     commandOrMap: {
-        commandHandlerMap?: CommandHandlerMap,
+        commandMap?: CommandMap,
         command?: NormalizedCommand
     },
     name: string,
