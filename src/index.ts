@@ -13,8 +13,11 @@ import TypedEmitter from "typed-emitter";
 import ClientEvents, { User } from "./types/events";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
-import { transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
-import { CommandHandlerMap, CommandContext, CommandHandlerMapEntry, CommandFileExports, CommandWithName, Command } from "./types/types";
+import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
+import {
+    CommandHandlerMap, CommandContext, CommandHandlerMapEntry, CommandFileExports, CommandWithName,
+    Command, WalkFunction,
+} from "./types/types";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
@@ -38,25 +41,25 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
 Here's a list of all available commands. For more information on a command, run \`${this.commandPrefixes[0]}help <command>\`
 Commands are case-sensitive!**
 `;
-            
-                    const iterateOverCommandHandlerMap = (commandHandlerMapEntry: CommandHandlerMapEntry, commandHandlerMapName: string, prefix: string) => {
-                        this.validateCommandName(commandHandlerMapName);
 
-                        if (typeof commandHandlerMapEntry.handler == "function") {
-                            const command = commandHandlerMapEntry as Command;
-                            if (commandHandlerMapName != "undefined") output += `\n${prefix}- *${command.description || "No description provided."}*`;
-                            return;
-                        }
+                    const commandList: string[] = [];
 
-                        const commandHandlerMap = commandHandlerMapEntry as CommandHandlerMap;
-                        if (commandHandlerMapName) output += `\n${prefix}- *${commandHandlerMap.undefined?.description as string || "No description provided."}*`;
-                
-                        for (const key in commandHandlerMapEntry) {
-                            iterateOverCommandHandlerMap(commandHandlerMap[key], key, `${prefix}${key} `);
-                        }
-                    };
+                    this.walkCommandHandlerMapEntry(this.commands, ({ command, commandHandlerMap }, name, fullCommand) => {
+                        if (command && name == "undefined") return;
+                        if (commandHandlerMap && !name) return;
+                        
+                        let description: string;
+                        if (command) description = command.description;
+                        else if (commandHandlerMap) { //TODO #43
+                            const subUndefinedDescription = commandHandlerMap.undefined?.description;
+                            if (typeof subUndefinedDescription == "string") description = subUndefinedDescription;
+                            else description = "No description provided.";
+                        } else description = "No description provided.";
+                        
+                        commandList.push(`\n${this.commandPrefixes[0]}${fullCommand.join(" ")} - *${description}*`);
+                    });
 
-                    iterateOverCommandHandlerMap(this.commands, "", this.commandPrefixes[0]);
+                    output += commandList.sort().join("");
 
                     return output.trim();
                 }
@@ -292,6 +295,7 @@ Commands are case-sensitive!**
                 // either the command doesn't exist
                 // or it does exist but as an alias to another command
                 // oh god this is going to be a pain
+                //TODO
                 console.log("undefined", currentGottenCommand, commandName);
 
                 //Object.values()
@@ -356,6 +360,37 @@ Full error:
 
         const [ command, commandHandlerArguments ] = gottenCommand;
         await this.runCommand(command, commandHandlerArguments, context);
+    }
+
+    walkCommandHandlerMapEntry(
+        commandHandlerMapEntry: CommandHandlerMapEntry,
+        walkFunction: WalkFunction,
+        name = "",
+        fullCommand: string[] = [],
+    ): void {
+        this.validateCommandName(name);
+        
+        // Create a new array because otherwise we're gonna break everything
+        fullCommand = Array.from(fullCommand);
+        if (name) fullCommand.push(name);
+
+        if (typeof commandHandlerMapEntry.handler == "function") {
+            const command = commandHandlerMapEntry as Command;
+            const normalizedCommand = normalizeCommand(command);
+            return walkFunction({ command: normalizedCommand }, name, fullCommand);
+        }
+
+        const commandHandlerMap = commandHandlerMapEntry as CommandHandlerMap;
+        walkFunction({ commandHandlerMap }, name, fullCommand);
+
+        for (const commandHandlerMapEntry in commandHandlerMap) {
+            this.walkCommandHandlerMapEntry(
+                commandHandlerMap[commandHandlerMapEntry],
+                walkFunction,
+                commandHandlerMapEntry,
+                fullCommand,
+            );
+        }
     }
 
     validateCommandName(this: void, commandName?: string) {
