@@ -282,8 +282,14 @@ Commands are case-sensitive!**
     }
 
     getCommand(command: string, commandArguments: string[]): [ CommandWithName, string[] ] | undefined {
-        let currentGottenCommand: CommandMapEntry = this.commands[command];
+        let currentGottenCommand: CommandMapEntry | undefined;
         let commandName = command;
+        for (const key in this.commands) {
+            if (key.toLowerCase() == command.toLowerCase()) {
+                commandName = command;
+                currentGottenCommand = this.commands[key];
+            }
+        }
 
         // eslint-disable-next-line no-constant-condition
         while (true) {
@@ -313,9 +319,16 @@ Commands are case-sensitive!**
 
             command = commandArguments[0];
             commandArguments.splice(0, 1);
-
-            currentGottenCommand = (currentGottenCommand as CommandMap)[command];
+            
+            const previousGottenCommand = currentGottenCommand as CommandMap;
+            currentGottenCommand = previousGottenCommand[command];
             commandName += "." + command;
+
+            if (!currentGottenCommand) for (const key in previousGottenCommand) {
+                if (key.toLowerCase() == command.toLowerCase()) {
+                    currentGottenCommand = previousGottenCommand[key];
+                }
+            }
         }
     }
 
