@@ -246,7 +246,6 @@ Commands are case-sensitive!**
 
     set name(name: string) {
         if (!this.socket) throw new NotConnectedError();
-
         this.validateNickname(name);
 
         this.socket.emit("change-user", name);
