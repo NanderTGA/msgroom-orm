@@ -3,21 +3,19 @@ import MsgroomSocket from "./types/socket.io";
 
 import { resolve } from "path";
 import { fileURLToPath } from "url";
-import { promisify } from "node:util";
-
-import { walk } from "@nodelib/fs.walk";
-const walkAsync = promisify(walk);
 
 import { EventEmitter } from "node:events";
 import TypedEmitter from "typed-emitter";
-import ClientEvents, { User } from "./types/events";
 
-import { AuthError, ConnectionError, NotConnectedError } from "./errors";
-import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
+import ClientEvents, { User } from "./types/events";
 import {
     CommandMap, CommandContext, CommandMapEntry, CommandFileExports, CommandWithName,
     Command, WalkFunction,
 } from "./types/types";
+
+import { AuthError, ConnectionError, NotConnectedError } from "./errors";
+import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
+import walkDirectory from "./utils/walkDirectory";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
@@ -439,7 +437,7 @@ If it returns an object, it will be assumed to be a CommandMap and all of its pr
         }
         if (typeof directory != "string") directory = fileURLToPath(directory);
 
-        const files = await walkAsync(directory);
+        const files = await walkDirectory(directory);
         const modules = files
             .filter( file => file.name.endsWith(".js"))
             .map( file => this.addCommandsFromFile(file.path));
