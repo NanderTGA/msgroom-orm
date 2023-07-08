@@ -22,6 +22,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     #name: string;
     #server: string;
     printErrors: boolean;
+    helpSuffix: string;
 
     users: Record<string, User> = {};
     #ID?: string;
@@ -58,6 +59,7 @@ Commands are case-sensitive!**
                     });
 
                     output += commandList.sort().join("");
+                    output = output.trim() + "\n\n" + this.helpSuffix;
 
                     return output.trim();
                 }
@@ -89,11 +91,12 @@ Commands are case-sensitive!**
      * @param options Extra options.
      * @param options.server The server to connect to.
      * @param options.printErrors Whether to print errors to the console.
+     * @param options.helpSuffix A suffix to add to the output of the help command.
      */
     constructor(
         name: string,
         commandPrefixes: string | string[] = [],
-        options: { server?: string, printErrors?: boolean } = {},
+        options: { server?: string, printErrors?: boolean, helpSuffix?: string } = {},
     ) {
         super();
 
@@ -102,6 +105,7 @@ Commands are case-sensitive!**
 
         this.#server = options.server || "wss://msgroom.windows96.net";
         this.printErrors = options.printErrors || false;
+        this.helpSuffix = options.helpSuffix || "";
     }
 
     /**
