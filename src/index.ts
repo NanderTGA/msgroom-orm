@@ -417,11 +417,10 @@ Full error:
 
         const [ commandName, ...commandArguments ] = message.replace(regex, "").split(" ");
 
-        const gottenCommand = this.getCommand(commandName, commandArguments);
-        if (!gottenCommand) return context.send(`That command doesn't exist. Run ${this.mainPrefix}help for a list of commands.`);
+        const commandAndArguments = this.getCommand(commandName, commandArguments);
+        if (!commandAndArguments) return context.send(`That command doesn't exist. Run ${this.mainPrefix}help for a list of commands.`);
 
-        const [ command, commandHandlerArguments ] = gottenCommand;
-        await this.runCommand(command, commandHandlerArguments, context);
+        await this.runCommand(...commandAndArguments, context);
     }
 
     walkCommandMapEntry(
