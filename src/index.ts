@@ -411,13 +411,11 @@ Full error:
     async processCommands(context: CommandContext) {
         if (!this.mainPrefix) return;
         const message = context.message.content;
+
         const regex = new RegExp(`^(${Array.from(this.prefixes).join(")|(")})`, "i"); // I checked and we should we safe from ReDoS
         if (!regex.test(message)) return;
-        
-        const commandArguments = message.replace(regex, "").split(" ");
-        
-        const commandName = commandArguments[0];
-        commandArguments.splice(0, 1);
+
+        const [ commandName, ...commandArguments ] = message.replace(regex, "").split(" ");
 
         const gottenCommand = this.getCommand(commandName, commandArguments);
         if (!gottenCommand) return context.send(`That command doesn't exist. Run ${this.mainPrefix}help for a list of commands.`);
