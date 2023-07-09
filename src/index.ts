@@ -2,7 +2,7 @@ import io from "socket.io-client";
 import MsgroomSocket, { RawMessage } from "./types/socket.io";
 
 import { resolve as pathResolve } from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 
 import { EventEmitter } from "node:events";
 import TypedEmitter from "typed-emitter";
@@ -461,7 +461,10 @@ Full error:
 
     async addCommandsFromFile(file: string | URL): Promise<void> {
         if (typeof file != "string") file = file.href;
-        const { default: defaultFileExport } = await dynamicImport<CommandFileExports>(file);
+        else if (!file.startsWith("file:") && !file.startsWith("data:")) file = pathToFileURL(file).href;
+
+        let { default: defaultFileExport } = await dynamicImport<CommandFileExports>(file);
+        if (typeof defaultFileExport != "function") defaultFileExport = defaultFileExport.default;
         if (!defaultFileExport) throw new Error(
             `${file} doesn't have a default export. The default export should be a function taking an instance of Client as the only argument and should return (a promise which resolves to) a CommandMapEntry.
 

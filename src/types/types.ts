@@ -18,7 +18,7 @@ export type CommandWithName = Command & { name: string };
 export type ModuleInitializeFunctionReturnType = Promise<CommandWithName | CommandMap> | CommandWithName | CommandMap;
 export type ModuleInitializeFunction = (client: Client) => ModuleInitializeFunctionReturnType;
 export type CommandFileExports = {
-    default: ModuleInitializeFunction
+    default: ModuleInitializeFunction | { default: ModuleInitializeFunction }
 };
 
 export type WalkFunction = (
