@@ -15,7 +15,7 @@ import {
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
-import walkDirectory from "./utils/walkDirectory";
+import { walkDirectory, dynamicImport } from "./utils/compilerFighting";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
@@ -449,8 +449,7 @@ Full error:
 
     async addCommandsFromFile(file: string | URL): Promise<void> {
         if (typeof file != "string") file = file.href;
-        //! This call to import() is replaced with something else by typescript, which uses require() under the hood! (because we're targeting commonJS)
-        const { default: defaultFileExport } = await import(file) as CommandFileExports;
+        const { default: defaultFileExport } = await dynamicImport<CommandFileExports>(file);
         if (!defaultFileExport) throw new Error(
             `${file} doesn't have a default export. The default export should be a function taking an instance of Client as the only argument and should return (a promise which resolves to) a CommandMapEntry.
 

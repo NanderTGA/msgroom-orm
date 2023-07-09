@@ -1,7 +1,7 @@
 import { promisify } from "util";
 import type { walk } from "@nodelib/fs.walk";
 
-let walkDirectory: typeof walk.__promisify__;
+export let walkDirectory: typeof walk.__promisify__;
 try {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval
     walkDirectory = Function("require", "promisify", `
@@ -16,5 +16,8 @@ try {
     };
 }
 
-//@ts-ignore It will be assigned, don't worry.
-export default walkDirectory;
+// get the real dynamic import() function, because the typescript compiler will override it to use require() >:(
+// eslint-disable-next-line @typescript-eslint/no-implied-eval
+export const dynamicImport = Function("importSpecifier", `
+    return import(importSpecifier);
+`) as <T>(importSpecifier: string) => Promise<T>;
