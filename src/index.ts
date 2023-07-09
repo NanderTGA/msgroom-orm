@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import MsgroomSocket from "./types/socket.io";
 
-import { resolve } from "path";
+import { resolve as pathResolve } from "path";
 import { fileURLToPath } from "url";
 
 import { EventEmitter } from "node:events";
@@ -227,7 +227,7 @@ Commands are case-sensitive!**
                             });
                     }
                 });
-        //#endregion
+            //#endregion
         });
     }
 
@@ -449,7 +449,7 @@ If it returns an object, it will be assumed to be a CommandMap and all of its pr
     async addCommandsFromDirectory(directory?: string | URL): Promise<void> {
         if (!directory) {
             if (!require.main) throw new Error("You cannot leave out the directory argument in this context!");
-            directory = resolve(require.main.path, "./commands");
+            directory = pathResolve(require.main.path, "./commands");
         }
         if (typeof directory != "string") directory = fileURLToPath(directory);
 
