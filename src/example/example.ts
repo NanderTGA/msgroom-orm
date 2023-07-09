@@ -34,10 +34,7 @@ Since it is completely useless, it will go offline once I'm done testing things.
 
     client.commands.repeat = {
         description: "Repeats what you said.",
-        handler    : (context, ...args) => {
-            if (context.message.author.ID != client.ID) return "This command has been disabled for everyone who doesn't have the same ID as this bot due to abuse.";
-            return args.join(" ");
-        },
+        handler    : (context, ...args) => args.join(" "),
     };
 
     client.commands.sendTest = {

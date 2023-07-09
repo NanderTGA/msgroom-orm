@@ -1,5 +1,5 @@
 import io from "socket.io-client";
-import MsgroomSocket from "./types/socket.io";
+import MsgroomSocket, { RawMessage } from "./types/socket.io";
 
 import { resolve as pathResolve } from "path";
 import { fileURLToPath } from "url";
@@ -23,9 +23,12 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     #server: string;
     printErrors: boolean;
     helpSuffix: string;
+    blockSelf: boolean;
+    welcomeMessage: string;
 
     users: Record<string, User> = {};
     #ID?: string;
+    #sessionID?: string;
     blockedIDs = new Set<string>();
     blockedSessionIDs = new Set<string>();
     commandPrefixes: string[];
@@ -92,11 +95,13 @@ Commands are case-sensitive!**
      * @param options.server The server to connect to.
      * @param options.printErrors Whether to print errors to the console.
      * @param options.helpSuffix A suffix to add to the output of the help command.
+     * @param options.blockSelf Whether the bot should block itself. Will force welcomeMessage to be sent.
+     * @param options.welcomeMessage A message to send when the bot joins.
      */
     constructor(
         name: string,
         commandPrefixes: string | string[] = [],
-        options: { server?: string, printErrors?: boolean, helpSuffix?: string } = {},
+        options: { server?: string, printErrors?: boolean, helpSuffix?: string, blockSelf?: boolean, welcomeMessage?: string } = {},
     ) {
         super();
 
@@ -106,6 +111,10 @@ Commands are case-sensitive!**
         this.#server = options.server || "wss://msgroom.windows96.net";
         this.printErrors = options.printErrors || false;
         this.helpSuffix = options.helpSuffix || "";
+
+        this.blockSelf = typeof options.blockSelf == "boolean" ? options.blockSelf : true;
+        if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.commandPrefixes[0]}help for a list of commands.`;
+        else this.welcomeMessage = options.welcomeMessage || "";
     }
 
     /**
@@ -163,6 +172,25 @@ Commands are case-sensitive!**
                 apikey,
             });
 
+        }).then( () => {
+            return new Promise<void>( resolve => {
+                const sessionIDHandler = (rawMessage: RawMessage) => {
+                    const message = transformMessage(rawMessage, this.users);
+                    if (!(message.content == this.welcomeMessage && message.author.ID == this.ID)) return;
+
+                    this.#sessionID = message.author.sessionID;
+                    this.blockedSessionIDs.add(this.#sessionID);
+
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    this.socket!.off("message", sessionIDHandler);
+                    resolve();
+                };
+
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                this.socket!.on("message", sessionIDHandler);
+
+                this.sendMessage(this.welcomeMessage);
+            });
         }).then( () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this.socket!
@@ -258,6 +286,11 @@ Commands are case-sensitive!**
     get ID(): string {
         if (!this.#ID) throw new NotConnectedError();
         return this.#ID;
+    }
+
+    get sessionID(): string {
+        if (!this.#sessionID) throw new NotConnectedError();
+        return this.#sessionID;
     }
 
     sendMessage(...messages: string[]): void {
