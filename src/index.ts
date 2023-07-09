@@ -21,17 +21,20 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     private socket?: MsgroomSocket;
     #name: string;
     #server: string;
+
     printErrors: boolean;
     helpSuffix: string;
     blockSelf: boolean;
     welcomeMessage: string;
+    
+    prefixes: Set<string>;
+    mainPrefix: string;
 
     users: Record<string, User> = {};
     #ID?: string;
     #sessionID?: string;
     blockedIDs = new Set<string>();
     blockedSessionIDs = new Set<string>();
-    commandPrefixes: string[];
 
     commands: CommandMap = {
         help: {
@@ -39,10 +42,9 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
             handler    : (context, ...args) => {
                 if (args.length < 1) {
                     let output =  `
-**The current ${this.commandPrefixes.length > 1 ? "prefixes are" : "prefix is"} \`${this.commandPrefixes.join("`, `")}\`
-Here's a list of all available commands. For more information on a command, run \`${this.commandPrefixes[0]}help <command>\`
-Commands are case-sensitive!**
-`;
+**The current ${this.prefixes.size > 1 ? "prefixes are" : "prefix is"} \`${Array.from(this.prefixes).join("`, `")}\`
+Here's a list of all available commands. For more information on a command, run \`${this.mainPrefix}help <command>\`
+                    `;
 
                     const commandList: string[] = [];
 
@@ -58,11 +60,13 @@ Commands are case-sensitive!**
                             else description = "No description provided.";
                         } else description = "No description provided.";
                         
-                        commandList.push(`\n${this.commandPrefixes[0]}${fullCommand.join(" ")} - *${description}*`);
+                        commandList.push(`\n${this.mainPrefix}${fullCommand.join(" ")} - *${description}*`);
                     });
 
                     output += commandList.sort().join("");
                     output = output.trim() + "\n\n" + this.helpSuffix;
+
+                    if (output.trim().length > 2048) context.send("Error: output too long\nTODO [#44](https://github.com/NanderTGA/msgroom-orm/issues/44)");
 
                     return output.trim();
                 }
@@ -97,23 +101,34 @@ Commands are case-sensitive!**
      * @param options.helpSuffix A suffix to add to the output of the help command.
      * @param options.blockSelf Whether the bot should block itself. Will force welcomeMessage to be sent.
      * @param options.welcomeMessage A message to send when the bot joins.
+     * @param options.mainPrefix The main prefix to use in commands (for example, the help command will use this to tell the user what prefix they should use). This shouldn't have regex in it.
      */
     constructor(
         name: string,
         commandPrefixes: string | string[] = [],
-        options: { server?: string, printErrors?: boolean, helpSuffix?: string, blockSelf?: boolean, welcomeMessage?: string } = {},
+        options: {
+            server?: string,
+            printErrors?: boolean,
+            helpSuffix?: string,
+            blockSelf?: boolean,
+            welcomeMessage?: string,
+            mainPrefix?: string,
+        } = {},
     ) {
         super();
 
         this.#name = name;
-        this.commandPrefixes = typeof commandPrefixes == "string" ? [ commandPrefixes ] : commandPrefixes;
+
+        const commandPrefixesArray = typeof commandPrefixes == "string" ? [ commandPrefixes ] : commandPrefixes;
+        this.mainPrefix = options.mainPrefix ?? commandPrefixesArray[0];
+        this.prefixes = new Set(commandPrefixesArray);
 
         this.#server = options.server || "wss://msgroom.windows96.net";
         this.printErrors = options.printErrors || false;
         this.helpSuffix = options.helpSuffix || "";
 
-        this.blockSelf = typeof options.blockSelf == "boolean" ? options.blockSelf : true;
-        if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.commandPrefixes[0]}help for a list of commands.`;
+        this.blockSelf = options.blockSelf ?? true;
+        if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.`;
         else this.welcomeMessage = options.welcomeMessage || "";
     }
 
@@ -394,8 +409,9 @@ Full error:
     }
 
     async processCommands(context: CommandContext) {
+        if (!this.mainPrefix) return;
         const message = context.message.content;
-        const regex = new RegExp(`^(${this.commandPrefixes.join(")|(")})`, "i"); // I checked and we should we safe from ReDoS
+        const regex = new RegExp(`^(${Array.from(this.prefixes).join(")|(")})`, "i"); // I checked and we should we safe from ReDoS
         if (!regex.test(message)) return;
         
         const commandArguments = message.replace(regex, "").split(" ");
@@ -404,8 +420,7 @@ Full error:
         commandArguments.splice(0, 1);
 
         const gottenCommand = this.getCommand(commandName, commandArguments);
-        // We can safely assume there is at least one prefix, because otherwise this method wouldn't be called.
-        if (!gottenCommand) return context.send(`That command doesn't exist. Run ${this.commandPrefixes[0]}help for a list of commands.`);
+        if (!gottenCommand) return context.send(`That command doesn't exist. Run ${this.mainPrefix}help for a list of commands.`);
 
         const [ command, commandHandlerArguments ] = gottenCommand;
         await this.runCommand(command, commandHandlerArguments, context);

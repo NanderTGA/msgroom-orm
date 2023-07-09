@@ -22,8 +22,8 @@ it("should correctly set properties", () => {
     expect(client.name).toBe("test");
     expect(client.server).toBe("wss://dabestmsgroomserver.com");
 
-    expect(client.commandPrefixes).toStrictEqual([ "!", "g!" ]);
-    expect((new Client("test2", "!")).commandPrefixes).toStrictEqual([ "!" ]);
+    expect(Array.from(client.prefixes)).toStrictEqual([ "!", "g!" ]);
+    expect(Array.from((new Client("test2", "!")).prefixes)).toStrictEqual([ "!" ]);
 });
 
 it("should validate nicknames correctly", () => {
