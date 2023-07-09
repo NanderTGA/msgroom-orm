@@ -1,6 +1,5 @@
 import Client from ".";
 import { Command } from "./types/types";
-import { normalizeCommand } from "./utils/transforms";
 
 export default function helpCommand(client: Client): Command {
     return {
