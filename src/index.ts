@@ -16,6 +16,7 @@ import {
 import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
 import { walkDirectory, dynamicImport } from "./utils/compilerFighting";
+import helpCommand from "./helpCommand";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
     private socket?: MsgroomSocket;
@@ -36,58 +37,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     blockedIDs = new Set<string>();
     blockedSessionIDs = new Set<string>();
 
-    commands: CommandMap = {
-        help: {
-            description: "Shows information about a command.",
-            handler    : (context, ...args) => {
-                if (args.length < 1) {
-                    let output =  `
-**The current ${this.prefixes.size > 1 ? "prefixes are" : "prefix is"} \`${Array.from(this.prefixes).join("`, `")}\`
-Here's a list of all available commands. For more information on a command, run \`${this.mainPrefix}help <command>\`
-                    `;
-
-                    const commandList: string[] = [];
-
-                    this.walkCommandMapEntry(this.commands, ({ command, commandMap }, name, fullCommand) => {
-                        if (command && name == "undefined") return;
-                        if (commandMap && !name) return;
-                        
-                        let description: string;
-                        if (command) description = command.description;
-                        else if (commandMap) { //TODO #43
-                            const subUndefinedDescription = commandMap.undefined?.description;
-                            if (typeof subUndefinedDescription == "string") description = subUndefinedDescription;
-                            else description = "No description provided.";
-                        } else description = "No description provided.";
-                        
-                        commandList.push(`\n${this.mainPrefix}${fullCommand.join(" ")} - *${description}*`);
-                    });
-
-                    output += commandList.sort().join("");
-                    output = output.trim() + "\n\n" + this.helpSuffix;
-
-                    if (output.trim().length > 2048) context.send("Error: output too long\nTODO [#44](https://github.com/NanderTGA/msgroom-orm/issues/44)");
-
-                    return output.trim();
-                }
-
-                const commandName = args[0];
-                args.splice(0, 1);
-
-                const commandAndArguments = this.getCommand(commandName, args);
-                if (!commandAndArguments) return "The command you specified cannot be found.";
-                const [ command ] = commandAndArguments;
-
-                const aliases = command.aliases || [];
-
-                return  `
-**Command:** ${command.name}
-**Aliases:** ${aliases.length > 0 ? aliases.join(", ") : "*This command does not have any aliases*"}
-**Description:** ${command.description || "*No description provided*" }
-                    `;
-            },
-        },
-    };
+    commands: CommandMap = {};
     
     static default = Client;
 
@@ -130,6 +80,8 @@ Here's a list of all available commands. For more information on a command, run 
         this.blockSelf = options.blockSelf ?? true;
         if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.`;
         else this.welcomeMessage = options.welcomeMessage || "";
+
+        this.commands.help = helpCommand(this);
     }
 
     /**
