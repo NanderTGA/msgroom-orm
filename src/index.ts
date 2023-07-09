@@ -174,6 +174,8 @@ Commands are case-sensitive!**
 
         }).then( () => {
             return new Promise<void>( resolve => {
+                if (!this.welcomeMessage) resolve();
+
                 const sessionIDHandler = (rawMessage: RawMessage) => {
                     const message = transformMessage(rawMessage, this.users);
                     if (!(message.content == this.welcomeMessage && message.author.ID == this.ID)) return;
