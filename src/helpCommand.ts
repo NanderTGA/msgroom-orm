@@ -1,4 +1,4 @@
-import Client from ".";
+import type Client from ".";
 import { Command } from "./types/types";
 
 export default function helpCommand(client: Client): Command {
@@ -8,7 +8,7 @@ export default function helpCommand(client: Client): Command {
             if (args.length < 1) {
                 let output =  `
 **The current ${client.prefixes.size > 1 ? "prefixes are" : "prefix is"} \`${Array.from(client.prefixes).join("`, `")}\`
-Here's a list of all available commands. For more information on a command, run \`${client.mainPrefix}help <command>\`
+Here's a list of all available commands. For more information on a command, run \`${client.mainPrefix}help <command>\`**
                 `;
 
                 const commandList: string[] = [];
