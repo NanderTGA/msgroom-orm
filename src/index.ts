@@ -108,6 +108,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     if (!this.socket) throw new NotConnectedError();
                     this.socket.emit("auth", {
                         user: name,
+                        apikey,
                     });
                 })
                 .on("disconnect", () => {
@@ -133,34 +134,26 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     resolve();
                 });
             //#endregion
+        }).then( () => new Promise<void>( resolve => {
+            if (!this.welcomeMessage) resolve();
 
-            this.socket.emit("auth", {
-                user: name,
-                apikey,
-            });
+            const sessionIDHandler = (rawMessage: RawMessage) => {
+                const message = transformMessage(rawMessage, this.users);
+                if (!(message.content == this.welcomeMessage && message.author.ID == this.ID)) return;
 
-        }).then( () => {
-            return new Promise<void>( resolve => {
-                if (!this.welcomeMessage) resolve();
-
-                const sessionIDHandler = (rawMessage: RawMessage) => {
-                    const message = transformMessage(rawMessage, this.users);
-                    if (!(message.content == this.welcomeMessage && message.author.ID == this.ID)) return;
-
-                    this.#sessionID = message.author.sessionID;
-                    this.blockedSessionIDs.add(this.#sessionID);
-
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    this.socket!.off("message", sessionIDHandler);
-                    resolve();
-                };
+                this.#sessionID = message.author.sessionID;
+                this.blockedSessionIDs.add(this.#sessionID);
 
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                this.socket!.on("message", sessionIDHandler);
+                this.socket!.off("message", sessionIDHandler);
+                resolve();
+            };
 
-                this.sendMessage(this.welcomeMessage);
-            });
-        }).then( () => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.socket!.on("message", sessionIDHandler);
+
+            this.sendMessage(this.welcomeMessage);
+        })).then( () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this.socket!
 
