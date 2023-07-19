@@ -13,7 +13,7 @@ import {
     Command, WalkFunction,
 } from "./types/types";
 
-import { AuthError, ConnectionError, NotConnectedError } from "./errors";
+import { AuthError, ConnectionError, ImpossibleError, NotConnectedError } from "./errors";
 import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
 import { walkDirectory, dynamicImport } from "./utils/compilerFighting";
 import helpCommand from "./helpCommand";
@@ -27,6 +27,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     helpSuffix: string;
     blockSelf: boolean;
     welcomeMessage: string;
+    apikey?: string;
     
     prefixes: Set<string>;
     mainPrefix: string;
@@ -52,6 +53,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
      * @param options.blockSelf Whether the bot should block itself. Will force welcomeMessage to be sent.
      * @param options.welcomeMessage A message to send when the bot joins.
      * @param options.mainPrefix The main prefix to use in commands (for example, the help command will use this to tell the user what prefix they should use). This shouldn't have regex in it.
+     * @param options.apikey You can request one from ctrlz.
      */
     constructor(
         name: string,
@@ -63,10 +65,12 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
             blockSelf?: boolean,
             welcomeMessage?: string,
             mainPrefix?: string,
+            apikey?: string
         } = {},
     ) {
         super();
 
+        this.validateNickname(name);
         this.#name = name;
 
         const commandPrefixesArray = typeof commandPrefixes == "string" ? [ commandPrefixes ] : commandPrefixes;
@@ -76,6 +80,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.#server = options.server || "wss://msgroom.windows96.net";
         this.printErrors = options.printErrors || false;
         this.helpSuffix = options.helpSuffix || "";
+        this.apikey = options.apikey;
 
         this.blockSelf = options.blockSelf ?? true;
         if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.`;
@@ -85,30 +90,22 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     }
 
     /**
-     * Connect to a msgroom server. This should be the first function you run after creating a new instance of this class.
-     * @param name The username you want to use.
-     * @param server A URL to the server you want to connect to.
-     * @param apikey You can request one from ctrlz.
+     * Connect to a msgroom server.
      * @returns A promise which resolves when the connection has successfully been established.
      */
-    async connect(name: string = this.#name, server = this.#server, apikey?: string): Promise<void> {
+    async connect(): Promise<void> {
         return new Promise<void>( (resolve, reject) => {
-            this.validateNickname(name);
-            
-            this.#name = name;
-            this.#server = server;
-
             let userID: string;
 
             this.socket = io(this.#server);
-            this.socket // no you can't remove this line, that would break the types
+            this.socket // don't remove this line, you'd break the types
 
             //#region connecting to the server
                 .on("connect", () => {
-                    if (!this.socket) throw new NotConnectedError();
+                    if (!this.socket) throw new ImpossibleError();
                     this.socket.emit("auth", {
-                        user: name,
-                        apikey,
+                        user  : this.#name,
+                        apikey: this.apikey,
                     });
                 })
                 .on("disconnect", () => {
@@ -118,7 +115,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     throw new ConnectionError();
                 })
                 .on("auth-complete", authenticatedUserID => {
-                    if (!this.socket) throw new NotConnectedError();
+                    if (!this.socket) throw new ImpossibleError();
                     this.socket.emit("online");
                     userID = authenticatedUserID;
                 })
