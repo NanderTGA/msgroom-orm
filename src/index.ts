@@ -19,6 +19,7 @@ import { walkDirectory, dynamicImport } from "./utils/compilerFighting";
 import helpCommand from "./helpCommand";
 
 class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
+    static default = Client;
     private socket?: MsgroomSocket;
     #name: string;
     #server: string;
@@ -39,8 +40,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     blockedSessionIDs = new Set<string>();
 
     commands: CommandMap = {};
-    
-    static default = Client;
+    erroredFiles = new Set<string>();
 
     /**
      * Creates a new msgroom client.
@@ -405,25 +405,51 @@ Full error:
         if (typeof file != "string") file = file.href;
         else if (!file.startsWith("file:") && !file.startsWith("data:")) file = pathToFileURL(file).href;
 
-        let { default: defaultFileExport } = await dynamicImport<CommandFileExports>(file);
+        let defaultFileExport;
+        try {
+            const fileExports = await dynamicImport<CommandFileExports>(file);
+            defaultFileExport = fileExports.default;
+        } catch (error) {
+            console.error(`An error occurred while loading ${file}`, error);
+            this.erroredFiles.add(file);
+            return;
+        }
+
         if (typeof defaultFileExport != "function") defaultFileExport = defaultFileExport.default;
-        if (!defaultFileExport) throw new Error(
-            `${file} doesn't have a default export. The default export should be a function taking an instance of Client as the only argument and should return (a promise which resolves to) a CommandMapEntry.
+        if (!defaultFileExport) {
+            console.error(new Error(
+                `${file} doesn't have a default export. The default export should be a function taking an instance of Client as the only argument and should return (a promise which resolves to) a CommandMapEntry.
 
 If it returns a Command (any object which has a property named "handler" that resolves to a function), it will be registered accordingly to client.commands.
 Do note that if you're returning a Command directly from a function, you also need to provide a property called name to provide the name of your command.
 
-If it returns an object, it will be assumed to be a CommandMap and all of its properties will be assigned to client.commands using Object.assign().`,
-        );
+If it returns any other object, it will be assumed to be a CommandMap and all of its properties will be assigned to client.commands using Object.assign().`,
+            ));
+            this.erroredFiles.add(file);
+            return;
+        }
 
-        const importedCommands = await defaultFileExport(this);
+        let importedCommands;
+        try {
+            importedCommands = await defaultFileExport(this);
+        } catch (error) {
+            console.error(`An error occurred while loading ${file}`, error);
+            this.erroredFiles.add(file);
+            return;
+        }
 
         if (typeof importedCommands.handler == "function") {
             const command = importedCommands as CommandWithName;
-            if (!command.name) throw new Error("You must provide a name for your command!");
-            this.validateCommandName(command.name);
 
-            // We don't need the name property
+            try {
+                if (!command.name) throw new Error("You must provide a name for your command!");
+                this.validateCommandName(command.name);
+            } catch (error) {
+                console.error(`${file} has an invalid commandName`, error);
+                this.erroredFiles.add(file);
+                return;
+            }
+
             this.commands[command.name] = {
                 description: command.description,
                 aliases    : command.aliases,

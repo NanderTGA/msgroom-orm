@@ -1,9 +1,19 @@
 import type Client from ".";
 import { Command } from "./types/types";
 
+import { basename } from "path";
+
 const helpCommand = (client: Client) => ({
     description: "Shows information about a command.",
     handler    : (context, ...args) => {
+        const erroredFiles = Array.from(client.erroredFiles).map(file => basename(file)).join(", ");
+        context.send(
+            `**An error occurred while loading the following files:** ${erroredFiles}.
+**Some features may be unavailable at this time.**
+If you are the developer of this bot and need more information, check the console.
+We apologize for the inconvenience.`,
+        );
+
         if (args.length < 1) {
             let output =  `
 **The current ${client.prefixes.size > 1 ? "prefixes are" : "prefix is"} \`${Array.from(client.prefixes).join("`, `")}\`
