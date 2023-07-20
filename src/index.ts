@@ -45,7 +45,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     /**
      * Creates a new msgroom client.
      * @param name The username to use.
-     * @param commandPrefixes List of prefixes to be used for commands. Do note these *will be pasted directly in a regular expression*, so **make sure to escape any special characters!**
+     * @param commandPrefixes List of prefixes to be used for commands. Do note these *will be pasted directly in a regular expression*, so **make sure to escape any special characters!** Set this to an empty string to disable the command system.
      * @param options Extra options.
      * @param options.server The server to connect to.
      * @param options.printErrors Whether to print errors to the console.
