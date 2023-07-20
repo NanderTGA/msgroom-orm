@@ -52,7 +52,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
      * @param options.helpSuffix A suffix to add to the output of the help command.
      * @param options.blockSelf Whether the bot should block itself. Will force welcomeMessage to be sent.
      * @param options.welcomeMessage A message to send when the bot joins.
-     * @param options.mainPrefix The main prefix to use in commands (for example, the help command will use this to tell the user what prefix they should use). This shouldn't have regex in it.
+     * @param options.mainPrefix The main prefix to use in commands (for example, the help command will use this to tell the user what prefix they should use). This shouldn't have regex in it. Set this to an empty string to disable the command system.
      * @param options.apikey You can request one from ctrlz.
      */
     constructor(
