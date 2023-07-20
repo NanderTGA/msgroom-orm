@@ -46,6 +46,21 @@ it("should handle errors in command handlers correctly", async () => {
     expect(throwErrorOutput).toContain("fuck");
 });
 
+/**
+ * To anyone writing more tests for built-in commands like this,
+ * Please test a commands's *behavior*, not if the output matches exactly what you wrote.
+ *
+ * For example: the help command might change in future.
+ * This should not mean you'd have to rewrite these tests.
+ * The command should fullfil its purpose, which is telling the user what commands there are.
+ *
+ * This is what the tests should test for.
+ * The help command should process all data (command names, descriptions, subcommands), and display it in some way.
+ * The tests should not define in *what way* it does this, they should only check if the expected data is there.
+ *
+ * This also applies to the test above involving error handling.
+ */
+
 test("built-in help command should list all commands and their descriptions", async () => {
     const helpOutput = await getCommandOutput(client, "!help");
     
