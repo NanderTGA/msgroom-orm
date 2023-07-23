@@ -7,7 +7,7 @@ const helpCommand = (client: Client) => ({
     description: "Shows information about a command.",
     handler    : (context, ...args) => {
         const erroredFiles = Array.from(client.erroredFiles).map(file => basename(file)).join(", ");
-        context.send(
+        if (client.erroredFiles.size > 0) context.send(
             `**An error occurred while loading the following files:** ${erroredFiles}.
 **Some features may be unavailable at this time.**
 If you are the developer of this bot and need more information, check the console.
