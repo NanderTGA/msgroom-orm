@@ -450,11 +450,9 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
                 return;
             }
 
-            this.commands[command.name] = {
-                description: command.description,
-                aliases    : command.aliases,
-                handler    : command.handler,
-            };
+            this.commands[command.name] = command;
+            //@ts-ignore Yeah that's why I'm deleting it.
+            delete this.commands[command.name].name;
             return;
         }
 
