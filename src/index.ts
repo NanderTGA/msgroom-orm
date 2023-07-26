@@ -289,7 +289,10 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
 
             let done = false;
             function testCommand(command: Command, fullCommand: string[]): boolean {
-                if (!arrayStartsWith(commandAndArguments, fullCommand)) return false;
+                if (!arrayStartsWith(
+                    commandAndArguments.map( argument => argument.toLowerCase() ),
+                    fullCommand.map( argument => argument.toLowerCase() ),
+                )) return false;
 
                 const commandArguments = commandAndArguments.slice(fullCommand.length);
                 const commandWithName = {
