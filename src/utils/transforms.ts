@@ -51,3 +51,7 @@ export function normalizeCommand(command: Command): NormalizedCommand {
         subcommands: command.subcommands || {},
     };
 }
+
+export function trimMessage(message: string): string {
+    return message.split("\n").map( line => line.trim() ).join("\n").trim();
+}
