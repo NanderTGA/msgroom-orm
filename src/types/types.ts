@@ -5,29 +5,27 @@ export type LogFunction = (...args: string[]) => void;
 export type CommandHandler = (context: CommandContext, ...args: string[]) => (Promise<string | string[] | void> | string | string[] | void);
 export type Command = {
     description?: string;
-    aliases?: string[]
+    aliases?: string[][]
     handler: CommandHandler;
+    subcommands?: CommandMap
 };
 export type NormalizedCommand = Required<Command>;
 export type CommandMap = {
-    [command: string]: CommandMapEntry;
+    [command: string]: Command;
 };
-export type CommandMapEntry = Command | CommandMap;
 
 export type CommandWithName = Command & { name: string };
-export type ModuleInitializeFunctionReturnType = Promise<CommandWithName | CommandMap> | CommandWithName | CommandMap;
-export type ModuleInitializeFunction = (client: Client) => ModuleInitializeFunctionReturnType;
+export type ModuleInitializeFunctionReturnType = CommandWithName | CommandMap | void;
+export type ModuleInitializeFunction =
+    ( (client: Client) => ModuleInitializeFunctionReturnType ) |
+    ( (client: Client) => Promise<ModuleInitializeFunctionReturnType> );
 export type CommandFileExports = {
     default: ModuleInitializeFunction | { default: ModuleInitializeFunction }
 };
 
 export type WalkFunction = (
-    commandOrMap: {
-        commandMap?: CommandMap,
-        command?: NormalizedCommand
-    },
-    name: string,
-    fullCommand: string[]
+    command: NormalizedCommand,
+    fullCommand: string[],
 ) => void;
 
 export type CommandContext = {
