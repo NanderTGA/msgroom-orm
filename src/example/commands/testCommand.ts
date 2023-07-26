@@ -5,7 +5,9 @@ export default function(client: Client): ModuleInitializeFunctionReturnType {
     return {
         name       : "test",
         description: "some test command",
-        aliases    : [ "tset" ],
-        handler    : () => "test",
+        aliases    : [
+            [ "tset" ],
+        ],
+        handler: () => "test",
     };
 }

@@ -48,5 +48,6 @@ export function normalizeCommand(command: Command): NormalizedCommand {
         description: command.description || "No description provided.",
         aliases    : command.aliases || [],
         handler    : command.handler,
+        subcommands: command.subcommands || {},
     };
 }

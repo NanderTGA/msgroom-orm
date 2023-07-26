@@ -52,32 +52,15 @@ Since it is completely useless, it will go offline once I'm done testing things.
 
     client.commands.testError = {
         description: "Throws an error.",
-        aliases    : [ "errorTest" ],
-        handler    : () => {
+        aliases    : [
+            [ "errorTest" ],
+        ],
+        handler: () => {
             throw new Error("fuck");
         },
     };
 
-    client.commands.subCommandTest = {
-        sub1         : { handler: () => "first subcommand" },
-        sub2         : { handler: () => "another subcommand" },
-        undefined    : { handler: () => "nothing?" },
-        subSubCommand: {
-            stuff : { handler: () => "some stuff here" },
-            stuff2: {
-                undefined: {
-                    handler: () => {
-                        throw new Error("Hey, when did this command start throwing errors?");
-                    },
-                },
-                sub      : { handler: () => "yes subcommand" },
-                testError: client.commands.testError,
-            },
-        },
-    };
-
     await client.addCommandsFromDirectory();
-    
     await client.connect();
 
     // will cause a werror

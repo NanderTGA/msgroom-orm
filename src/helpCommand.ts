@@ -5,7 +5,7 @@ import { basename } from "path";
 
 const helpCommand = (client: Client) => ({
     description: "Shows information about a command.",
-    handler    : (context, ...args) => {
+    handler    : async (context, ...args) => {
         const erroredFiles = Array.from(client.erroredFiles).map(file => basename(file)).join(", ");
         if (client.erroredFiles.size > 0) context.send(
             `**An error occurred while loading the following files:** ${erroredFiles}.
@@ -22,19 +22,8 @@ Here's a list of all available commands. For more information on a command, run 
 
             const commandList: string[] = [];
 
-            client.walkCommandMapEntry(client.commands, ({ command, commandMap }, name, fullCommand) => {
-                if (command && name == "undefined") return;
-                if (commandMap && !name) return;
-                
-                let description: string;
-                if (command) description = command.description;
-                else if (commandMap) { //TODO #43
-                    const subUndefinedDescription = commandMap.undefined?.description;
-                    if (typeof subUndefinedDescription == "string") description = subUndefinedDescription;
-                    else description = "No description provided.";
-                } else description = "No description provided.";
-
-                commandList.push(`\n${client.mainPrefix}${fullCommand.join(" ")} - *${description}*`);
+            client.walkCommandOrMap(client.commands, (command, fullCommand) => {
+                commandList.push(`\n${client.mainPrefix}${fullCommand.join(" ")} - *${command.description}*`);
             });
 
             output += commandList.sort().join("");
@@ -45,10 +34,7 @@ Here's a list of all available commands. For more information on a command, run 
             return output.trim();
         }
 
-        const commandName = args[0];
-        args.splice(0, 1);
-
-        const commandAndArguments = client.getCommand(commandName, args);
+        const commandAndArguments = await client.getCommand(args);
         if (!commandAndArguments) return "The command you specified cannot be found.";
 
         const [ command ] = commandAndArguments;

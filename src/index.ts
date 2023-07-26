@@ -3,14 +3,15 @@ import MsgroomSocket, { RawMessage } from "./types/socket.io";
 
 import { resolve as pathResolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
+import arrayStartsWith from "array-starts-with";
 
 import { EventEmitter } from "node:events";
 import TypedEmitter from "typed-emitter";
 
 import ClientEvents, { User } from "./types/events";
 import {
-    CommandMap, CommandContext, CommandMapEntry, CommandFileExports, CommandWithName,
-    Command, WalkFunction,
+    CommandMap, CommandContext, CommandFileExports, CommandWithName,
+    Command, WalkFunction, NormalizedCommand,
 } from "./types/types";
 
 import { AuthError, ConnectionError, ImpossibleError, NotConnectedError } from "./errors";
@@ -277,55 +278,49 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.socket.emit("admin-action", { args });
     }
 
-    getCommand(command: string, commandArguments: string[]): [ CommandWithName, string[] ] | undefined {
-        let currentGottenCommand: CommandMapEntry | undefined;
-        let commandName = command;
-        for (const key in this.commands) {
-            if (key.toLowerCase() == command.toLowerCase()) {
-                commandName = command;
-                currentGottenCommand = this.commands[key];
+    async getCommand(commandAndArguments: string[]): Promise<[ CommandWithName, string[] ] | void> {
+        return new Promise( resolve => {
+            /**
+             * iterate over commands:
+             *  - check if command matches what we need
+             *TODO  - if not get the current command's aliases and check those
+             ok so subcommands are broken fuck fuck fuck
+             */
+
+            let done = false;
+            function testCommand(command: Command, fullCommand: string[]): boolean {
+                if (!arrayStartsWith(commandAndArguments, fullCommand)) return false;
+
+                const commandArguments = commandAndArguments.slice(fullCommand.length);
+                const commandWithName = {
+                    ...command,
+                    name: fullCommand.join(" "),
+                };
+
+                done = true;
+                resolve([ commandWithName, commandArguments ]);
+                return true;
             }
-        }
+        
+            const walkFunction = (command: NormalizedCommand, fullCommand: string[]): void => {
+                if (done) return;
+                if (testCommand(command, fullCommand)) return;
 
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-            if (typeof currentGottenCommand == "undefined") {
-                // right now there are 2 possibilities:
-                // either the command doesn't exist
-                // or it does exist but as an alias to another command
-                // oh god this is going to be a pain
-                //TODO
-                console.log("undefined", currentGottenCommand, commandName);
-
-                //Object.values()
-
-                return;
-            }
-
-
-            if (typeof currentGottenCommand.handler == "function") {
-                const gottenCommand = currentGottenCommand as Command;
-                return [ {
-                    name       : commandName,
-                    description: gottenCommand.description,
-                    aliases    : gottenCommand.aliases,
-                    handler    : gottenCommand.handler,
-                }, commandArguments ];
-            }
-
-            command = commandArguments[0];
-            commandArguments.splice(0, 1);
-            
-            const previousGottenCommand = currentGottenCommand as CommandMap;
-            currentGottenCommand = previousGottenCommand[command];
-            commandName += "." + command;
-
-            if (!currentGottenCommand) for (const key in previousGottenCommand) {
-                if (key.toLowerCase() == command.toLowerCase()) {
-                    currentGottenCommand = previousGottenCommand[key];
+                for (const alias of command.aliases) {
+                    if (testCommand(command, alias)) return;
                 }
-            }
-        }
+            };
+
+            const commands: { command: NormalizedCommand, fullCommand: string[] }[] = [];
+            this.walkCommandOrMap(this.commands, (command, fullCommand) => {
+                commands.push({ command, fullCommand });
+            });
+
+            commands.sort( (a, b) => b.fullCommand.length - a.fullCommand.length);
+            commands.forEach( ({ command, fullCommand }) => walkFunction(command, fullCommand));
+
+            resolve(undefined);
+        });
     }
 
     async runCommand(command: CommandWithName, commandHandlerArguments: string[], context: CommandContext) {
@@ -357,48 +352,34 @@ Full error:
         const regex = new RegExp(`^(${Array.from(this.prefixes).join(")|(")})`, "i"); // I checked and we should we safe from ReDoS
         if (!regex.test(message)) return;
 
-        const [ commandName, ...commandArguments ] = message.replace(regex, "").split(" ");
+        const parsedArguments = message.replace(regex, "").split(" ");
 
-        const commandAndArguments = this.getCommand(commandName, commandArguments);
+        const commandAndArguments = await this.getCommand(parsedArguments);
         if (!commandAndArguments) return context.send(`That command doesn't exist. Run ${this.mainPrefix}help for a list of commands.`);
 
         await this.runCommand(...commandAndArguments, context);
     }
 
-    walkCommandMapEntry(
-        commandMapEntry: CommandMapEntry,
+    walkCommandOrMap(
+        commandOrMap: Command | CommandMap,
         walkFunction: WalkFunction,
-        name = "",
         fullCommand: string[] = [],
     ): void {
-        this.validateCommandName(name);
-        
-        // Create a new array because otherwise we're gonna break everything
-        fullCommand = Array.from(fullCommand);
-        if (name) fullCommand.push(name);
+        let commandMap: CommandMap;
+        if (typeof commandOrMap.handler == "function") {
+            const command = normalizeCommand(commandOrMap as Command);
+            if (fullCommand.length == 0) throw new Error("Please provide the name of the command!");
+            walkFunction(command, fullCommand);
+            commandMap = command.subcommands;
+        } else commandMap = commandOrMap as CommandMap;
 
-        if (typeof commandMapEntry.handler == "function") {
-            const command = commandMapEntry as Command;
-            const normalizedCommand = normalizeCommand(command);
-            return walkFunction({ command: normalizedCommand }, name, fullCommand);
-        }
-
-        const commandMap = commandMapEntry as CommandMap;
-        walkFunction({ commandMap }, name, fullCommand);
-
-        for (const commandMapEntry in commandMap) {
-            this.walkCommandMapEntry(
-                commandMap[commandMapEntry],
+        for (const command in commandMap) {
+            this.walkCommandOrMap(
+                commandMap[command],
                 walkFunction,
-                commandMapEntry,
-                fullCommand,
+                fullCommand.concat(command),
             );
         }
-    }
-
-    validateCommandName(this: void, commandName?: string) {
-        if (typeof commandName != "string") throw new TypeError("A commandName must be a string.");
-        if (commandName.indexOf(" ") >= 0) throw new Error("You cannot have spaces in a command name, this will cause your command to be unable to be invoked. Use subcommands instead.");
     }
 
     async addCommandsFromFile(file: string | URL): Promise<void> {
@@ -438,12 +419,12 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
             return;
         }
 
+        if (!importedCommands) return;
         if (typeof importedCommands.handler == "function") {
             const command = importedCommands as CommandWithName;
 
             try {
                 if (!command.name) throw new Error("You must provide a name for your command!");
-                this.validateCommandName(command.name);
             } catch (error) {
                 console.error(`${file} has an invalid commandName`, error);
                 this.erroredFiles.add(file);
@@ -457,7 +438,6 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         }
 
         const commandMap = importedCommands as CommandMap;
-        Object.keys(commandMap).forEach(this.validateCommandName);
         Object.assign(this.commands, importedCommands);
     }
 
