@@ -3,16 +3,16 @@ import Client from "..";
 import { formatWithOptions } from "node:util";
 
 void (async () => {
-    const client = new Client("[!] TestBot", [ "!" ], {
+    const client = new Client("[!] TestBot", "!", {
         printErrors: true,
         helpSuffix : `
 *TestBot is a bot made by NanderTGA to test new [msgroom](https://npmjs.com/package/msgroom) features before releasing them.
 Since it is completely useless, it will go offline once I'm done testing things.*
 `.trim(),
+        blockSelf: true,
     });
 
     client.on("message", message => {
-        if (message.author.ID == client.ID) return;
         const monkey: Record<string, string> = {
             "hey"        : "hey",
             "gn"         : "gn",
