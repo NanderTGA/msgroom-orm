@@ -12,6 +12,7 @@
         "NanderTGA",
         "nodelib",
         "TestBot",
+        "tset",
         "werror"
     ]
 }
