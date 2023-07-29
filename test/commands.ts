@@ -6,13 +6,13 @@ import getCommandOutput from "../src/utils/testCommand";
 const client = new Client("test", [ "!", "g!" ], { server: "wss://dabestmsgroomserver.com" });
 
 client.commands.something = {
-    description: "does stuff",
-    aliases    : [ "stuff" ],
+    description: "does some things",
+    aliases    : [ [ "stuff" ] ],
     handler    : () => "ok I did some stuff",
 };
 client.commands.throwError = {
     description: "does exactly what you think it does",
-    aliases    : [ "inYourFace" ],
+    aliases    : [ [ "inYourFace" ] ],
     handler    : () => {
         throw new Error("fuck");
     },
@@ -65,9 +65,11 @@ test("built-in help command should list all commands and their descriptions", as
     const helpOutput = await getCommandOutput(client, "!help");
     
     expect(helpOutput).toContain("help");
+    expect(helpOutput).toContain("g!");
+    expect(helpOutput).toContain("!");
 
     expect(helpOutput).toContain("something");
-    expect(helpOutput).toContain("does stuff");
+    expect(helpOutput).toContain("does some things");
     
     expect(helpOutput).toContain("throwError");
     expect(helpOutput).toContain("does exactly what you think it does");
@@ -77,6 +79,6 @@ test("built-in help command should list specific commands and their descriptions
     const helpOutput = await getCommandOutput(client, "!help something");
     
     expect(helpOutput).toContain("something");
-    expect(helpOutput).toContain("does stuff");
-    expect(helpOutput).toContain("something");
+    expect(helpOutput).toContain("does some things");
+    expect(helpOutput).toContain("stuff");
 });
