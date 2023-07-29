@@ -280,13 +280,6 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
 
     async getCommand(commandAndArguments: string[]): Promise<[ CommandWithName, string[] ] | void> {
         return new Promise( resolve => {
-            /**
-             * iterate over commands:
-             *  - check if command matches what we need
-             *TODO  - if not get the current command's aliases and check those
-             ok so subcommands are broken fuck fuck fuck
-             */
-
             let done = false;
             function testCommand(command: Command, fullCommand: string[]): boolean {
                 if (!arrayStartsWith(
