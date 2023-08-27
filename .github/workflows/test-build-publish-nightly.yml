@@ -22,23 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Read contents of package.json
-        uses: rexdefuror/read-package-json@v1.0.5
-
-      - name: Craft a new version based on the current version and the (full) git sha
-        id: craft_new_version
-        run: echo "VERSION=$(node -e "const semver = require('semver'); const newVersion = semver.valid(semver.coerce(process.env.PACKAGE_VERSION)) + '-' + process.env.GITHUB_SHA; console.log(newVersion)")" >> $GITHUB_OUTPUT
-
-      - name: Set update version and change name to msgroom-nightly in package.json
-        uses: jaywcjlove/github-action-package@v1.3.1
-        with:
-          data: |
-            {
-              "name": "msgroom-nightly",
-              "description": "A client for msgroom (nightly builds).",
-              "version": "${{ steps.craft_new_version.outputs.VERSION }}"
-            }
-          
+      - name: Bump version
+        run: npm version prerelease
 
       - name: Run tests
         run: npm test
@@ -55,12 +40,12 @@ jobs:
 
       - name: Publish the nightly build to npm
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM_NIGHTLY }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
         if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != '' }}
-        run: npm publish --provenance
+        run: npm publish --provenance --tag nightly
       
       - name: Send warn if there's no NPM token provided
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM_NIGHTLY }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
         if: ${{ !cancelled() && env.NODE_AUTH_TOKEN == '' }}
         run: echo "::warning::No NPM token provided"
