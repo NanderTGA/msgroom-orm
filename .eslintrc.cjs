@@ -7,7 +7,9 @@ module.exports = {
         "node"    : true,
     },
     parserOptions: {
-        sourceType : "module", // for allowing import and export
-        ecmaVersion: "latest",
+        sourceType     : "module", // for allowing import and export
+        ecmaVersion    : "latest",
+        project        : "./tsconfig.eslint.json",
+        tsconfigRootDir: __dirname,
     },
 };
