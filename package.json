@@ -40,7 +40,7 @@
     "typed-emitter": "^2.1.0"
   },
   "devDependencies": {
-    "@nandertga/eslint-config": "^3.0.2",
+    "@nandertga/eslint-config": "^3.1.0",
     "@total-typescript/shoehorn": "^0.1.1",
     "@types/he": "^1.2.0",
     "@types/jest": "^29.5.2",
