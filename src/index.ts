@@ -99,7 +99,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
             let userID: string;
 
             this.socket = io(this.#server);
-            this.socket // don't remove this line, you'd break the types
+            this.socket //! don't remove this line, you'd break the types
 
             //#region connecting to the server
                 .on("connect", () => {
