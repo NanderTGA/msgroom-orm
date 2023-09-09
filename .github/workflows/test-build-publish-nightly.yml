@@ -23,7 +23,7 @@ jobs:
         run: npm ci
 
       - name: Bump version
-        run: npm version prerelease
+        run: npm version --no-git-tag-version prerelease
 
       - name: Run tests
         run: npm test
