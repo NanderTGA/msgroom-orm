@@ -78,14 +78,15 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.mainPrefix = options.mainPrefix ?? commandPrefixesArray[0];
         this.prefixes = new Set(commandPrefixesArray);
 
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         this.#server = options.server || "wss://msgroom.windows96.net";
-        this.printErrors = options.printErrors || false;
-        this.helpSuffix = options.helpSuffix || "";
+        this.printErrors = options.printErrors ?? false;
+        this.helpSuffix = options.helpSuffix ?? "";
         this.apikey = options.apikey;
 
         this.blockSelf = options.blockSelf ?? true;
         if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.`;
-        else this.welcomeMessage = options.welcomeMessage || "";
+        else this.welcomeMessage = options.welcomeMessage ?? "";
 
         this.commands.help = helpCommand(this);
     }
