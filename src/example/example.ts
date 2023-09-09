@@ -22,10 +22,10 @@ Since it is completely useless, it will go offline once I'm done testing things.
             "who's joe?" : "Joe mama",
             "who's joe"  : "Joe mama",
         };
-        if (monkey[message.content]) return client.sendMessage(monkey[message.content]);
+        if (monkey[message.content]) return void client.sendMessage(monkey[message.content]);
     });
 
-    client.on("werror", reason => console.warn("Received werror:", reason));
+    client.on("werror", reason => void console.warn("Received werror:", reason));
 
     client.commands.ping = {
         description: "Replies with Pong!",

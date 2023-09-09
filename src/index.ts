@@ -167,14 +167,14 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     this.emit("message", message);
                     void this.processCommands({
                         message,
-                        send : (...args) => this.sendMessage(...args),
-                        reply: (...args) => this.sendMessage(`@${message.author.nickname}`, ...args),
+                        send : (...args) => void this.sendMessage(...args),
+                        reply: (...args) => void this.sendMessage(`@${message.author.nickname}`, ...args),
                     });
                 })
                 .on("sys-message", rawSysMessage => {
                     const sysMessage = transformSysMessage(rawSysMessage);
                     this.emit("sys-message", sysMessage);
-                    //@ts-ignore Don't worry, it's fine. Think about it, you'll understand.
+                    //@ts-expect-error Don't worry, it's fine. Think about it, you'll understand.
                     this.emit(`sys-message-${sysMessage.type}`, sysMessage);
                 })
                 .on("nick-changed", rawNickChangeInfo => {
@@ -279,7 +279,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.socket.emit("admin-action", { args });
     }
 
-    async getCommand(commandAndArguments: string[]): Promise<[ CommandWithName, string[] ] | void> {
+    async getCommand(commandAndArguments: string[]): Promise<[ CommandWithName, string[] ] | undefined> {
         return new Promise( resolve => {
             let done = false;
             function testCommand(command: Command, fullCommand: string[]): boolean {
@@ -314,7 +314,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
             });
 
             commands.sort( (a, b) => b.fullCommand.length - a.fullCommand.length);
-            commands.forEach( ({ command, fullCommand }) => walkFunction(command, fullCommand));
+            commands.forEach( ({ command, fullCommand }) => void walkFunction(command, fullCommand));
 
             resolve(undefined);
         });
@@ -325,8 +325,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
             const commandResult = await command.handler(context, ...commandHandlerArguments);
 
             if (!commandResult) return;
-            if (typeof commandResult == "string") return context.send(commandResult);
-            return context.send(...commandResult);
+            if (typeof commandResult == "string") return void context.send(commandResult);
+            return void context.send(...commandResult);
 
         } catch (error) {
             context.send(`An error occurred while executing ${command.name}: *${error as string}*`);
@@ -352,7 +352,7 @@ Full error:
         const parsedArguments = message.replace(regex, "").split(" ");
 
         const commandAndArguments = await this.getCommand(parsedArguments);
-        if (!commandAndArguments) return context.send(`That command doesn't exist. Run ${this.mainPrefix}help for a list of commands.`);
+        if (!commandAndArguments) return void context.send(`That command doesn't exist. Run ${this.mainPrefix}help for a list of commands.`);
 
         await this.runCommand(...commandAndArguments, context);
     }
@@ -393,7 +393,8 @@ Full error:
             return;
         }
 
-        if (typeof defaultFileExport != "function") defaultFileExport = defaultFileExport.default;
+        if (typeof defaultFileExport != "function") defaultFileExport = defaultFileExport?.default;
+
         if (!defaultFileExport) {
             console.error(new Error(
                 `${file} doesn't have a default export. The default export should be a function taking an instance of Client as the only argument and should return (a promise which resolves to) a CommandMapEntry.
@@ -429,7 +430,7 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
             }
 
             this.commands[command.name] = command;
-            //@ts-ignore Yeah that's why I'm deleting it.
+            //@ts-expect-error Yeah that's why I'm deleting it.
             delete this.commands[command.name].name;
             return;
         }
@@ -462,8 +463,8 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         let blocked = false;
 
         if (typeof userIDOrObject == "string") blocked ||= this.blockedIDs.has(userIDOrObject);
-        else if (!(typeof userIDOrObject == "undefined")) blocked   ||= this.blockedIDs.has(userIDOrObject.ID as string)
-                                                                    ||  this.blockedSessionIDs.has(userIDOrObject.sessionID as string);
+        else if (!(typeof userIDOrObject == "undefined")) blocked   ||= this.blockedIDs.has("" + userIDOrObject.ID)
+                                                                    ||  this.blockedSessionIDs.has("" + userIDOrObject.sessionID);
 
         if (typeof userSessionID == "string") blocked ||= this.blockedSessionIDs.has(userSessionID);
 
