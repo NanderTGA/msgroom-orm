@@ -9,10 +9,10 @@ try {
         const { walk } = require("@nodelib/fs.walk");
         return promisify(walk);
     `)(require, promisify) as typeof walk.__promisify__;
-} catch {
+} catch (error) {
     // eslint-disable-next-line @typescript-eslint/require-await
     walkDirectory = async () => {
-        throw new Error("This feature is not available in this environment!");
+        throw new Error("This feature is not available in this environment!", { cause: error });
     };
 }
 
