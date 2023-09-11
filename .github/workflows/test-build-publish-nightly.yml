@@ -28,6 +28,7 @@ jobs:
           git config user.email "<>"
 
       - name: Bump version
+        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != '' }}
         run: npm version prerelease
       
       - name: Push the new version
