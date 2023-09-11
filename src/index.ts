@@ -197,6 +197,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     if (this.isBlocked(user)) return;
 
                     this.emit("user-leave", user);
+                    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
                     delete this.users[userLeaveInfo.session_id];
                 })
                 .on("user-update", userUpdateInfo => {
