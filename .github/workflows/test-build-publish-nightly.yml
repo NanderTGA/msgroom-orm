@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup node
         uses: actions/setup-node@v3
@@ -28,9 +28,11 @@ jobs:
           git config user.email "<>"
 
       - name: Bump version
+        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != '' }}
         run: npm version prerelease
       
       - name: Push the new version
+        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != '' }}
         run: git push origin master
 
       - name: Run tests
@@ -51,9 +53,3 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
         if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != '' }}
         run: npm publish --provenance --tag nightly
-      
-      - name: Send warn if there's no NPM token provided
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
-        if: ${{ !cancelled() && env.NODE_AUTH_TOKEN == '' }}
-        run: echo "::warning::No NPM token provided"
