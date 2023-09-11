@@ -28,10 +28,14 @@ jobs:
           git config user.email "<>"
 
       - name: Bump version
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
         if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != '' }}
         run: npm version prerelease
       
       - name: Push the new version
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
         if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != '' }}
         run: git push origin master
 
