@@ -45,13 +45,18 @@ export function transformSysMessage(rawSysMessage: RawSysMessage): SysMessage {
 
 export function normalizeCommand(command: Command): NormalizedCommand {
     return {
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         description: command.description || "No description provided.",
-        aliases    : command.aliases || [],
+        aliases    : command.aliases ?? [],
         handler    : command.handler,
-        subcommands: command.subcommands || {},
+        subcommands: command.subcommands ?? {},
     };
 }
 
 export function trimMessage(message: string): string {
-    return message.split("\n").map( line => line.trim() ).join("\n").trim();
+    return message
+        .split("\n")
+        .map( line => line.trim() )
+        .join("\n")
+        .trim();
 }
