@@ -11,6 +11,8 @@
         "msgroom",
         "NanderTGA",
         "nodelib",
+        "ratelimiting",
+        "shhh",
         "TestBot",
         "tset",
         "werror"
