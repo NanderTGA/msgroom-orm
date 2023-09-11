@@ -38,7 +38,7 @@ Here's a list of all available commands. For more information on a command, run 
         if (!commandAndArguments) return "The command you specified cannot be found.";
 
         const [ command ] = commandAndArguments;
-        const aliases = command.aliases || [];
+        const aliases = command.aliases ?? [];
 
         return  `
 **Command:** ${command.name}

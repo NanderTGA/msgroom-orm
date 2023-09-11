@@ -24,7 +24,7 @@ export interface RawUser {
     user: string;
 }
 
-export type RawMessage = {
+export interface RawMessage {
     color: hexColor;
     content: string;
     date: string;
@@ -32,35 +32,35 @@ export type RawMessage = {
     session_id: string;
     type: "text";
     user: string;
-};
+}
 
-export type RawNickChangeInfo = {
+export interface RawNickChangeInfo {
     oldUser: string;
     newUser: string;
     id: string;
     session_id: string;
-};
+}
 
-export type RawUserLeaveInfo = {
+export interface RawUserLeaveInfo {
     id: string;
     session_id: string;
     user: string;
-};
+}
 
-export type RawSysMessage = {
+export interface RawSysMessage {
     message: string;
     type: "info" | "error" | "success";
     isHtml: boolean;
-};
+}
 
-export type RawUserUpdateInfo = {
+export interface RawUserUpdateInfo {
     /** The session ID of the affected user. */
     user: string;
 
     type: "tag-add";
     tag?: flag;
     tagLabel?: string;
-};
+}
 
 /**
  * used for receiving events from the server
@@ -82,6 +82,7 @@ export interface ServerToClientEvents {
     }) => void;
     "werror": (
         /** A generic error, which doesn't cause disconnects. For example ratelimiting errors would send this event. Is currently never called by the server. */
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
         reason: string | "You are doing this too much - please wait!"
     ) => void;
 }

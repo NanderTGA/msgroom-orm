@@ -27,9 +27,9 @@ it("should correctly set properties", () => {
 });
 
 it("should validate nicknames correctly", () => {
-    expect( () => client.validateNickname("") ).toThrow(); // < 1 character
-    expect( () => client.validateNickname("dfssqdfsdfqdfqfdqdfqdsfqsfd") ).toThrow(); // > 18 characters
-    expect( () => client.validateNickname("dfssqdfsdfqdfqfdqdg") ).toThrow(); // > 18 characters
+    expect( () => void client.validateNickname("") ).toThrow(); // < 1 character
+    expect( () => void client.validateNickname("dfssqdfsdfqdfqfdqdfqdsfqsfd") ).toThrow(); // > 18 characters
+    expect( () => void client.validateNickname("dfssqdfsdfqdfqfdqdg") ).toThrow(); // > 18 characters
     client.validateNickname("dfssqdfsdfqdfqfdqd"); // 18 characters
 });
 

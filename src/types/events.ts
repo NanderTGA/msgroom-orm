@@ -8,35 +8,36 @@ export interface User {
     nickname: string;
 }
 
-export type Message = {
+export interface Message {
     type: "text";
 
     color: hexColor;
     content: string;
     date: Date;
     author: User;
-};
+}
 
-export type NickChangeInfo = {
+export interface NickChangeInfo {
     user: User;
     oldNickname: string;
     newNickname: string;
-};
+}
 
 type SysMessageType = "info" | "error" | "success";
 
-export type SysMessage<Type extends SysMessageType = "info" | "error" | "success"> = {
+export interface SysMessage<Type extends SysMessageType = "info" | "error" | "success"> {
     type: Type;
     message: string;
     isHTML: boolean;
-};
+}
 
-export type TagAddInfo = {
+export interface TagAddInfo {
     user: User;
     newTag: string;
     newTagLabel: string
-};
+}
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type ClientEvents = {
     /** Fired on disconnect. */
     disconnected: () => void;
@@ -48,6 +49,7 @@ type ClientEvents = {
      * Fired when a "GUI error" occurs.
      * This is can be any error which doesn't disconnect you as a result.
      */
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     werror: (reason: string | "message too long" | "You are doing this too much - please wait!") => void;
 
     /** Fired when someone changes their nickname. */
