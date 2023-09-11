@@ -43,7 +43,7 @@ Here's a list of all available commands. For more information on a command, run 
         return  `
 **Command:** ${command.name}
 **Aliases:** ${aliases.length > 0 ? aliases.join(", ") : "*This command does not have any aliases*"}
-**Description:** ${command.description || "*No description provided.*"}
+**Description:** ${command.description == "No description provided." ? "*No description provided.*" : command.description}
             `.trim();
     },
 } satisfies Command);
