@@ -1,4 +1,6 @@
 export class AuthError extends Error {
+    cause?: unknown;
+    
     constructor(
         message?: string,
         options?: ErrorOptions,
@@ -11,6 +13,8 @@ export class AuthError extends Error {
 }
 
 export class ConnectionError extends Error {
+    cause?: unknown;
+
     constructor(
         message = "Socket.io connection error. Do the server and client version match? Did you enter the right server details? Is the server running?",
         options?: ErrorOptions,
@@ -23,6 +27,8 @@ export class ConnectionError extends Error {
 }
 
 export class NotConnectedError extends Error {
+    cause?: unknown;
+    
     constructor(
         message = "Not connected to a server! Connect to one first before using any other functions.",
         options?: ErrorOptions,
@@ -35,6 +41,8 @@ export class NotConnectedError extends Error {
 }
 
 export class ImpossibleError extends Error {
+    cause?: unknown;
+    
     constructor(
         message = "This state is physically impossible, but typescript doesn't understand.",
         options?: ErrorOptions,

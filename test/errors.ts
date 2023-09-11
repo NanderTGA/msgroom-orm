@@ -10,7 +10,6 @@ describe("Error constructors", () => {
 
         const authError2 = new AuthError("test 1 2 3", { cause: "something" });
         expect(authError2.message).toBe("test 1 2 3");
-        // @ts-expect-error for testing only
         expect(authError2.cause).toBe("something");
     });
 
@@ -21,7 +20,6 @@ describe("Error constructors", () => {
 
         const connectionError2 = new ConnectionError("test 1 2 3", { cause: "something" });
         expect(connectionError2.message).toBe("test 1 2 3");
-        // @ts-expect-error for testing only
         expect(connectionError2.cause).toBe("something");
     });
 
@@ -32,7 +30,6 @@ describe("Error constructors", () => {
 
         const notConnectedError2 = new NotConnectedError("test 1 2 3", { cause: "something" });
         expect(notConnectedError2.message).toBe("test 1 2 3");
-        // @ts-expect-error for testing only
         expect(notConnectedError2.cause).toBe("something");
     });
 });
