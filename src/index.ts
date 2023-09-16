@@ -23,7 +23,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     static default = Client;
     private socket?: MsgroomSocket;
     #name: string;
-    #server: string;
+    server: string;
 
     printErrors: boolean;
     helpSuffix: string;
@@ -64,7 +64,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.prefixes = new Set(commandPrefixesArray);
 
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        this.#server = options.server || "wss://msgroom.windows96.net";
+        this.server = options.server || "wss://msgroom.windows96.net";
         this.printErrors = options.printErrors ?? false;
         this.helpSuffix = options.helpSuffix ?? "";
         this.apikey = options.apikey;
@@ -84,7 +84,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         return new Promise<void>( (resolve, reject) => {
             let userID: string;
 
-            this.socket = io(this.#server);
+            this.socket = io(this.server);
             this.socket //! don't remove this line, you'd break the types
 
             //#region connecting to the server
@@ -213,10 +213,6 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
 
     disconnect() {
         this.socket?.disconnect();
-    }
-
-    get server(): string {
-        return this.#server;
     }
 
     get name(): string {
