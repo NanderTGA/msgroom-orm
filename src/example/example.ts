@@ -7,6 +7,7 @@ void (async () => {
         printErrors: true,
         helpSuffix : `
 *TestBot is a bot made by NanderTGA to test new [msgroom](https://npmjs.com/package/msgroom) features before releasing them.
+Things may also seem broken when it's intended behavior to test a feature.
 Since it is completely useless, it will go offline once I'm done testing things.*
 `.trim(),
         blockSelf: true,
