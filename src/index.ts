@@ -11,7 +11,7 @@ import TypedEmitter from "typed-emitter";
 import ClientEvents, { User } from "./types/events";
 import {
     CommandMap, CommandContext, CommandFileExports, CommandWithName,
-    Command, WalkFunction, NormalizedCommand,
+    Command, WalkFunction, NormalizedCommand, ClientOptions,
 } from "./types/types";
 
 import { AuthError, ConnectionError, ImpossibleError, NotConnectedError } from "./errors";
@@ -46,28 +46,13 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     /**
      * Creates a new msgroom client.
      * @param name The username to use.
-     * @param commandPrefixes List of prefixes to be used for commands. Do note these *will be pasted directly in a regular expression*, so **make sure to escape any special characters!** Set this to an empty string to disable the command system.
+     * @param commandPrefixes List of prefixes to be used for commands. Set this to an empty string to disable the command system.
      * @param options Extra options.
-     * @param options.server The server to connect to.
-     * @param options.printErrors Whether to print errors to the console.
-     * @param options.helpSuffix A suffix to add to the output of the help command.
-     * @param options.blockSelf Whether the bot should block itself. Will force welcomeMessage to be sent.
-     * @param options.welcomeMessage A message to send when the bot joins.
-     * @param options.mainPrefix The main prefix to use in commands (for example, the help command will use this to tell the user what prefix they should use). This shouldn't have regex in it. Set this to an empty string to disable the command system.
-     * @param options.apikey You can request one from ctrlz.
      */
     constructor(
         name: string,
         commandPrefixes: string | RegExp | (string | RegExp)[] = [],
-        options: {
-            server?: string,
-            printErrors?: boolean,
-            helpSuffix?: string,
-            blockSelf?: boolean,
-            welcomeMessage?: string,
-            mainPrefix?: string | RegExp,
-            apikey?: string
-        } = {},
+        options: ClientOptions = {},
     ) {
         super();
 

@@ -39,3 +39,24 @@ export interface CommandContext {
     /** Like send(), but will tag the user. */
     reply: LogFunction;
 }
+
+export interface ClientOptions {
+    /** The server to connect to. */
+    server?: string,
+    /** Whether to print errors to the console. */
+    printErrors?: boolean,
+    /** A suffix to add to the output of the help command. */
+    helpSuffix?: string,
+    /** Whether the bot should block itself. Will force welcomeMessage to be sent. */
+    blockSelf?: boolean,
+    /** A message to send when the bot joins. */
+    welcomeMessage?: string,
+    /**
+     * The main prefix to use in commands (for example, the help command will use this to tell the user what prefix they should use).
+     * This shouldn't have regex in it.
+     * Set this to an empty string to disable the command system.
+     */
+    mainPrefix?: string | RegExp,
+    /** You can request one from ctrlz. */
+    apikey?: string
+}
