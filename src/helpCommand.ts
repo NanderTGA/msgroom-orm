@@ -15,8 +15,21 @@ We apologize for the inconvenience.`,
         );
 
         if (args.length < 1) {
+            const prefixes: string[] = [];
+            let hasRegexPrefix = false;
+            client.prefixes.forEach( value => {
+                let prefix = `\`${value.toString()}\``;
+                if (value instanceof RegExp) {
+                    hasRegexPrefix = true;
+                    prefix += "\\*";
+                }
+                prefixes.push(prefix);
+            });
+
+            const regexMessage = hasRegexPrefix ? "\n\\*Prefixes with an asterisk are regular expressions." : "";
+
             let output =  `
-**The current ${client.prefixes.size > 1 ? "prefixes are" : "prefix is"} \`${Array.from(client.prefixes).join("`, `")}\`
+**The current ${client.prefixes.size > 1 ? "prefixes are" : "prefix is"} ${prefixes.join(", ")} ${regexMessage}
 Here's a list of all available commands. For more information on a command, run \`${client.mainPrefix}help <command>\`**
                 `;
 

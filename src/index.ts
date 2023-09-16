@@ -31,8 +31,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     welcomeMessage: string;
     apikey?: string;
     
-    prefixes: Set<string>;
-    mainPrefix: string;
+    prefixes: Set<string | RegExp>;
+    mainPrefix: string | RegExp;
 
     users: Record<string, User> = {};
     #ID?: string;
@@ -347,10 +347,19 @@ Full error:
         if (!this.mainPrefix) return;
         const message = context.message.content;
 
-        const regex = new RegExp(`^(${Array.from(this.prefixes).join(")|(")})`, "i"); // I checked and we should we safe from ReDoS
-        if (!regex.test(message)) return;
-
-        const parsedArguments = message.replace(regex, "").split(" ");
+        let messageWithoutPrefix: string | undefined;
+        for (const prefix of this.prefixes) {
+            if (
+                ( typeof prefix == "string" && message.startsWith(prefix) ) ||
+                ( prefix instanceof RegExp && prefix.test(message) )
+            ) {
+                messageWithoutPrefix = message.replace(prefix, "");
+                break;
+            }
+        }
+        
+        if (messageWithoutPrefix == undefined) return;
+        const parsedArguments = messageWithoutPrefix.split(" ");
 
         const commandAndArguments = await this.getCommand(parsedArguments);
         if (!commandAndArguments) return void context.send(`That command doesn't exist. Run ${this.mainPrefix}help for a list of commands.`);
