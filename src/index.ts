@@ -260,7 +260,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
 
         const message = messages.join(" ");
         if (message.length > 2048) {
-            if (this.printErrors) console.warn("A message was too long and cannot be sent, it will be printed below:\n", message);
+            if (this.printErrors) console.warn("\nA message was too long and cannot be sent, it will be printed below:\n", message);
             return void this.emit("werror", "message too long");
         }
 
@@ -389,7 +389,7 @@ Full error:
             const fileExports = await dynamicImport<CommandFileExports>(file);
             defaultFileExport = fileExports.default;
         } catch (error) {
-            console.error(`An error occurred while loading ${file}`, error);
+            console.error(`\nAn error occurred while loading ${file}`, error);
             this.erroredFiles.add(file);
             return;
         }
@@ -397,12 +397,10 @@ Full error:
         if (typeof defaultFileExport != "function") defaultFileExport = defaultFileExport?.default;
 
         if (!defaultFileExport) {
-            console.error(new Error(
+            console.error("\n", new Error(
                 `${file} doesn't have a default export. The default export should be a function taking an instance of Client as the only argument and should return (a promise which resolves to) a CommandMapEntry.
-
 If it returns a Command (any object which has a property named "handler" that resolves to a function), it will be registered accordingly to client.commands.
 Do note that if you're returning a Command directly from a function, you also need to provide a property called name to provide the name of your command.
-
 If it returns any other object, it will be assumed to be a CommandMap and all of its properties will be assigned to client.commands using Object.assign().`,
             ));
             this.erroredFiles.add(file);
@@ -413,7 +411,7 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         try {
             importedCommands = await defaultFileExport(this);
         } catch (error) {
-            console.error(`An error occurred while loading ${file}`, error);
+            console.error(`\nAn error occurred while loading ${file}`, error);
             this.erroredFiles.add(file);
             return;
         }
@@ -425,7 +423,7 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
             try {
                 if (!command.name) throw new Error("You must provide a name for your command!");
             } catch (error) {
-                console.error(`${file} has an invalid commandName`, error);
+                console.error(`\n${file} has an invalid commandName`, error);
                 this.erroredFiles.add(file);
                 return;
             }

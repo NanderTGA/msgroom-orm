@@ -25,7 +25,7 @@ Since it is completely useless, it will go offline once I'm done testing things.
         if (monkey[message.content]) return void client.sendMessage(monkey[message.content]);
     });
 
-    client.on("werror", reason => void console.warn("Received werror:", reason));
+    client.on("werror", reason => void console.warn("\nReceived werror:", reason));
 
     client.commands.ping = {
         description: "Replies with Pong!",
