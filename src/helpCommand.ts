@@ -17,14 +17,14 @@ We apologize for the inconvenience.`,
         if (args.length < 1) {
             const prefixes: string[] = [];
             let hasRegexPrefix = false;
-            client.prefixes.forEach( value => {
+            for (const value of client.prefixes) {
                 let prefix = `\`${value.toString()}\``;
                 if (value instanceof RegExp) {
                     hasRegexPrefix = true;
                     prefix += "\\*";
                 }
                 prefixes.push(prefix);
-            });
+            }
 
             const regexMessage = hasRegexPrefix ? "\n\\*Prefixes with an asterisk are regular expressions." : "";
 
