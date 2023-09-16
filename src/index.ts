@@ -58,14 +58,14 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
      */
     constructor(
         name: string,
-        commandPrefixes: string | string[] = [],
+        commandPrefixes: string | RegExp | (string | RegExp)[] = [],
         options: {
             server?: string,
             printErrors?: boolean,
             helpSuffix?: string,
             blockSelf?: boolean,
             welcomeMessage?: string,
-            mainPrefix?: string,
+            mainPrefix?: string | RegExp,
             apikey?: string
         } = {},
     ) {
@@ -74,7 +74,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.validateNickname(name);
         this.#name = name;
 
-        const commandPrefixesArray = typeof commandPrefixes == "string" ? [ commandPrefixes ] : commandPrefixes;
+        const commandPrefixesArray = Array.isArray(commandPrefixes) ? commandPrefixes : [ commandPrefixes ];
         this.mainPrefix = options.mainPrefix ?? commandPrefixesArray[0];
         this.prefixes = new Set(commandPrefixesArray);
 
