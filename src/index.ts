@@ -153,7 +153,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     void this.processCommands({
                         message,
                         send : (...args) => void this.sendMessage(...args),
-                        reply: (...args) => void this.sendMessage(`@${message.author.nickname}`, ...args),
+                        reply: (...args) => void this.sendMessage(`**@${message.author.nickname}**`, ...args),
                     });
                 })
                 .on("sys-message", rawSysMessage => {
