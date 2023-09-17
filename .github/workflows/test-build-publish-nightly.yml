@@ -6,12 +6,14 @@ on:
       - package.json
       - tsconfig.json
       - .github/workflows/**
+      - README.md
   pull_request:
     paths:
       - src/**
       - package.json
       - tsconfig.json
       - .github/workflows/**
+      - README.md
 
 jobs:
   test_and_build:
