@@ -93,7 +93,7 @@ client.isBlocked("bad-user-id", "some session id") // true
 You can now also define subcommands like this:
 
 ```js
-client.commands.someSubommand = {
+client.commands.someSubcommand = {
     subcommand: () => "You used the subcommand!", // user ran `!someSubcommand subcommand`
     undefined: () => "You didn't use any subcommands!", // user ran `!someSubcommand`
     anotherSubcommand: () => "You used another subcommand!", // user ran `!someSubcommand anotherSubcommand`
