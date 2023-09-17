@@ -1,7 +1,17 @@
 name: Test and build
 on:
   push:
+    paths:
+      - src/**
+      - package.json
+      - tsconfig.json
+      - .github/workflows/**
   pull_request:
+    paths:
+      - src/**
+      - package.json
+      - tsconfig.json
+      - .github/workflows/**
 
 jobs:
   test_and_build:
