@@ -20,7 +20,7 @@ First, create a new client and connect
 ```js
 import Client from "msgroom";
 
-const client = new Client("TestBot", [ "!" ]);
+const client = new Client("TestBot", "!");
 await client.connect();
 ```
 
