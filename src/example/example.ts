@@ -3,7 +3,7 @@ import Client from "..";
 import { formatWithOptions } from "node:util";
 
 void (async () => {
-    const client = new Client("[!] TestBot", [ "!", /^t!/i ], {
+    const client = new Client("[!] TestBot", [ "!", /^test!/i ], {
         printErrors: true,
         helpSuffix : `
 *TestBot is a bot made by NanderTGA to test new [msgroom](https://npmjs.com/package/msgroom) features before releasing them.
