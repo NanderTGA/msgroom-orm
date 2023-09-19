@@ -4,6 +4,11 @@ import { Command, NormalizedCommand } from "../types/types";
 
 import { decode as decodeHTML } from "he";
 
+/**
+ * Transforms a {@link RawUser} into a {@link User}.
+ * @param rawUser The rawUser to transform.
+ * @returns The transformed user.
+ */
 export function transformUser(rawUser: RawUser): User {
     return {
         color    : rawUser.color,
@@ -14,6 +19,13 @@ export function transformUser(rawUser: RawUser): User {
     };
 }
 
+/**
+ * Transforms a {@link RawMessage} into a {@link Message}.
+ * @param rawMessage The rawMessage to transform.
+ * @param onlineUsers A {@link Record} of online users.
+ * @param unescapeMessages Whether to unescape messages. True by default.
+ * @returns The transformed message.
+ */
 export function transformMessage(rawMessage: RawMessage, onlineUsers: Record<string, User>, unescapeMessages = true): Message {
     return {
         type: rawMessage.type,
@@ -25,6 +37,12 @@ export function transformMessage(rawMessage: RawMessage, onlineUsers: Record<str
     };
 }
 
+/**
+ * Transforms a {@link RawNickChangeInfo} into a {@link NickChangeInfo}.
+ * @param rawNickChangeInfo The rawNickChangeInfo to transform.
+ * @param onlineUsers A {@link Record} of online users.
+ * @returns The transformed nickChangeInfo.
+ */
 export function transformNickChangeInfo(rawNickChangeInfo: RawNickChangeInfo, onlineUsers: Record<string, User>): NickChangeInfo {
     return {
         user: onlineUsers[rawNickChangeInfo.session_id],
@@ -34,15 +52,26 @@ export function transformNickChangeInfo(rawNickChangeInfo: RawNickChangeInfo, on
     };
 }
 
-export function transformSysMessage(rawSysMessage: RawSysMessage): SysMessage {
+/**
+ * Transforms a {@link RawSysMessage} into a {@link SysMessage}.
+ * @param rawSysMessage The rawSysMessage to transform.
+ * @param unescapeMessages Whether to unescape messages. True by default.
+ * @returns The transformed sysMessage
+ */
+export function transformSysMessage(rawSysMessage: RawSysMessage, unescapeMessages = true): SysMessage {
     return {
         type: rawSysMessage.type,
 
-        message: rawSysMessage.message,
+        message: unescapeMessages ? decodeHTML(rawSysMessage.message) : rawSysMessage.message,
         isHTML : rawSysMessage.isHtml,
     };
 }
 
+/**
+ * Normalizes a {@link Command} so it is guaranteed to have every property.
+ * @param command The command to normalize.
+ * @returns The normalized command.
+ */
 export function normalizeCommand(command: Command): NormalizedCommand {
     return {
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
@@ -53,6 +82,12 @@ export function normalizeCommand(command: Command): NormalizedCommand {
     };
 }
 
+/**
+ * Trims a message the way the official msgroom server does.
+ * Removes whitespace at the beginning and end of each line.
+ * @param message The message to trim.
+ * @returns The trimmed message.
+ */
 export function trimMessage(message: string): string {
     return message
         .split("\n")
