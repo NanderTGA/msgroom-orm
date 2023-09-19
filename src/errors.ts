@@ -39,17 +39,3 @@ export class NotConnectedError extends Error {
         if (options) Object.assign(this, options);
     }
 }
-
-export class ImpossibleError extends Error {
-    cause?: unknown;
-    
-    constructor(
-        message = "This state is physically impossible, but typescript doesn't understand.",
-        options?: ErrorOptions,
-    ) {
-        super(message);
-        this.name = "ImpossibleError";
-
-        if (options) Object.assign(this, options);
-    }
-}

@@ -66,7 +66,7 @@ export interface RawUserUpdateInfo {
  * used for receiving events from the server
  */
 export interface ServerToClientEvents {
-    "auth-complete": (userID: string) => void;
+    "auth-complete": (userID: string, sessionID: string) => void;
     message: (message: RawMessage) => void;
     "sys-message": (sysMessage: RawSysMessage) => void;
     "nick-changed": (nickChangeInfo: RawNickChangeInfo) => void;

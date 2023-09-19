@@ -14,7 +14,7 @@ import {
     Command, WalkFunction, NormalizedCommand, ClientOptions,
 } from "./types/types";
 
-import { AuthError, ConnectionError, ImpossibleError, NotConnectedError } from "./errors";
+import { AuthError, ConnectionError, NotConnectedError } from "./errors";
 import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
 import { walkDirectory, dynamicImport } from "./utils/compilerFighting";
 import helpCommand from "./helpCommand";
@@ -89,8 +89,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
 
             //#region connecting to the server
                 .on("connect", () => {
-                    if (!this.socket) throw new ImpossibleError();
-                    this.socket.emit("auth", {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    this.socket!.emit("auth", {
                         user  : this.#name,
                         apikey: this.apikey,
                     });
@@ -101,10 +101,15 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                 .on("connect_error", () => {
                     throw new ConnectionError();
                 })
-                .on("auth-complete", authenticatedUserID => {
-                    if (!this.socket) throw new ImpossibleError();
-                    this.socket.emit("online");
+                .on("auth-complete", (authenticatedUserID, sessionID) => {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    this.socket!.emit("online");
+
                     userID = authenticatedUserID;
+                    this.#sessionID = sessionID;
+
+                    if (this.welcomeMessage) this.sendMessage(this.welcomeMessage);
+                    if (this.blockSelf) this.blockedSessionIDs.add(this.sessionID);
                 })
                 .on("auth-error", ({ reason }) => {
                     reject(new AuthError(reason));
@@ -117,27 +122,8 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     this.#ID = userID;
                     resolve();
                 });
-            //#endregion
-        }).then( () => new Promise<void>( resolve => {
-            if (!this.welcomeMessage) resolve();
-
-            const sessionIDHandler = (rawMessage: RawMessage) => {
-                const message = transformMessage(rawMessage, this.users);
-                if (!(message.content == this.welcomeMessage && message.author.ID == this.ID)) return;
-
-                this.#sessionID = message.author.sessionID;
-                this.blockedSessionIDs.add(this.#sessionID);
-
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                this.socket!.off("message", sessionIDHandler);
-                resolve();
-            };
-
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.socket!.on("message", sessionIDHandler);
-
-            this.sendMessage(this.welcomeMessage);
-        })).then( () => {
+            //#endregion connecting to the server
+        }).then( () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this.socket!
 
@@ -202,7 +188,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                             });
                     }
                 });
-            //#endregion
+            //#endregion main events
         });
     }
 
