@@ -1,5 +1,5 @@
 import io from "socket.io-client";
-import MsgroomSocket, { RawMessage } from "./types/socket.io";
+import MsgroomSocket from "./types/socket.io";
 
 import { resolve as pathResolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
