@@ -59,4 +59,10 @@ export interface ClientOptions {
     mainPrefix?: string | RegExp,
     /** You can request one from ctrlz. */
     apikey?: string
+    /**
+     * Unescapes the incoming messages, meant for use in bots.
+     * It's recommended to disable this when making a custom client.
+     * @default true
+     */
+    unescapeMessages?: boolean
 }

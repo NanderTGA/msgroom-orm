@@ -30,6 +30,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     blockSelf: boolean;
     welcomeMessage: string;
     apikey?: string;
+    unescapeMessages: boolean;
     
     prefixes: Set<string | RegExp>;
     mainPrefix: string | RegExp;
@@ -68,6 +69,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.printErrors = options.printErrors ?? false;
         this.helpSuffix = options.helpSuffix ?? "";
         this.apikey = options.apikey;
+        this.unescapeMessages = options.unescapeMessages ?? true;
 
         this.blockSelf = options.blockSelf ?? true;
         if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.`;
@@ -132,7 +134,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
                     this.emit("werror", reason);
                 })
                 .on("message", rawMessage => {
-                    const message = transformMessage(rawMessage, this.users);
+                    const message = transformMessage(rawMessage, this.users, this.unescapeMessages);
                     if (this.isBlocked(message.author)) return;
 
                     this.emit("message", message);

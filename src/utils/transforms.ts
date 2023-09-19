@@ -14,12 +14,12 @@ export function transformUser(rawUser: RawUser): User {
     };
 }
 
-export function transformMessage(rawMessage: RawMessage, onlineUsers: Record<string, User>): Message {
+export function transformMessage(rawMessage: RawMessage, onlineUsers: Record<string, User>, unescapeMessages = true): Message {
     return {
         type: rawMessage.type,
 
         color  : rawMessage.color,
-        content: decodeHTML(rawMessage.content),
+        content: unescapeMessages ? decodeHTML(rawMessage.content) : rawMessage.content,
         date   : new Date(rawMessage.date),
         author : onlineUsers[rawMessage.session_id],
     };
