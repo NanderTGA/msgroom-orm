@@ -50,7 +50,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
         if: ${{ !cancelled() && env.NODE_AUTH_TOKEN != '' }}
-        run: git push origin master
+        run: git push origin main
 
       - name: Run tests
         run: npm test
