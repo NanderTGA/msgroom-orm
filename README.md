@@ -1,4 +1,4 @@
-# msgroom
+# MsgRoom.js
 
 ## A Msgroom client
 
@@ -8,7 +8,7 @@
 
 ## **:warning: The documentation in this readme is very outdated :warning:**
 
-### For a reference on v2's syntax, check [Yabluzo's code](https://github.com/NanderTGA/yabluzo) or [TestBot's code](https://github.com/NanderTGA/msgroom-orm/tree/master/src/example). We're also working on creating a documentation site
+### For a reference on v2's syntax, check [Yabluzo's code](https://github.com/NanderTGA/yabluzo) or [TestBot's code](https://github.com/NanderTGA/msgroom-orm/tree/master/src/example). We're also working on creating [a documentation site](https://nandertga.github.io/msgroom-orm/)
 
 Available on npm: `npm i msgroom`
 
