@@ -8,7 +8,9 @@ sidebar_position: 1
 
 First, let's install the latest v2 build.
 
-`$ npm i msgroom@nightly`
+```bash npm2yarn
+npm install msgroom@nightly
+```
 
 :::warning
 

@@ -4,6 +4,10 @@
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
+const remarkPlugins = [
+    [ require("@docusaurus/remark-plugin-npm2yarn"), { sync: true } ],
+];
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
     title  : "MsgRoom.js",
@@ -39,17 +43,16 @@ const config = {
             ({
                 docs: {
                     sidebarPath: require.resolve("./sidebars.js"),
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
-                    editUrl:
-            "https://github.com/NanderTGA/msgroom-orm/tree/main/website/",
+                    editUrl    : "https://github.com/NanderTGA/msgroom-orm/tree/main/website/",
+                    remarkPlugins,
                 },
                 blog: {
                     showReadingTime: true,
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
-                    editUrl:
-            "https://github.com/NanderTGA/msgroom-orm/tree/main/website/",
+                    editUrl        : "https://github.com/NanderTGA/msgroom-orm/tree/main/website/",
+                    remarkPlugins,
+                },
+                pages: {
+                    remarkPlugins,
                 },
                 theme: {
                     customCss: require.resolve("./src/css/custom.css"),
@@ -126,12 +129,6 @@ const config = {
         prism: {
             theme    : lightCodeTheme,
             darkTheme: darkCodeTheme,
-        },
-        announcementBar: {
-            isCloseable    : false,
-            content        : "This site is still a heavy WIP. Expect things to break.",
-            backgroundColor: "#25c2a0",
-            textColor      : "#fff",
         },
     }),
 };
