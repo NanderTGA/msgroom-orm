@@ -1,6 +1,6 @@
 {
   "name": "msgroom",
-  "version": "2.0.0-27",
+  "version": "2.0.0-28",
   "description": "A client for msgroom.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
