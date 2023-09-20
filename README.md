@@ -4,11 +4,11 @@
 
 [![Wallaby.js](https://img.shields.io/badge/wallaby.js-powered-blue.svg?style=flat&logo=github)](https://wallabyjs.com/oss/)
 
-**NOTE: This is <ins>not</ins> the official msgroom package!**
+**NOTE: This is ~~not~~ the official msgroom package!**
 
 ## **:warning: The documentation in this readme is very outdated :warning:**
 
-### For a reference on v2's syntax, check [Yabluzo's code](https://github.com/NanderTGA/yabluzo) or [TestBot's code](https://github.com/NanderTGA/msgroom-orm/tree/master/src/example). We're also working on creating [a documentation site](https://nandertga.github.io/msgroom-orm/)
+### For a reference on v2's syntax, check [Yabluzo's code](https://github.com/NanderTGA/yabluzo) or [TestBot's code](https://github.com/NanderTGA/msgroom-orm/tree/main/src/example). We're also working on creating [a documentation site](https://nandertga.github.io/msgroom-orm/)
 
 Available on npm: `npm i msgroom`
 
@@ -57,7 +57,7 @@ client.commands.repeat = (reply, ...args) => {
 
 You can, after defining these commands, use them by sending a message like this:
 
-![example command usage](https://github.com/NanderTGA/msgroom-orm/blob/master/example%20command%20usage.png?raw=true)
+![example command usage](https://github.com/NanderTGA/msgroom-orm/blob/main/example%20command%20usage.png?raw=true)
 
 ### Blocking users
 
