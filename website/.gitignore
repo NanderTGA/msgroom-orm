@@ -7,9 +7,7 @@
 # Generated files
 .docusaurus
 .cache-loader
-# had to comment it out because we need it to be uploaded to github pages
-# but please don't commit this
-# docs/api/
+docs/api/
 
 # Misc
 .DS_Store
