@@ -36,6 +36,29 @@ const config = {
         locales      : [ "en" ],
     },
 
+    plugins: [
+        [
+            "docusaurus-plugin-typedoc",
+            {
+                entryPoints: [
+                    "../src/index.ts",
+                    "../src/errors.ts",
+                    "../src/utils/transforms.ts",
+                    "../src/utils/testCommand.ts",
+                    "../src/types/events.ts",
+                    "../src/types/socket.io.ts",
+                    "../src/types/types.ts",
+                ],
+                tsconfig          : "../tsconfig.json",
+                entryPointStrategy: "Expand",
+                plugin            : [ "typedoc-plugin-rename-defaults" ],
+                sidebar           : {
+                    position: 2,
+                },
+            },
+        ],
+    ],
+
     presets: [
         [
             "classic",
