@@ -152,6 +152,11 @@ const config = {
             theme    : lightCodeTheme,
             darkTheme: darkCodeTheme,
         },
+        algolia: {
+            apiKey: "34295e993e07003a0578afc53595d9a2",
+            appId: "8MI5GFFQ5N",
+            indexName: "msgroom-orm",
+        }
     }),
 };
 
