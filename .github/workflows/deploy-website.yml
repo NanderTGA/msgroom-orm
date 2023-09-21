@@ -29,6 +29,10 @@ jobs:
       
       - name: Setup docusaurus caching
         uses: docuactions/cache@v1
+
+      - name: Install root dependencies
+        working-directory: ./
+        run: npm ci
       
       - name: Install dependencies
         run: npm ci
