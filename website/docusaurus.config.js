@@ -1,5 +1,4 @@
 // @ts-check
-// Note: type annotations allow type checking and IDEs autocompletion
 
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
@@ -153,6 +152,11 @@ const config = {
             theme    : lightCodeTheme,
             darkTheme: darkCodeTheme,
         },
+        algolia: {
+            apiKey: "34295e993e07003a0578afc53595d9a2",
+            appId: "8MI5GFFQ5N",
+            indexName: "msgroom-orm",
+        }
     }),
 };
 
