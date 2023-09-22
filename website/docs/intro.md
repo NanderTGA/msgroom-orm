@@ -45,6 +45,12 @@ A map of events can be found in `src/events.ts` or in `dist/events.d.ts`.
 
 ## Defining commands
 
+:::tip
+
+Don't create your own help command, there already is a built-in one.
+
+:::
+
 To define a command, define a property on `client.commands`.
 The name of the property will be the name of your command.
 The property should have a handler property, which should be a function that is called with
