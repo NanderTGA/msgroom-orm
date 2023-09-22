@@ -3,6 +3,11 @@ on:
   push:
     paths:
       - website/**
+      - src/**
+      - package.json
+      - tsconfig.json
+      - .github/workflows/**
+      - README.md
 
 jobs:
   deploy_website:
