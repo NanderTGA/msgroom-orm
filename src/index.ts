@@ -398,10 +398,8 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         if (typeof importedCommands.handler == "function") {
             const command = importedCommands as CommandWithName;
 
-            try {
-                if (!command.name) throw new Error("You must provide a name for your command!");
-            } catch (error) {
-                console.error(`\n${file} has an invalid commandName`, error);
+            if (!command.name) {
+                console.error(`\nError in ${file}: You must provide a name for your command!`);
                 this.erroredFiles.add(file);
                 return;
             }
@@ -413,7 +411,7 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         }
 
         const commandMap = importedCommands as CommandMap;
-        Object.assign(this.commands, importedCommands);
+        Object.assign(this.commands, commandMap);
     }
 
     async addCommandsFromDirectory(directory?: string | URL): Promise<void> {
