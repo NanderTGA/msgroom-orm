@@ -1,10 +1,17 @@
+/**
+ * @module
+ * This file contains the code for the built-in help command.
+ * It is similar to a normal module, but without the name property.
+ * It also doesn't support any async stuff outside of the command because it is loaded in the constructor.
+ */
+
 import type Client from ".";
-import { Command } from "./types/types";
+import type { Command } from "./types/types";
 
 import { basename } from "path";
 
 const helpCommand = (client: Client) => ({
-    description: "Shows information about a command.",
+    description: "Shows a list of commands or information about a specific command.",
     handler    : async (context, ...args) => {
         const erroredFiles = Array.from(client.erroredFiles).map(file => basename(file)).join(", ");
         if (client.erroredFiles.size > 0) context.send(

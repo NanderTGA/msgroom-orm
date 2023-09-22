@@ -1,6 +1,7 @@
 import Client from "..";
 
 import { formatWithOptions } from "node:util";
+import { resolve as pathResolve } from "path";
 
 void (async () => {
     const client = new Client("[!] TestBot", [ "!", /^test!/i ], {
@@ -61,7 +62,7 @@ Since it is completely useless, it will go offline once I'm done testing things.
         },
     };
 
-    await client.addCommandsFromDirectory();
+    await client.loadDirectory(pathResolve(__dirname, "./modules"));
     await client.connect();
 
     // will cause a werror

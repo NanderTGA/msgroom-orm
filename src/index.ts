@@ -1,7 +1,6 @@
 import io from "socket.io-client";
 import MsgroomSocket from "./types/socket.io";
 
-import { resolve as pathResolve } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import arrayStartsWith from "array-starts-with";
 
@@ -81,6 +80,7 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     /**
      * Connect to a msgroom server.
      * @returns A promise which resolves when the connection has successfully been established.
+     * @throws An {@link AuthError} when the server won't let you in.
      */
     async connect(): Promise<void> {
         return new Promise<void>( (resolve, reject) => {
@@ -194,15 +194,30 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         });
     }
 
+    /**
+     * Validates a nickname.
+     * A nickname should be 1-18 characters.
+     * @param name The nickname to validate.
+     * @throws An {@link Error} when the criteria has not been met.
+     */
     validateNickname(name: string) {
         if (name.length > 18) throw new Error("Username is longer than 18 characters.");
         if (name.length < 1) throw new Error("Username should be 1 character or more.");
     }
 
+    /**
+     * Disconnects from the server if connected.
+     */
     disconnect() {
         this.socket?.disconnect();
     }
 
+    /**
+     * The user's name.
+     * You can change it by reassigning this variable.
+     * Do note that changing it is done using an asynchronous operation, meaning the change won't be reflected immediately.
+     * @throws A {@link NotConnectedError} when you haven't connected yet.
+     */
     get name(): string {
         return this.#name;
     }
@@ -214,16 +229,31 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         this.socket.emit("change-user", name);
     }
 
+    /**
+     * The user's ID.
+     * @throws A {@link NotConnectedError} when you haven't connected yet.
+     */
     get ID(): string {
         if (!this.#ID) throw new NotConnectedError();
         return this.#ID;
     }
 
+    /**
+     * The user's session ID.
+     * @throws A {@link NotConnectedError} when you haven't connected yet.
+     */
     get sessionID(): string {
         if (!this.#sessionID) throw new NotConnectedError();
         return this.#sessionID;
     }
 
+    /**
+     * Sends a message. (The character limit is 2048.)
+     * All arguments will be joined together with a space before being sent.
+     * Anything that is not a string will be converted to one, but this does not mean that it is a good practice to do so.
+     * @param messages The message to send.
+     * @throws A {@link NotConnectedError} when you haven't connected yet.
+     */
     sendMessage(...messages: string[]): void {
         if (!this.socket) throw new NotConnectedError();
 
@@ -240,15 +270,22 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
     }
 
     /**
-     * We currently have no idea what this could be, apart from what the type must be according to the code of the official msgroom client.
-     * Only msgroom staff know the list of commands.
+     * Triggers an admin action.
+     * The way it works is by passing an array of arguments, similar to how commands work.
+     * We currently have no idea what these commands could be because only msgroom staff know the list of commands.
      * @param args The arguments to pass to the `admin-action` event.
+     * @throws A {@link NotConnectedError} when you haven't connected yet.
      */
     adminAction(...args: string[]): void {
         if (!this.socket) throw new NotConnectedError();
         this.socket.emit("admin-action", { args });
     }
 
+    /**
+     * Gets a command from its call.
+     * @param commandAndArguments The split arguments which also have the command in it.
+     * @returns A promise which resolves to the command and its arguments, or undefined if none was found.
+     */
     async getCommand(commandAndArguments: string[]): Promise<[ CommandWithName, string[] ] | undefined> {
         return new Promise( resolve => {
             let done = false;
@@ -290,7 +327,14 @@ class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEv
         });
     }
 
-    async runCommand(command: CommandWithName, commandHandlerArguments: string[], context: CommandContext) {
+    /**
+     * Runs a command.
+     * @param command The command to run.
+     * @param commandHandlerArguments The arguments to pass to the command's handler.
+     * @param context The context in which the command was triggered.
+     * @returns A promise which resolves when the command has been ran.
+     */
+    async runCommand(command: CommandWithName, commandHandlerArguments: string[], context: CommandContext): Promise<void> {
         try {
             const commandResult = await command.handler(context, ...commandHandlerArguments);
 
@@ -312,7 +356,12 @@ Full error:
         }
     }
 
-    async processCommands(context: CommandContext) {
+    /**
+     * Processes a message to check for command calls.
+     * @param context The context which will be passed to command handlers.
+     * @returns A promise which resolves when the associated command (if there is one) has been called.
+     */
+    async processCommands(context: CommandContext): Promise<void> {
         if (!this.mainPrefix) return;
         const message = context.message.content;
 
@@ -336,6 +385,13 @@ Full error:
         await this.runCommand(...commandAndArguments, context);
     }
 
+    /**
+     * Walks a commandMap or a command's subcommands recursively.
+     * @param commandOrMap The command or commandMap to walk.
+     * @param walkFunction The function that will be called with every command.
+     * @param fullCommand The full path to the current command or commandMap being walked. (Used when walking, you probably don't need this).
+     * @throws An {@link Error} when fullCommand is empty when commandOrMap is a command.
+     */
     walkCommandOrMap(
         commandOrMap: Command | CommandMap,
         walkFunction: WalkFunction,
@@ -358,7 +414,13 @@ Full error:
         }
     }
 
-    async addCommandsFromFile(file: string | URL): Promise<void> {
+    /**
+     * Loads a module.
+     * Any errors thrown anywhere in the process will be caught and logged to the console.
+     * @param file The module to load.
+     * @returns A promise which resolves once the module has been loaded.
+     */
+    async loadModule(file: string | URL): Promise<void> {
         if (typeof file != "string") file = file.href;
         else if (!file.startsWith("file:") && !file.startsWith("data:")) file = pathToFileURL(file).href;
 
@@ -414,21 +476,29 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         Object.assign(this.commands, commandMap);
     }
 
-    async addCommandsFromDirectory(directory?: string | URL): Promise<void> {
-        if (!directory) {
-            if (!require.main) throw new Error("You cannot leave out the directory argument in this context!");
-            directory = pathResolve(require.main.path, "./commands");
-        }
+    /**
+     * Loads modules from a directory recursively.
+     * Any errors thrown anywhere in the process will be caught and logged to the console.
+     * @param directory The directory to get the modules from.
+     * @returns A promise which resolves once the modules have been loaded.
+     */
+    async loadDirectory(directory: string | URL): Promise<void> {
         if (typeof directory != "string") directory = fileURLToPath(directory);
 
         const files = await walkDirectory(directory);
         const modules = files
             .filter( file => file.name.endsWith(".js"))
-            .map( file => this.addCommandsFromFile(file.path));
+            .map( file => this.loadModule(file.path));
 
         await Promise.all(modules);
     }
 
+    /**
+     * Checks whether the specified user is blocked.
+     * @param userID A user's session ID or an object with an ID and/or session ID in it.
+     * @param userSessionID A user's session ID.
+     * @returns A boolean value indicating whether the user is blocked.
+     */
     public isBlocked(userID: string, userSessionID?: string): boolean;
     public isBlocked(userIDOrObject: { ID?: string, sessionID?: string }): boolean;
     public isBlocked(
