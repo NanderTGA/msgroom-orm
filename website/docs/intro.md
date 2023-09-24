@@ -20,6 +20,20 @@ These builds can also be unstable, so use them at your own risk.
 
 :::
 
+## API documentation
+
+Before we start, you should know everything in this library is fully typed and most things have TSDoc comments explaining what they do.
+If you want to know what something does, hover over it in your IDE or find the associated documentation on it here.
+
+The TSDoc comments and types are also used to automatically generate the API docs, which you can find under the API section in the sidebar to your left.
+
+You will find 3 sections there, but you probably will only need the `Classes` section and the `Interfaces` section.
+Most things in the `Modules` section are probably only useful to you if you are a library developer or are interested in the internal workings of this library.
+You can find [the map of events](/msgroom-orm/docs/api/modules/types_events#clientevents) there though, which can be pretty useful to have.
+
+When you are on one the pages of the API docs, it might look overwhelming at first, but don't worry, it's not as complicated as it looks at first.
+You can use the sidebar to your right or the search feature in the top right corner to find what you're looking for.
+
 ## Creating a client
 
 First, create a new client and connect
@@ -34,14 +48,6 @@ const client = new Client("TestBot", "!");
 
 await client.connect();
 ```
-
-For more information about any functions/variables/properties,
-hover over them in your IDE.
-This package is fully typed.
-
-You can listen for any events you like using `client.on` (or `client.addListener`).
-
-A map of events can be found in `src/events.ts` or in `dist/events.d.ts`.
 
 ## Defining commands
 
@@ -79,4 +85,4 @@ client.commands.repeat = {
 
 You can, after defining these commands, use them by sending a message like this:
 
-![example command usage](https://github.com/NanderTGA/msgroom-orm/blob/master/example%20command%20usage.png?raw=true)
+![example command usage](https://github.com/NanderTGA/msgroom-orm/blob/main/example%20command%20usage.png?raw=true)
