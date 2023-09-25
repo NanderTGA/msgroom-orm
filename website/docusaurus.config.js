@@ -146,17 +146,17 @@ const config = {
                     ],
                 },
             ],
-            copyright: `Copyright © ${new Date().getFullYear()} NanderTGA and contributors. Built with Docusaurus.`,
+            copyright: `Copyright © ${new Date().getFullYear()} NanderTGA and contributors. All code is licensed under the MIT license unless stated otherwise. Built with Docusaurus.`,
         },
         prism: {
             theme    : lightCodeTheme,
             darkTheme: darkCodeTheme,
         },
         algolia: {
-            apiKey: "34295e993e07003a0578afc53595d9a2",
-            appId: "8MI5GFFQ5N",
+            apiKey   : "34295e993e07003a0578afc53595d9a2",
+            appId    : "8MI5GFFQ5N",
             indexName: "msgroom-orm",
-        }
+        },
     }),
 };
 
