@@ -7,8 +7,8 @@ void (async () => {
     const client = new Client("[!] TestBot", [ "!", /^test!/i ], {
         printErrors: true,
         helpSuffix : `
-*TestBot is a bot made by NanderTGA to test new [msgroom](https://npmjs.com/package/msgroom) features before releasing them.
-Things may also seem broken when it's intended behavior to test a feature.
+*TestBot is a bot made by NanderTGA to test new [MsgRoom.js](https://nandertga.github.io/msgroom-orm/) features before releasing them.
+Some things may also seem broken when they are intentionally broken so I can test a specific feature.
 Since it is completely useless, it will go offline once I'm done testing things.*
 `.trim(),
         blockSelf: true,
