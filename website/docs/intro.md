@@ -37,13 +37,40 @@ You can use the sidebar to your right or the search feature in the top right cor
 ## Creating a client
 
 First, create a new client and connect
-(the package exports commonJS, so you can use require too)
+
+<!--tabs-->
+
+### ESM (recommended)
 
 ```js
 import Client from "msgroom";
+```
 
+### CommonJS
+
+```js
+const Client = require("msgroom");
+```
+
+<!--/tabs-->
+
+<!--tabs-->
+
+### One prefix
+
+```js
 const client = new Client("TestBot", "!");
+```
 
+### Multiple prefixes
+
+```js
+const client = new Client("TestBot", [ "!", "test!" ]);
+```
+
+<!--/tabs-->
+
+```js
 // insert some very cool commands here
 
 await client.connect();
