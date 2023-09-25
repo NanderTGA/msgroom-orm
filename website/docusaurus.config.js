@@ -3,8 +3,14 @@
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
+/** @type {import("@docusaurus/mdx-loader").MDXPlugin[]} */
 const remarkPlugins = [
     [ require("@docusaurus/remark-plugin-npm2yarn"), { sync: true } ],
+];
+
+/** @type {import("@docusaurus/mdx-loader").MDXPlugin[]} */
+const beforeDefaultRemarkPlugins = [
+    require("remark-docusaurus-tabs"),
 ];
 
 /** @type {import('@docusaurus/types').Config} */
@@ -56,6 +62,7 @@ const config = {
                 },
             },
         ],
+        "remark-docusaurus-tabs",
     ],
 
     presets: [
@@ -67,14 +74,17 @@ const config = {
                     sidebarPath: require.resolve("./sidebars.js"),
                     editUrl    : "https://github.com/NanderTGA/msgroom-orm/tree/main/website/",
                     remarkPlugins,
+                    beforeDefaultRemarkPlugins,
                 },
                 blog: {
                     showReadingTime: true,
                     editUrl        : "https://github.com/NanderTGA/msgroom-orm/tree/main/website/",
                     remarkPlugins,
+                    beforeDefaultRemarkPlugins,
                 },
                 pages: {
                     remarkPlugins,
+                    beforeDefaultRemarkPlugins,
                 },
                 theme: {
                     customCss: require.resolve("./src/css/custom.css"),
