@@ -8,7 +8,7 @@
     "build": "rimraf dist && tsc",
     "prepack": "npm run build",
     "test": "rimraf dist && jest",
-    "testbot": "npm run build && node --inspect ./dist/example/example.js"
+    "testbot": "npm run build && node --inspect --enable-source-maps ./dist/example/example.js"
   },
   "files": [
     "dist/"
