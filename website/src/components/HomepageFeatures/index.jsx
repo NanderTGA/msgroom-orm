@@ -15,7 +15,7 @@ const FeatureList = [
     title: 'Battle-tested',
     description: (
       <>
-        MsgRoom.js is used in production in several bots you know and love, like Yabluzo and SoBot.
+        MsgRoom.js is used in production in several bots you know and love, like Yabluzo and KrisOS.
       </>
     ),
   },
@@ -32,10 +32,24 @@ const FeatureList = [
     title: "Universal",
     description: (
       <>
-        MsgRoom.js is truly universal, you can use it for anything!
-        Use it to make a bot, a custom client or whatever else you like!
-        You don't even have to use the command framework.
-        Don't like it? Just listen for messages and use some good old if statements (like SoBot does)!
+        MsgRoom.js is truly universal, you can use it for whatever you like!
+        Make a bot, a custom client or whatever else you can think of!
+      </>
+    )
+  },
+  {
+    title: "Documentation",
+    description: (
+      <>
+        MsgRoom.js is the only library of its kind that has up-to-date documentation and extensive API docs.
+      </>
+    )
+  },
+  {
+    title: "Mature",
+    description: (
+      <>
+        This project has been around longer than any others, and as a result it has matured the most compared to others.
       </>
     )
   }
