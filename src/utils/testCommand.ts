@@ -27,7 +27,7 @@ export default async function getCommandOutput(client: Client, command: string, 
             output.push(message);
         },
         reply: (...messages) => {
-            const message = `@${fakeMessage.author.nickname}${messages.join(" ")}`;
+            const message = `@**${fakeMessage.author.nickname}** ${messages.join(" ")}`;
             output.push(message);
         },
     });
