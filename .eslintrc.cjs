@@ -12,4 +12,16 @@ module.exports = {
         project        : "./tsconfig.eslint.json",
         tsconfigRootDir: __dirname,
     },
+    ignorePatterns: [
+        "node_modules",
+        "**/node_modules/**",
+        "dist",
+        "**/dist/**",
+        "coverage",
+        "**/coverage/**",
+        ".DS_Store",
+        "**/.DS_Store/**",
+        "website/.docusaurus/**",
+        "website/build/**",
+    ],
 };
