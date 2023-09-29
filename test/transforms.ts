@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { transformUser, transformMessage, transformNickChangeInfo, transformSysMessage } from "../src/utils/transforms";
-import { User } from "../src/types/events";
+import { transformUser, transformMessage, transformNickChangeInfo, transformSysMessage } from "#utils/transforms.js";
+import { User } from "#types/events.js";
 
 const someoneUser: User = {
     color    : "#ff0000",

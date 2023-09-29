@@ -1,5 +1,5 @@
 import { it } from "@jest/globals";
-import Client from "../src/index";
+import Client from "#client";
 
 it("should connect, send a message and disconnect", async () => {
     const client = new Client("JestBot", "", { blockSelf: false });

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
-import { AuthError, ConnectionError, NotConnectedError } from "../src/errors";
-import Client from "../src/index";
+import { AuthError, ConnectionError, NotConnectedError } from "#root/errors.js";
+import Client from "#client";
 
 describe("Error constructors", () => {
     it("AuthError", () => {

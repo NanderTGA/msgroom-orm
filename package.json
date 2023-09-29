@@ -51,7 +51,7 @@
     "build": "rimraf dist && tsc",
     "prepack": "npm run build",
     "lint": "eslint .",
-    "test": "rimraf dist && jest --coverage",
+    "test": "npm run build && node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "testbot": "npm run build && node --inspect --enable-source-maps ./dist/example/example.js"
   },
   "files": [

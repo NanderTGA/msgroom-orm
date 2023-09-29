@@ -1,6 +1,6 @@
 import { test, it, expect } from "@jest/globals";
-import Client from "../src/index";
-import getCommandOutput from "../src/utils/testCommand";
+import Client from "#client";
+import getCommandOutput from "#utils/testCommand.js";
 
 
 const client = new Client("test", [ "!", "g!" ], { server: "wss://dabestmsgroomserver.com" });
