@@ -8,7 +8,6 @@
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/NanderTGA/msgroom-orm/deploy-website.yml?label=Website%20builds)
 ![Discord](https://img.shields.io/discord/718043998018863114?logo=discord)
 
-
 **NOTE: This is ~~not~~ the official msgroom package!**
 
 ## **:warning: The documentation in this readme is very outdated :warning:**
