@@ -65,7 +65,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
 
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         this.server = options.server || "wss://msgroom.windows96.net";
-        this.printErrors = options.printErrors ?? false;
+        this.printErrors = options.printErrors ?? true;
         this.helpSuffix = options.helpSuffix ?? "";
         this.apikey = options.apikey;
         this.unescapeMessages = options.unescapeMessages ?? true;
