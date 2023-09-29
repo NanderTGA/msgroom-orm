@@ -41,23 +41,43 @@ export interface CommandContext {
 }
 
 export interface ClientOptions {
-    /** The server to connect to. */
+    /**
+     * The server to connect to.
+     * @default "wss://msgroom.windows96.net"
+     */
     server?: string,
-    /** Whether to print errors to the console. */
+    /**
+     * Whether to print errors to the console.
+     * Will not stop printing of fatal errors while loading files.
+     * @default true
+     */
     printErrors?: boolean,
-    /** A suffix to add to the output of the help command. */
+    /**
+     * A suffix to add to the output of the help command.
+     * @default ""
+     */
     helpSuffix?: string,
-    /** Whether the bot should block itself. Will force welcomeMessage to be sent. */
+    /**
+     * Whether to ignore events triggered by the current user.
+     * @default true
+     */
     blockSelf?: boolean,
-    /** A message to send when the bot joins. */
+    /**
+     * A message to send when the bot joins.
+     * @default ""
+     */
     welcomeMessage?: string,
     /**
      * The main prefix to use in commands (for example, the help command will use this to tell the user what prefix they should use).
-     * This shouldn't have regex in it.
+     * This shouldn't have regex in it because the average user can't read that, although you can.
      * Set this to an empty string to disable the command system.
+     * @default "The first prefix passed in the constructor."
      */
     mainPrefix?: string | RegExp,
-    /** You can request one from ctrlz. */
+    /**
+     * You can request one from ctrlz.
+     * @default undefined
+     */
     apikey?: string
     /**
      * Unescapes the incoming messages, meant for use in bots.
