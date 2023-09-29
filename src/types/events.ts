@@ -37,8 +37,10 @@ export interface TagAddInfo {
     newTagLabel: string
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-type ClientEvents = {
+/**
+ * @interface
+ */
+type ClientEvents = { // eslint-disable-line @typescript-eslint/consistent-type-definitions
     /** Fired on disconnect. */
     disconnected: () => void;
 
