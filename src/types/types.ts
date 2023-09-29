@@ -69,7 +69,7 @@ export interface ClientOptions {
     welcomeMessage?: string,
     /**
      * The main prefix to use in commands (for example, the help command will use this to tell the user what prefix they should use).
-     * This shouldn't have regex in it because the average user can't read that, although you can.
+     * This shouldn't have regex in it (although you can) because the average user can't read that.
      * Set this to an empty string to disable the command system.
      * @default "The first prefix passed in the constructor."
      */
