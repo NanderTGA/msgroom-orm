@@ -2,7 +2,8 @@ import type { Message, NickChangeInfo, SysMessage, User } from "#types/events.js
 import type { RawMessage, RawNickChangeInfo, RawSysMessage, RawUser } from "#types/socket.io.js";
 import type { Command, NormalizedCommand } from "#types";
 
-import { decode as decodeHTML } from "he";
+import he from "he";
+const { decode: decodeHTML } = he;
 
 /**
  * Transforms a {@link RawUser} into a {@link User}.

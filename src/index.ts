@@ -2,7 +2,8 @@ import io from "socket.io-client";
 import type MsgroomSocket from "#types/socket.io.js";
 
 import { fileURLToPath, pathToFileURL } from "url";
-import arrayStartsWith from "array-starts-with";
+import arrayStartsWithExports from "array-starts-with";
+const arrayStartsWith = arrayStartsWithExports.default;
 
 import { EventEmitter } from "node:events";
 import type TypedEmitter from "typed-emitter";
