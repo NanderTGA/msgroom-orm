@@ -1,5 +1,5 @@
-import Client from "..";
-import { Message } from "../types/events";
+import type Client from "#client";
+import type { Message } from "#types/events.js";
 
 export default async function getCommandOutput(client: Client, command: string, message?: Omit<Message, "content">): Promise<string> {
     const output: string[] = [];

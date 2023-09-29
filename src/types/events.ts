@@ -1,4 +1,4 @@
-import { flag, hexColor } from "./socket.io";
+import type { flag, hexColor } from "#types/socket.io.js";
 
 export interface User {
     color: hexColor;

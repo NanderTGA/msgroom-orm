@@ -48,10 +48,8 @@ const config = {
                 entryPoints: [
                     "../src/index.ts",
                     "../src/errors.ts",
-                    "../src/utils/transforms.ts",
                     "../src/utils/testCommand.ts",
                     "../src/types/events.ts",
-                    "../src/types/socket.io.ts",
                     "../src/types/types.ts",
                 ],
                 tsconfig          : "../tsconfig.json",

@@ -1,5 +1,5 @@
-import { Socket } from "socket.io-client";
-import { EventNames } from "@socket.io/component-emitter";
+import type { Socket } from "socket.io-client";
+import type { EventNames } from "@socket.io/component-emitter";
 
 type MsgroomSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 export default MsgroomSocket;

@@ -1,6 +1,6 @@
-import { Message, NickChangeInfo, SysMessage, User } from "../types/events";
-import { RawMessage, RawNickChangeInfo, RawSysMessage, RawUser } from "../types/socket.io";
-import { Command, NormalizedCommand } from "../types/types";
+import type { Message, NickChangeInfo, SysMessage, User } from "#types/events.js";
+import type { RawMessage, RawNickChangeInfo, RawSysMessage, RawUser } from "#types/socket.io.js";
+import type { Command, NormalizedCommand } from "#types";
 
 import { decode as decodeHTML } from "he";
 

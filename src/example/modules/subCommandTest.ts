@@ -1,4 +1,4 @@
-import { CommandWithName, ModuleInitializeFunction } from "../../types/types";
+import type { CommandWithName, ModuleInitializeFunction } from "#types";
 
 const initialize: ModuleInitializeFunction = client => ({
     name       : "subCommandTest",

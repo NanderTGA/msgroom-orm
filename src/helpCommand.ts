@@ -5,8 +5,8 @@
  * It also doesn't support any async stuff outside of the command because it is loaded in the constructor.
  */
 
-import type Client from ".";
-import type { Command } from "./types/types";
+import type Client from "#client";
+import type { Command } from "#types";
 
 import { basename } from "path";
 

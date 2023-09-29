@@ -1,4 +1,4 @@
-import Client from "..";
+import Client from "#client";
 
 import { formatWithOptions } from "node:util";
 import { resolve as pathResolve } from "path";

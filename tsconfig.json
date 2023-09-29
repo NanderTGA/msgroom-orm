@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
-        "module"             : "CommonJS",
+        "module"             : "NodeNext",
         "target"             : "ESNext",
         "strictFunctionTypes": true,
         "strict"             : true,
         "esModuleInterop"    : true,
-        "moduleResolution"   : "Node",
+        "moduleResolution"   : "NodeNext",
         "outDir"             : "./dist",
+        "rootDir"            : "./src",
         "sourceMap"          : true,
         "inlineSourceMap"    : false,
         "inlineSources"      : true,

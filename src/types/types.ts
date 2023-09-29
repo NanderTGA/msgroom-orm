@@ -1,5 +1,5 @@
-import { Message } from "./events";
-import type Client from "..";
+import type { Message } from "#types/events.js";
+import type Client from "#client";
 
 export type LogFunction = (...args: string[]) => void;
 // I need to because typescript is behaving weirdly again

@@ -1,25 +1,24 @@
 import io from "socket.io-client";
-import MsgroomSocket from "./types/socket.io";
+import type MsgroomSocket from "#types/socket.io.js";
 
 import { fileURLToPath, pathToFileURL } from "url";
 import arrayStartsWith from "array-starts-with";
 
 import { EventEmitter } from "node:events";
-import TypedEmitter from "typed-emitter";
+import type TypedEmitter from "typed-emitter";
 
-import ClientEvents, { User } from "./types/events";
-import {
+import type { default as ClientEvents, User } from "#types/events.js";
+import type {
     CommandMap, CommandContext, CommandFileExports, CommandWithName,
     Command, WalkFunction, NormalizedCommand, ClientOptions,
-} from "./types/types";
+} from "#types";
 
-import { AuthError, ConnectionError, NotConnectedError } from "./errors";
-import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "./utils/transforms";
-import { walkDirectory, dynamicImport } from "./utils/compilerFighting";
-import helpCommand from "./helpCommand";
+import { AuthError, ConnectionError, NotConnectedError } from "./errors.js";
+import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "#utils/transforms.js";
+import { walkDirectory, dynamicImport } from "#utils/compilerFighting.js";
+import helpCommand from "./helpCommand.js";
 
-class Client extends (EventEmitter as unknown as new () => TypedEmitter<ClientEvents>) {
-    static default = Client;
+export default class Client extends (EventEmitter as unknown as new () => TypedEmitter.default<ClientEvents>) {
     private socket?: MsgroomSocket;
     #name: string;
     server: string;
@@ -516,5 +515,3 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         return blocked;
     }
 }
-
-export = Client;

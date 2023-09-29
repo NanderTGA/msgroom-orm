@@ -2,8 +2,51 @@
   "name": "msgroom",
   "version": "2.0.0-33",
   "description": "A client for msgroom.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "default": "./dist/errors.js"
+    },
+    "./testCommand": {
+      "types": "./dist/utils/testCommand.d.ts",
+      "default": "./dist/utils/testCommand.js"
+    },
+    "./types": {
+      "types": "./dist/types/types.d.ts"
+    },
+    "./types/events": {
+      "types": "./dist/types/events.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "imports": {
+    "#root/*": {
+      "types": "./src/*",
+      "default": "./dist/*"
+    },
+    "#client": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "#types": {
+      "types": "./src/types/types.ts"
+    },
+    "#types/*": {
+      "types": "./src/types/*"
+    },
+    "#utils/*": {
+      "types": "./src/utils/*",
+      "default": "./dist/utils/*"
+    }
+  },
+  "engines": {
+    "node": "^18.16.1 || >=20"
+  },
   "scripts": {
     "build": "rimraf dist && tsc",
     "prepack": "npm run build",

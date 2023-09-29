@@ -1,5 +1,5 @@
-import Client from "../..";
-import { ModuleInitializeFunctionReturnType } from "../../types/types";
+import type Client from "#client";
+import type { ModuleInitializeFunctionReturnType } from "#types";
 
 export default function(client: Client): ModuleInitializeFunctionReturnType {
     return {
