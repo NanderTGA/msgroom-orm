@@ -50,7 +50,8 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "prepack": "npm run build",
-    "test": "rimraf dist && jest",
+    "lint": "eslint .",
+    "test": "rimraf dist && jest --coverage",
     "testbot": "npm run build && node --inspect --enable-source-maps ./dist/example/example.js"
   },
   "files": [
