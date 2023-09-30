@@ -56,7 +56,7 @@ const config = {
                 entryPointStrategy: "Expand",
                 plugin            : [ "typedoc-plugin-rename-defaults" ],
                 sidebar           : {
-                    position: 2,
+                    position: 999,
                 },
             },
         ],

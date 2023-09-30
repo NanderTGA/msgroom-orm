@@ -498,6 +498,17 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
      * @param userID A user's session ID or an object with an ID and/or session ID in it.
      * @param userSessionID A user's session ID.
      * @returns A boolean value indicating whether the user is blocked.
+     * @example
+     * client.isBlocked("user-id-here", "session-id-here");
+     * client.isBlocked({
+     *     id: "user-id-here", // you can leave any of these 3 out
+     *     sessionID: "session-id-here",
+     *     session_id: "session-id-here"
+     * });
+     *
+     * client.isBlocked("bad-user-id", "some session id"); // false
+     * client.blockedIDs.add("bad-user-id");
+     * client.isBlocked("bad-user-id", "some session id"); // true
      */
     public isBlocked(userID: string, userSessionID?: string): boolean;
     public isBlocked(userIDOrObject: { ID?: string, sessionID?: string }): boolean;

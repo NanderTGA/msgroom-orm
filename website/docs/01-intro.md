@@ -1,7 +1,3 @@
----
-sidebar_position: 1
----
-
 # Getting Started
 
 ## Installation
@@ -27,8 +23,6 @@ If you want to know what something does, hover over it in your IDE or find the a
 
 The TSDoc comments and types are also used to automatically generate the API docs, which you can find under the API section in the sidebar to your left.
 We will link to these API docs a lot.
-
-You can find [the map of events](/msgroom-orm/docs/api/interfaces/types_events.ClientEvents) there too, which can be pretty useful to have.
 
 When you are on one the pages of the API docs, it might look overwhelming at first, but don't worry, it's not as complicated as it looks at first.
 You can use the sidebar to your right or the search feature in the top right corner to find what you're looking for.
@@ -104,11 +98,25 @@ As you can see, a command consists of a handler which takes [`context`](/msgroom
 and a number of arguments passed by the user when calling the command.
 
 You can also add a description, aliases and subcommands.
-These are all optional of course.
-[Here](/msgroom-orm/docs/api/interfaces/types_types.Command)'s a full list of fields a command can have
+More info on metadata [here](/msgroom-orm/docs/commands/metadata) and more on subcommands [here](/msgroom-orm/docs/commands/subcommands).
 
 ### Usage
 
 You can use commands by sending a message like this:
 
 ![example command usage](https://github.com/NanderTGA/msgroom-orm/blob/main/example%20command%20usage.png?raw=true)
+
+## Blocking users
+
+To block a user, add their ID or session ID to [`client.blockedIDs`](http://localhost:3000/msgroom-orm/docs/api/classes/index.Client#blockedids)
+or [`client.blockedSessionIDs`](http://localhost:3000/msgroom-orm/docs/api/classes/index.Client#blockedsessionids) respectively.
+You can then check if a user is blocked using [`client.isBlocked()`](http://localhost:3000/msgroom-orm/docs/api/classes/index.Client#isblocked).
+Any events caused by blocked users will be ignored, so you likely won't need this method.
+
+An example:
+
+```js
+client.isBlocked("bad-user-id", "some session id"); // false
+client.blockedIDs.add("bad-user-id");
+client.isBlocked("bad-user-id", "some session id"); // true
+```
