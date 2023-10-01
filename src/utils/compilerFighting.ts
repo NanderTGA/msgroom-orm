@@ -4,10 +4,12 @@ import type { walk } from "@nodelib/fs.walk";
 export let walkDirectory: typeof walk.__promisify__;
 try {
     // eslint-disable-next-line @typescript-eslint/no-implied-eval
-    walkDirectory = Function("require", "promisify", /*javascript*/ `
+    walkDirectory = await Function("require", "promisify", /*javascript*/ `
+    return (async function () {
         // try breaking this, rollup
-        const { walk } = require("@nodelib/fs.walk");
+        const { walk } = await import("@nodelib/fs.walk");
         return promisify(walk);
+    })()
     `)(require, promisify) as typeof walk.__promisify__;
 } catch (error) {
     // eslint-disable-next-line @typescript-eslint/require-await
