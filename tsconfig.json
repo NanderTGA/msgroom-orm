@@ -15,7 +15,8 @@
         "declarationMap"     : true,
         "declarationDir"     : "./dist",
         "skipLibCheck"       : true,
-        "importHelpers"      : true
+        "importHelpers"      : true,
+        "customConditions"   : [ "src-types" ]
     },
     "exclude": [
         "node_modules",

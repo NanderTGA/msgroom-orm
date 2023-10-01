@@ -26,21 +26,26 @@
   },
   "imports": {
     "#root/*": {
-      "types": "./src/*",
+      "src-types": "./src/*",
+      "types": "./dist/*",
       "default": "./dist/*"
     },
     "#client": {
-      "types": "./src/index.ts",
+      "src-types": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
     "#types": {
-      "types": "./src/types/types.ts"
+      "src-types": "./src/types/types.ts",
+      "types": "./dist/types/types.d.ts"
     },
     "#types/*": {
-      "types": "./src/types/*"
+      "src-types": "./src/types/*",
+      "types": "./dist/types/*"
     },
     "#utils/*": {
-      "types": "./src/utils/*",
+      "src-types": "./src/utils/*",
+      "types": "./dist/utils/*",
       "default": "./dist/utils/*"
     }
   },
