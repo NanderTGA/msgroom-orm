@@ -16,7 +16,8 @@ export type NormalizedCommand = Required<Command>;
 export type CommandMap = Record<string, Command>;
 
 export type CommandWithName = Command & { name: string };
-export type ModuleInitializeFunctionReturnType = CommandWithName | CommandMap | undefined | null;
+// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+export type ModuleInitializeFunctionReturnType = CommandWithName | CommandMap | void;
 export type ModuleInitializeFunction =
     ( (client: Client) => ModuleInitializeFunctionReturnType ) |
     ( (client: Client) => Promise<ModuleInitializeFunctionReturnType> );
