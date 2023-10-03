@@ -46,10 +46,11 @@ const FeatureList = [
     )
   },
   {
-    title: "Mature",
+    title: "Long-standing",
     description: (
       <>
         This project has been around longer than any others, and as a result it has matured the most compared to others.
+        We know what we're doing... I guess... hehe
       </>
     )
   }
