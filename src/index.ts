@@ -5,6 +5,10 @@ import { fileURLToPath, pathToFileURL } from "url";
 import arrayStartsWithExports from "array-starts-with";
 const arrayStartsWith = arrayStartsWithExports.default;
 
+import { promisify } from "util";
+import { walk } from "@nodelib/fs.walk";
+const walkDirectory = promisify(walk);
+
 import { EventEmitter } from "node:events";
 import type TypedEmitter from "typed-emitter";
 
@@ -16,7 +20,6 @@ import type {
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors.js";
 import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "#utils/transforms.js";
-import { walkDirectory, dynamicImport } from "#utils/compilerFighting.js";
 import helpCommand from "./helpCommand.js";
 
 export default class Client extends (EventEmitter as unknown as new () => TypedEmitter.default<ClientEvents>) {
@@ -426,7 +429,7 @@ Full error:
 
         let defaultFileExport;
         try {
-            const fileExports = await dynamicImport<CommandFileExports>(file);
+            const fileExports = await import(file) as CommandFileExports;
             defaultFileExport = fileExports.default;
         } catch (error) {
             console.error(`\nAn error occurred while loading ${file}`, error);
