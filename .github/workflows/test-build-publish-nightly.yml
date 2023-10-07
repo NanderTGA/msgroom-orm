@@ -7,6 +7,8 @@ on:
       - tsconfig.json
       - .github/workflows/**
       - README.md
+    branches:
+      - main
   pull_request:
     paths:
       - src/**
@@ -14,6 +16,8 @@ on:
       - tsconfig.json
       - .github/workflows/**
       - README.md
+    branches:
+      - main
 
 jobs:
   test_and_build:

@@ -8,6 +8,8 @@ on:
       - tsconfig.json
       - .github/workflows/**
       - README.md
+    branches:
+      - main
 
 jobs:
   deploy_website:
