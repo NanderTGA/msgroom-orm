@@ -2,8 +2,7 @@ import io from "socket.io-client";
 import type MsgroomSocket from "#types/socket.io.js";
 
 import { fileURLToPath, pathToFileURL } from "url";
-import arrayStartsWithExports from "array-starts-with";
-const arrayStartsWith = arrayStartsWithExports.default;
+import arrayStartsWith from "#utils/arrayStartsWith.js";
 
 import { promisify } from "util";
 import { walk } from "@nodelib/fs.walk";

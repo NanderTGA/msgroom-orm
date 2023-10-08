@@ -1,6 +1,8 @@
 declare module "array-starts-with" {
+    export type ArrayStartsWith = (base: unknown[], start: unknown[]) => boolean;
+
     const arrayStartsWith: {
-        default: (base: unknown[], start: unknown[]) => boolean;
-    };
+        default: ArrayStartsWith;
+    } | ArrayStartsWith;
     export default arrayStartsWith;
 }
