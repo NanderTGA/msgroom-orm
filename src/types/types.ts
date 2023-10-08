@@ -16,7 +16,7 @@ export interface Command {
      * A list of aliases for this command.
      * Check [the docs](https://nandertga.github.io/msgroom-orm/docs/commands/metadata) for more info.
      */
-    aliases?: string[][];
+    aliases?: (string[] | string)[];
 
     /**
      * The function that will handle any calls to this command (except for any subcommands).

@@ -313,7 +313,10 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 if (testCommand(command, fullCommand)) return;
 
                 for (const alias of command.aliases) {
-                    if (testCommand(command, alias)) return;
+                    if (testCommand(
+                        command,
+                        Array.isArray(alias) ? alias : [ alias ],
+                    )) return;
                 }
             };
 
