@@ -84,8 +84,8 @@ export function normalizeCommand(command: Command): NormalizedCommand {
 }
 
 /**
- * Trims a message the way the official msgroom server does.
- * Removes whitespace at the beginning and end of each line.
+ * Better version of {@link String.prototype.trim}.
+ * Removes whitespace at the beginning and end of each line and does the same for the entire message.
  * @param message The message to trim.
  * @returns The trimmed message.
  */

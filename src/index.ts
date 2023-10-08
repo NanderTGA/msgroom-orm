@@ -18,7 +18,7 @@ import type {
 } from "#types";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors.js";
-import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser } from "#utils/transforms.js";
+import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser, trimMessage } from "#utils/transforms.js";
 import helpCommand from "./helpCommand.js";
 
 export default class Client extends (EventEmitter as unknown as new () => TypedEmitter.default<ClientEvents>) {
@@ -259,7 +259,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     sendMessage(...messages: string[]): void {
         if (!this.socket) throw new NotConnectedError();
 
-        const message = messages.join(" ");
+        const message = trimMessage(messages.join(" "));
         if (message.length > 2048) {
             if (this.printErrors) console.warn("\nA message was too long and cannot be sent, it will be printed below:\n", message);
             return void this.emit("werror", "message too long");
