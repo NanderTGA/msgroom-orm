@@ -7,10 +7,27 @@ export type LogFunction = (...args: string[]) => void;
 export type CommandHandlerReturnValue = string | string[] | void;
 export type CommandHandler = (context: CommandContext, ...args: string[]) => (Promise<CommandHandlerReturnValue> | CommandHandlerReturnValue);
 export interface Command {
+    /**
+     * A description for your command that will be shown in the help command.
+     */
     description?: string;
-    aliases?: string[][]
+
+    /**
+     * A list of aliases for this command.
+     * Check [the docs](https://nandertga.github.io/msgroom-orm/docs/commands/metadata) for more info.
+     */
+    aliases?: string[][];
+
+    /**
+     * The function that will handle any calls to this command (except for any subcommands).
+     */
     handler: CommandHandler;
-    subcommands?: CommandMap
+
+    /**
+     * A CommandMap with subcommands in it.
+     * Check [the docs](https://nandertga.github.io/msgroom-orm/docs/commands/subcommands) for more info.
+     */
+    subcommands?: CommandMap;
 }
 export type NormalizedCommand = Required<Command>;
 export type CommandMap = Record<string, Command>;
