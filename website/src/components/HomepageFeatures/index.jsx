@@ -34,6 +34,7 @@ const FeatureList = [
       <>
         MsgRoom.js is truly universal, you can use it for whatever you like!
         Make a bot, a custom client or whatever else you can think of!
+        Ever wanted to make a bot in devtools? We support the browser too!
       </>
     )
   },
@@ -50,7 +51,6 @@ const FeatureList = [
     description: (
       <>
         This project has been around longer than any others, and as a result it has matured the most compared to others.
-        We know what we're doing... I guess... hehe
       </>
     )
   }
