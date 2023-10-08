@@ -29,8 +29,21 @@ Since it is completely useless, it will go offline once I'm done testing things.
     client.on("werror", reason => void console.warn("\nReceived werror:", reason));
 
     client.commands.ping = {
-        description: "Replies with Pong!",
+        description: "Ping pong!",
         handler    : () => "Pong!",
+        subcommands: {
+            pong: { // this is any normal command, which can have its own subcommands and aliases and such
+                description: "Ping pong peng!",
+                handler    : () => "Peng!",
+                aliases    : [
+                    "peng",
+                    [ "ping", "peng" ],
+                ],
+            },
+        },
+        aliases: [
+            "pang",
+        ],
     };
 
     client.commands.repeat = {
