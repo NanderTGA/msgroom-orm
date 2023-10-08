@@ -59,12 +59,19 @@ Here's a list of all available commands. For more information on a command, run 
 
         const [ command ] = commandAndArguments;
         const aliases = command.aliases ?? [];
+        const joinedAliases = aliases.map( alias => Array.isArray(alias)
+            ? alias.reduce( (accumulator, currentValue) => {
+                if (!currentValue.includes(" ")) return `${accumulator} ${currentValue}`;
+                return `${accumulator} "${currentValue}"`;
+            }, "")
+            : alias,
+        );
 
         return  `
 **Command:** ${command.name}
-**Aliases:** ${aliases.length > 0 ? aliases.join(", ") : "*This command does not have any aliases*"}
+**Aliases:** ${joinedAliases.length > 0 ? joinedAliases.join(", ") : "*This command does not have any aliases*"}
 **Description:** ${command.description == "No description provided." ? "*No description provided.*" : command.description}
-            `.trim();
+            `;
     },
 } satisfies Command);
 
