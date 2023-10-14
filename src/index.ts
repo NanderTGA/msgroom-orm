@@ -95,7 +95,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 .on("connect", () => {
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     this.socket!.emit("auth", {
-                        user  : this.#name,
+                        user  : this.name,
                         apikey: this.apikey,
                     });
                 })
@@ -154,6 +154,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 })
                 .on("nick-changed", rawNickChangeInfo => {
                     const nickChangeInfo = transformNickChangeInfo(rawNickChangeInfo, this.users);
+
+                    if (nickChangeInfo.user.sessionID == this.sessionID) this.#name = nickChangeInfo.newNickname;
                     if (this.isBlocked(nickChangeInfo.user)) return;
 
                     nickChangeInfo.user.nickname = nickChangeInfo.newNickname;
