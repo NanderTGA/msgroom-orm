@@ -74,6 +74,15 @@ Since it is completely useless, it will go offline once I'm done testing things.
         },
     };
 
+client.commands.name = {
+    description: "Tells you my name or changes it.",
+    handler    : (context, ...nameParts) => {
+        const newName = nameParts.join(" ");
+        if (!newName) return client.name;
+        client.name = newName;
+    },
+};
+
     await client.loadDirectory(new URL("./modules", import.meta.url));
     await client.connect();
 
