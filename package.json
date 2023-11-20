@@ -44,6 +44,14 @@
       },
       "default": "./dist/types/events.js"
     },
+    "./types/socket.io": {
+      "types": "./dist/types/socket.io.d.ts",
+      "browser": {
+        "import": "./dist/browser/socket.io.es.js",
+        "require": "./dist/browser/socket.io.cjs.js"
+      },
+      "default": "./dist/types/socket.io.js"
+    },
     "./package.json": "./package.json"
   },
   "imports": {
