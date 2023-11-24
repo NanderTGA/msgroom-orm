@@ -44,17 +44,18 @@ We apologize for the inconvenience.`,
 
             const regexMessage = hasRegexPrefix ? "\n\\*Prefixes with an asterisk are regular expressions." : "";
             
+            const helpCommandLimit = parseInt(args[1]) || client.helpCommandLimit;
             if (!pageNumber) pageNumber = 1;
-            const pagesAmount = Math.ceil(commandList.length / client.helpCommandLimit);
+            const pagesAmount = Math.ceil(commandList.length / helpCommandLimit);
             if (pageNumber < 0) pageNumber = pagesAmount + pageNumber + 1;
             if (pageNumber > pagesAmount || pageNumber <= 0) return "That page doesn't exist.";
-            const commandListStart = (pageNumber - 1) * client.helpCommandLimit;
-            const commandsToShow = commandList.sort().slice(commandListStart, commandListStart + client.helpCommandLimit);
+            const commandListStart = (pageNumber - 1) * helpCommandLimit;
+            const commandsToShow = commandList.sort().slice(commandListStart, commandListStart + helpCommandLimit);
 
             let output =  `
 **The current ${client.prefixes.size > 1 ? "prefixes are" : "prefix is"} ${prefixes.join(", ")} ${regexMessage}
 Here's a list of all available commands. For more information on a command, run \`${client.mainPrefix}help <command>\`
-Showing ${commandsToShow.length} commands on page ${pageNumber}/${pagesAmount} with ${client.helpCommandLimit} commands per page.**
+Showing ${commandsToShow.length} commands on page ${pageNumber}/${pagesAmount} with ${helpCommandLimit} commands per page.**
                 `;
 
             output += commandsToShow.join("");
