@@ -111,4 +111,10 @@ export interface ClientOptions {
      * @default true
      */
     unescapeMessages?: boolean
+
+    /**
+     * The amount of commands to show on one page of the help command.
+     * @default 15
+     */
+    helpCommandLimit?: number;
 }

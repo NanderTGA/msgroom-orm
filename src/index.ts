@@ -32,6 +32,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     welcomeMessage: string;
     apikey?: string;
     unescapeMessages: boolean;
+    helpCommandLimit: number;
     
     prefixes: Set<string | RegExp>;
     mainPrefix: string | RegExp;
@@ -71,6 +72,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         this.helpSuffix = options.helpSuffix ?? "";
         this.apikey = options.apikey;
         this.unescapeMessages = options.unescapeMessages ?? true;
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        this.helpCommandLimit = options.helpCommandLimit || 15;
 
         this.blockSelf = options.blockSelf ?? true;
         if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.`;

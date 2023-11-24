@@ -21,7 +21,10 @@ If you are the developer of this bot and need more information, check the consol
 We apologize for the inconvenience.`,
         );
 
-        if (args.length < 1) {
+        const commandAndArguments = await client.getCommand(args);
+        let pageNumber = parseInt(args[0]);
+
+        if ((!commandAndArguments && pageNumber) || args.length < 1) {
             const prefixes: string[] = [];
             let hasRegexPrefix = false;
             for (const value of client.prefixes) {
@@ -33,28 +36,34 @@ We apologize for the inconvenience.`,
                 prefixes.push(prefix);
             }
 
-            const regexMessage = hasRegexPrefix ? "\n\\*Prefixes with an asterisk are regular expressions." : "";
-
-            let output =  `
-**The current ${client.prefixes.size > 1 ? "prefixes are" : "prefix is"} ${prefixes.join(", ")} ${regexMessage}
-Here's a list of all available commands. For more information on a command, run \`${client.mainPrefix}help <command>\`**
-                `;
-
             const commandList: string[] = [];
-
             client.walkCommandOrMap(client.commands, (command, fullCommand) => {
                 commandList.push(`\n${client.mainPrefix}${fullCommand.join(" ")} - *${command.description}*`);
             });
 
-            output += commandList.sort().join("");
+            const regexMessage = hasRegexPrefix ? "\n\\*Prefixes with an asterisk are regular expressions." : "";
+            
+            if (!pageNumber) pageNumber = 1;
+            const pagesAmount = Math.ceil(commandList.length / client.helpCommandLimit);
+            if (pageNumber < 0) pageNumber = pagesAmount + pageNumber + 1;
+            if (pageNumber > pagesAmount || pageNumber <= 0) return "That page doesn't exist.";
+            const commandListStart = (pageNumber - 1) * client.helpCommandLimit;
+            const commandsToShow = commandList.sort().slice(commandListStart, commandListStart + client.helpCommandLimit);
+
+            let output =  `
+**The current ${client.prefixes.size > 1 ? "prefixes are" : "prefix is"} ${prefixes.join(", ")} ${regexMessage}
+Here's a list of all available commands. For more information on a command, run \`${client.mainPrefix}help <command>\`
+Showing ${commandsToShow.length} commands on page ${pageNumber}/${pagesAmount} with ${client.helpCommandLimit} commands per page.**
+                `;
+
+            output += commandsToShow.join("");
             output = output.trim() + "\n\n" + client.helpSuffix;
 
-            if (output.trim().length > 2048) context.send("Error: output too long\nTODO [#44](https://github.com/NanderTGA/msgroom-orm/issues/44)");
+            if (output.trim().length > 2048) context.send("Error: The help command output is too long. Please decrease the [help command limit](https://nandertga.github.io/msgroom-orm/docs/api/interfaces/types_types.ClientOptions#helpcommandlimit).");
 
             return output.trim();
         }
 
-        const commandAndArguments = await client.getCommand(args);
         if (!commandAndArguments) return "The command you specified cannot be found.";
 
         const [ command ] = commandAndArguments;
