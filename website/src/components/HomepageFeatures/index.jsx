@@ -15,7 +15,7 @@ const FeatureList = [
     title: 'Battle-tested',
     description: (
       <>
-        MsgRoom.js is used in production in several bots you know and love, like Yabluzo.
+        MsgRoom.js is used in production in several bots you know and love, like Yabluzo and toB.
       </>
     ),
   },
