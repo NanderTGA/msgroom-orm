@@ -13,6 +13,11 @@ const initialize: ModuleInitializeFunction = client => ({
         description: "Shows the arguments passed to this command.",
         handler    : (context, ...args) => `[ "${args.join(`", "`)}" ]`,
     },
+    shhh: {
+        description: "How did you even find out I exist? Leave me alone!",
+        handler    : () => "Congrats you found me. What are you gonna do now?",
+        hidden     : true,
+    },
 } satisfies CommandMap);
 
 export default initialize;

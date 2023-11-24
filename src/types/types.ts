@@ -28,6 +28,13 @@ export interface Command {
      * Check [the docs](https://nandertga.github.io/msgroom-orm/docs/commands/subcommands) for more info.
      */
     subcommands?: CommandMap;
+
+    /**
+     * Whether the command should be hidden from the help Command.
+     * NOTE: This is not a way to protect your admin commands!
+     * @default false
+     */
+    hidden?: boolean;
 }
 export type NormalizedCommand = Required<Command>;
 export type CommandMap = Record<string, Command>;

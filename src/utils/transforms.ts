@@ -80,6 +80,7 @@ export function normalizeCommand(command: Command): NormalizedCommand {
         aliases    : command.aliases ?? [],
         handler    : command.handler,
         subcommands: command.subcommands ?? {},
+        hidden     : command.hidden ?? false,
     };
 }
 

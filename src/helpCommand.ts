@@ -38,6 +38,7 @@ We apologize for the inconvenience.`,
 
             const commandList: string[] = [];
             client.walkCommandOrMap(client.commands, (command, fullCommand) => {
+                if (command.hidden) return;
                 commandList.push(`\n${client.mainPrefix}${fullCommand.join(" ")} - *${command.description}*`);
             });
 
