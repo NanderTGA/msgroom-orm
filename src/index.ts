@@ -366,6 +366,29 @@ Full error:
         }
     }
 
+    parseCommandCall(commandCall: string): string[] {
+        const args = [];
+        let currentArgument = "";
+        let isInQuotes = false;
+
+        for (let i = 0; i < commandCall.length; i++) {
+            const character = commandCall[i];
+            const nextCharacter = commandCall[i + 1];
+
+            if (character === "\\" && nextCharacter === `"`) {
+                currentArgument += `"`;
+                i++;
+            } else if (character === `"`) isInQuotes = !isInQuotes;
+            else if (character === " " && !isInQuotes) {
+                args.push(currentArgument);
+                currentArgument = "";
+            } else currentArgument += character;
+        }
+        args.push(currentArgument);
+
+        return args;
+    }
+
     /**
      * Processes a message to check for command calls.
      * @param context The context which will be passed to command handlers.
@@ -387,7 +410,7 @@ Full error:
         }
         
         if (messageWithoutPrefix == undefined) return;
-        const parsedArguments = messageWithoutPrefix.split(" ");
+        const parsedArguments = this.parseCommandCall(messageWithoutPrefix);
 
         const commandAndArguments = await this.getCommand(parsedArguments);
         if (!commandAndArguments) return void context.send(`That command doesn't exist. Run ${this.mainPrefix}help for a list of commands.`);
