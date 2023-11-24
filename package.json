@@ -1,6 +1,6 @@
 {
   "name": "msgroom",
-  "version": "2.0.0-54",
+  "version": "2.0.0-55",
   "description": "A client for msgroom.",
   "type": "module",
   "exports": {
