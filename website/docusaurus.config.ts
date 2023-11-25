@@ -1,20 +1,18 @@
-// @ts-check
+import { themes } from "prism-react-renderer";
+const lightCodeTheme = themes.github;
+const darkCodeTheme = themes.dracula;
 
-const lightCodeTheme = require("prism-react-renderer/themes/github");
-const darkCodeTheme = require("prism-react-renderer/themes/dracula");
+import type { Config } from "@docusaurus/types";
+import type * as Preset from "@docusaurus/preset-classic";
 
-/** @type {import("@docusaurus/mdx-loader").MDXPlugin[]} */
-const remarkPlugins = [
+const remarkPlugins: unknown[] = [
     [ require("@docusaurus/remark-plugin-npm2yarn"), { sync: true } ],
 ];
 
-/** @type {import("@docusaurus/mdx-loader").MDXPlugin[]} */
-const beforeDefaultRemarkPlugins = [
-    require("remark-docusaurus-tabs"),
+const beforeDefaultRemarkPlugins: unknown[] = [
 ];
 
-/** @type {import('@docusaurus/types').Config} */
-const config = {
+export default {
     title  : "MsgRoom.js",
     tagline: "A MsgRoom client.",
     favicon: "img/favicon.ico",
@@ -41,6 +39,13 @@ const config = {
         locales      : [ "en" ],
     },
 
+    markdown: {
+        mdx1Compat: {
+            admonitions: false,
+            headingIds : false,
+        },
+    },
+
     plugins: [
         [
             "docusaurus-plugin-typedoc",
@@ -60,14 +65,12 @@ const config = {
                 },
             },
         ],
-        "remark-docusaurus-tabs",
     ],
 
     presets: [
         [
             "classic",
-            /** @type {import('@docusaurus/preset-classic').Options} */
-            ({
+            {
                 docs: {
                     sidebarPath: require.resolve("./sidebars.js"),
                     editUrl    : "https://github.com/NanderTGA/msgroom-orm/tree/main/website/",
@@ -87,13 +90,12 @@ const config = {
                 theme: {
                     customCss: require.resolve("./src/css/custom.css"),
                 },
-            }),
+            } satisfies Preset.Options,
         ],
     ],
 
     themeConfig:
-    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    ({
+    {
         navbar: {
             title: "MsgRoom.js",
             items: [
@@ -165,7 +167,5 @@ const config = {
             appId    : "8MI5GFFQ5N",
             indexName: "msgroom-orm",
         },
-    }),
-};
-
-module.exports = config;
+    } satisfies Preset.ThemeConfig,
+} satisfies Config;

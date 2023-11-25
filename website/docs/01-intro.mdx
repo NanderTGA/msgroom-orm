@@ -40,9 +40,12 @@ Not doing this can be a common pitfall.
 
 :::
 
-<!--tabs-->
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-### One prefix
+<Tabs>
+
+<TabItem value="one_prefix" label="One prefix" default>
 
 ```js
 import Client from "msgroom";
@@ -55,7 +58,9 @@ const client = new Client("TestBot", "!", {
 await client.connect();
 ```
 
-### Multiple prefixes
+</TabItem>
+
+<TabItem value="multiple_prefixes" label="Multiple prefixes">
 
 ```js
 import Client from "msgroom";
@@ -68,7 +73,9 @@ const client = new Client("TestBot", [ "!", "test!" ], {
 await client.connect();
 ```
 
-<!--/tabs-->
+</TabItem>
+
+</Tabs>
 
 ## Defining commands
 

@@ -6,6 +6,8 @@
         "src/**/*.ts",
         "test/**/*.ts",
         "jest.config.ts",
-        "vite.config.ts"
+        "vite.config.ts",
+        "website/**/*.js",
+        "website/**/*.ts"
     ]
 }
