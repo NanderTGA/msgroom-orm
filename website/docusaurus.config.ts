@@ -39,13 +39,6 @@ export default {
         locales      : [ "en" ],
     },
 
-    markdown: {
-        mdx1Compat: {
-            admonitions: false,
-            headingIds : false,
-        },
-    },
-
     plugins: [
         [
             "docusaurus-plugin-typedoc",
