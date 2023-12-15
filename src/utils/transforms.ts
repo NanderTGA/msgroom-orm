@@ -78,7 +78,7 @@ export function normalizeCommand(command: Command): NormalizedCommand {
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         description: command.description || "No description provided.",
         aliases    : command.aliases ?? [],
-        handler    : command.handler,
+        handler    : command.handler.bind(command),
         subcommands: command.subcommands ?? {},
         hidden     : command.hidden ?? false,
     };
