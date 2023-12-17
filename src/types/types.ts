@@ -77,13 +77,12 @@ export interface ClientOptions {
      * Will not stop printing of fatal errors while loading files.
      * @default true
      */
-
     printErrors?: boolean,
+
     /**
      * A suffix to add to the output of the help command.
      * @default ""
      */
-
     helpSuffix?: string,
 
     /**
