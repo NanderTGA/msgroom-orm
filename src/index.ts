@@ -203,12 +203,12 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
 
     /**
      * Validates a nickname.
-     * A nickname should be 1-18 characters.
+     * A nickname should be 1-16 characters.
      * @param name The nickname to validate.
      * @throws An {@link Error} when the criteria has not been met.
      */
     validateNickname(name: string) {
-        if (name.length > 18) throw new Error("Username is longer than 18 characters.");
+        if (name.length > 16) throw new Error("Username is longer than 18 characters.");
         if (name.length < 1) throw new Error("Username should be 1 character or more.");
     }
 
