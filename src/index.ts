@@ -534,9 +534,8 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
      * @example
      * client.isBlocked("user-id-here", "session-id-here");
      * client.isBlocked({
-     *     id: "user-id-here", // you can leave any of these 3 out
-     *     sessionID: "session-id-here",
-     *     session_id: "session-id-here"
+     *     id: "user-id-here", // you can leave any of these two out
+     *     sessionID: "session-id-here"
      * });
      *
      * client.isBlocked("bad-user-id", "some session id"); // false
