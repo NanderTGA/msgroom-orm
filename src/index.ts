@@ -21,6 +21,18 @@ import { AuthError, ConnectionError, NotConnectedError } from "./errors.js";
 import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser, trimMessage } from "#utils/transforms.js";
 import helpCommand from "./helpCommand.js";
 
+let sheeshBots: string[] = [];
+setInterval( () => {
+    fetch("https://sheesh.nolanwh.cf/api/bots.php", {
+        headers: {
+            Accept: "application/json",
+        },
+    })
+        .then( response => response.json())
+        .then( bots => sheeshBots = bots as string[])
+        .catch( () => []);
+}, 10 * 60 * 1000);
+
 export default class Client extends (EventEmitter as unknown as new () => TypedEmitter.default<ClientEvents>) {
     private socket?: MsgroomSocket;
     #name: string;
@@ -42,6 +54,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     #sessionID?: string;
     blockedIDs = new Set<string>();
     blockedSessionIDs = new Set<string>();
+    bot: boolean;
+    blockBots: boolean;
 
     commands: CommandMap = {};
     erroredFiles = new Set<string>();
@@ -74,6 +88,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         this.unescapeMessages = options.unescapeMessages ?? true;
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         this.helpCommandLimit = options.helpCommandLimit || 15;
+        this.bot = options.bot ?? true;
+        this.blockBots = options.blockBots ?? this.bot;
 
         this.blockSelf = options.blockSelf ?? true;
         if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.`;
@@ -527,6 +543,17 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
     }
 
     /**
+     * The currently cached list of bots retrieved from [Sheesh's bot API](https://sheesh.nolanwh.cf/api/bots.php)
+     */
+    public get _sheeshBots() {
+        return sheeshBots;
+    }
+
+    public isBot(id: string): boolean {
+        return sheeshBots.includes(id);
+    }
+
+    /**
      * Checks whether the specified user is blocked.
      * @param userID A user's session ID or an object with an ID and/or session ID in it.
      * @param userSessionID A user's session ID.
@@ -555,6 +582,11 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
                                                                     ||  this.blockedSessionIDs.has("" + userIDOrObject.sessionID);
 
         if (typeof userSessionID == "string") blocked ||= this.blockedSessionIDs.has(userSessionID);
+
+        if (this.blockBots) {
+            if (typeof userIDOrObject == "string") blocked ||= this.isBot(userIDOrObject);
+            else if (userIDOrObject?.ID) blocked ||= this.isBot(userIDOrObject.ID);
+        }
 
         return blocked;
     }

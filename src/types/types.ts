@@ -123,4 +123,17 @@ export interface ClientOptions {
      * @default 15
      */
     helpCommandLimit?: number;
+
+    /**
+     * Whether to mark the user as a bot.
+     * Cannot be changed after connecting.
+     * @default true
+     */
+    bot?: boolean
+
+    /**
+     * Whether to block bots
+     * @default options.bot
+     */
+    blockBots?: boolean
 }
