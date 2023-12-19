@@ -88,12 +88,11 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         this.unescapeMessages = options.unescapeMessages ?? true;
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         this.helpCommandLimit = options.helpCommandLimit || 15;
+        
         this.bot = options.bot ?? true;
         this.blockBots = options.blockBots ?? this.bot;
-
-        this.blockSelf = options.blockSelf ?? true;
-        if (!options.welcomeMessage && this.blockSelf) this.welcomeMessage = `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.`;
-        else this.welcomeMessage = options.welcomeMessage ?? "";
+        this.blockSelf = options.blockSelf ?? this.bot;
+        this.welcomeMessage = options.welcomeMessage ?? this.bot ? `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.` : "";
 
         this.commands.help = helpCommand(this);
     }
