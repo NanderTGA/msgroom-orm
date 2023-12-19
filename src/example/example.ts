@@ -46,8 +46,8 @@ client.commands.ping = {
 };
 
 client.commands.repeat = {
-    description: "Repeats what you said.",
-    handler    : (context, ...args) => args.join(" "),
+    description: "Repeats what you said.", // invisible character to stop triggering of other bots
+    handler    : (context, ...args) => "\u3164" + args.join(" "),
 };
 
 client.commands.sendTest = {
