@@ -154,8 +154,41 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     this.emit("werror", reason);
                 })
                 .on("message", rawMessage => {
-                    const message = transformMessage(rawMessage, this.users, this.unescapeMessages);
-                    if (this.isBlocked(message.author)) return;
+                    let message = transformMessage(rawMessage, this.users, this.unescapeMessages);
+
+                    const isBot = this.isBot(message.author.ID);
+                    if (this.isBlocked(message.author) && !isBot) return;
+
+                    const messageFromSocialMediaBridgeMatch = /^\[(\w+)\] <strong>(\w+) \((\d+)\)<\/strong>:\n(.*)/.exec(message.content);
+                    if (messageFromSocialMediaBridgeMatch) {
+                        const [ , socialMediaApp, name, ID, extractedMessage ] = messageFromSocialMediaBridgeMatch;
+                        const originalMessage = message;
+                        const socialMediaUser = {
+                            name,
+                            ID,
+                        };
+                        const bridgedID = `BRIDGED-BY:${originalMessage.author.ID}-FROM:${socialMediaApp}-${socialMediaUser.name}-${socialMediaUser.ID}`;
+                        message = {
+                            type   : message.type,
+                            color  : message.color,
+                            content: extractedMessage,
+                            date   : message.date,
+                            author : {
+                                color    : message.author.color,
+                                flags    : [ "bridged", `bridgedFrom-${socialMediaApp}`, `bridgedBy-${message.author.ID}` ],
+                                ID       : bridgedID,
+                                sessionID: `${bridgedID}-0`,
+                                nickname : name,
+                            },
+                            bridged: {
+                                originalMessage,
+                                socialMediaApp,
+                                socialMediaUser,
+                            },
+                        };
+                    }
+
+                    if (isBot) return;
 
                     this.emit("message", message);
                     void this.processCommands({

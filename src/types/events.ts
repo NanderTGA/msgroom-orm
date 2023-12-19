@@ -1,8 +1,10 @@
-import type { flag, hexColor } from "#types/socket.io.js";
+import type { hexColor } from "#types/socket.io.js";
+
+export type Flag = "staff" | "bot" | "bridged" | `bridgedFrom-${string}` | `bridgedBy-${string}`;
 
 export interface User {
     color: hexColor;
-    flags: flag[];
+    flags: Flag[];
     ID: string;
     sessionID: string;
     nickname: string;
@@ -15,6 +17,15 @@ export interface Message {
     content: string;
     date: Date;
     author: User;
+
+    bridged?: {
+        originalMessage: Message;
+        socialMediaApp: string;
+        socialMediaUser: {
+            name: string;
+            ID: string;
+        }
+    }
 }
 
 export interface NickChangeInfo {
