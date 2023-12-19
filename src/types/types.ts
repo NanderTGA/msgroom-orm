@@ -87,7 +87,7 @@ export interface ClientOptions {
 
     /**
      * Whether to ignore events triggered by the current user.
-     * @default true
+     * @default options.bot
      */
     blockSelf?: boolean,
 
