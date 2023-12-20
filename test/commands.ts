@@ -28,9 +28,9 @@ it("should correctly set properties", () => {
 
 it("should validate nicknames correctly", () => {
     expect( () => void client.validateNickname("") ).toThrow(); // < 1 character
-    expect( () => void client.validateNickname("dfssqdfsdfqdfqfdqdfqdsfqsfd") ).toThrow(); // > 18 characters
-    expect( () => void client.validateNickname("dfssqdfsdfqdfqfdqdg") ).toThrow(); // > 18 characters
-    client.validateNickname("dfssqdfsdfqdfqfdqd"); // 18 characters
+    expect( () => void client.validateNickname("dfssqdfsdfqdfqfdqdfqdsfqsfd") ).toThrow(); // > 16 characters
+    expect( () => void client.validateNickname("dfssqdfsdfqdfqfdqdg") ).toThrow(); // > 16 characters
+    client.validateNickname("dfssqdfsdfqdfqfd"); // 16 characters
 });
 
 test("getCommandOutput should return output of command", async () => {
