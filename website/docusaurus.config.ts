@@ -52,7 +52,7 @@ export default {
                 ],
                 tsconfig          : "../tsconfig.json",
                 entryPointStrategy: "Expand",
-                plugin            : [ /*"typedoc-plugin-rename-defaults",*/ ],
+                plugin            : [ /*"typedoc-plugin-rename-defaults",*/ "typedoc-plugin-mdn-links" ],
                 sidebar           : {
                     position: 999,
                 },
