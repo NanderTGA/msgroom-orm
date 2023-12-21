@@ -4,11 +4,12 @@ import { transformUser, transformMessage, transformNickChangeInfo, transformSysM
 import { User } from "#types/events.js";
 
 const someoneUser: User = {
-    color    : "#ff0000",
-    flags    : [ "staff" ],
-    ID       : "some id",
-    sessionID: "some session id",
-    nickname : "Someone",
+    color      : "#ff0000",
+    flags      : [ "staff" ],
+    ID         : "some id",
+    sessionID  : "some session id",
+    nickname   : "Someone",
+    escapedName: "Someone",
 };
 
 describe("Test transforms", () => {
