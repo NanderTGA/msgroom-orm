@@ -4,7 +4,7 @@ import type { Message } from "#types/events.js";
 export default async function getCommandOutput(client: Client, command: string, message?: Omit<Message, "content">): Promise<string> {
     const output: string[] = [];
 
-    const fakeMessage = message || {
+    const fakeMessage = message ?? {
         author: {
             color      : "#ff0000",
             flags      : [],
