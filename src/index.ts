@@ -18,7 +18,7 @@ import type {
 } from "#types";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors.js";
-import { normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser, trimMessage } from "#utils/transforms.js";
+import { escapeName, normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser, trimMessage } from "#utils/transforms.js";
 import helpCommand from "./helpCommand.js";
 
 let sheeshBots: string[] = [];
@@ -174,11 +174,12 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                             content: extractedMessage,
                             date   : message.date,
                             author : {
-                                color    : message.author.color,
-                                flags    : [ "bridged", `bridgedFrom-${socialMediaApp}`, `bridgedBy-${message.author.ID}` ],
-                                ID       : bridgedID,
-                                sessionID: `${bridgedID}-0`,
-                                nickname : name,
+                                color      : message.author.color,
+                                flags      : [ "bridged", `bridgedFrom-${socialMediaApp}`, `bridgedBy-${message.author.ID}` ],
+                                ID         : bridgedID,
+                                sessionID  : `${bridgedID}-0`,
+                                nickname   : name,
+                                escapedName: escapeName(name),
                             },
                             bridged: {
                                 originalMessage,
@@ -194,7 +195,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     void this.processCommands({
                         message,
                         send : (...args) => void this.sendMessage(...args),
-                        reply: (...args) => void this.sendMessage(`**@${message.author.nickname}**`, ...args),
+                        reply: (...args) => void this.sendMessage(`**@${message.author.escapedName}**`, ...args),
                     });
                 })
                 .on("sys-message", rawSysMessage => {
@@ -210,6 +211,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     if (this.isBlocked(nickChangeInfo.user)) return;
 
                     nickChangeInfo.user.nickname = nickChangeInfo.newNickname;
+                    nickChangeInfo.user.escapedName = escapeName(nickChangeInfo.newNickname);
 
                     this.emit("nick-change", nickChangeInfo);
                 })
@@ -406,7 +408,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
             if (this.printErrors) console.error(`
 An error occurred at ${context.message.date.toString()}.
 Message: ${context.message.content}
-User: ${context.message.author.nickname}
+User: ${context.message.author.escapedName}
 User's ID: ${context.message.author.ID}
 User's session ID: ${context.message.author.sessionID}
 Full error:

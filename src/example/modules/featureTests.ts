@@ -5,6 +5,10 @@ const initialize: ModuleInitializeFunction = client => ({
         description: "Tells you my name or changes it.",
         handler    : () => client.name,
     },
+    escapeName: {
+        description: "Runs your name through escapeName()",
+        handler    : (context) => context.message.author.escapedName,
+    },
     showArguments: {
         description: "Shows the arguments passed to this command.",
         handler    : (context, ...args) => `[ "${args.join(`", "`)}" ]`,

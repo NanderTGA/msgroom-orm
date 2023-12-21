@@ -8,6 +8,7 @@ export interface User {
     ID: string;
     sessionID: string;
     nickname: string;
+    escapedName: string;
 }
 
 export interface Message {

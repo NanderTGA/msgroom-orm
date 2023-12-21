@@ -6,11 +6,12 @@ export default async function getCommandOutput(client: Client, command: string, 
 
     const fakeMessage = message || {
         author: {
-            color    : "#ff0000",
-            flags    : [],
-            ID       : "some-id",
-            sessionID: "some-session-id",
-            nickname : "Someone",
+            color      : "#ff0000",
+            flags      : [],
+            ID         : "some-id",
+            sessionID  : "some-session-id",
+            nickname   : "Someone",
+            escapedName: "Someone",
         },
         color: "#ff0000",
         date : new Date(),
@@ -27,7 +28,7 @@ export default async function getCommandOutput(client: Client, command: string, 
             output.push(message);
         },
         reply: (...messages) => {
-            const message = `@**${fakeMessage.author.nickname}** ${messages.join(" ")}`;
+            const message = `@**${fakeMessage.author.escapedName}** ${messages.join(" ")}`;
             output.push(message);
         },
     });
