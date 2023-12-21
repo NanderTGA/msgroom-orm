@@ -93,7 +93,7 @@ export interface ClientOptions {
 
     /**
      * A message to send when the bot joins.
-     * @default ""
+     * @default "Hi there! I'm ${client.name}. Send ${client.mainPrefix}help for a list of commands."
      */
     welcomeMessage?: string,
 
