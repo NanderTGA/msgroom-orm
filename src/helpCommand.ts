@@ -59,11 +59,9 @@ Showing ${commandsToShow.length} commands on page ${pageNumber}/${pagesAmount} w
                 `;
 
             output += commandsToShow.join("");
-            output = output.trim() + "\n\n" + client.helpSuffix;
+            output = (output.trim() + "\n\n" + client.helpSuffix).trim();
 
-            if (output.trim().length > 2048) context.send("Error: The help command output is too long. Please decrease the [help command limit](https://nandertga.github.io/msgroom-orm/docs/api/interfaces/types_types.ClientOptions#helpcommandlimit).");
-
-            return output.trim();
+            return output.length <= 2048 ? output : "Error: The help command output is too long. Please decrease the [help command limit](https://nandertga.github.io/msgroom-orm/docs/api/interfaces/types_types.ClientOptions#helpcommandlimit).";
         }
 
         if (!commandAndArguments) return "The command you specified cannot be found.";
