@@ -122,5 +122,9 @@ export interface ClientToServerEvents {
          * You can request one from ctrlz
          */
         apikey?: string;
+        /**
+         * A proposed option to mark the user as a bot.
+         */
+        bot?: boolean;
     }) => void;
 }

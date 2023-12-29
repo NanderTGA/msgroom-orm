@@ -115,6 +115,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     this.socket!.emit("auth", {
                         user  : this.name,
                         apikey: this.apikey,
+                        bot   : this.bot,
                     });
                 })
                 .on("disconnect", () => {
