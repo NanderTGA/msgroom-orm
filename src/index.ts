@@ -92,7 +92,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         this.bot = options.bot ?? true;
         this.blockBots = options.blockBots ?? this.bot;
         this.blockSelf = options.blockSelf ?? this.bot;
-        this.welcomeMessage = options.welcomeMessage ?? (this.bot && this.mainPrefix) ? `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.` : "";
+        this.welcomeMessage = options.welcomeMessage ?? ((this.bot && this.mainPrefix) ? `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.` : "");
 
         this.commands.help = helpCommand(this);
     }
