@@ -41,7 +41,6 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     printErrors: boolean;
     helpSuffix: string;
     blockSelf: boolean;
-    welcomeMessage: string;
     apikey?: string;
     unescapeMessages: boolean;
     helpCommandLimit: number;
@@ -92,7 +91,6 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         this.bot = options.bot ?? true;
         this.blockBots = options.blockBots ?? this.bot;
         this.blockSelf = options.blockSelf ?? this.bot;
-        this.welcomeMessage = options.welcomeMessage ?? ((this.bot && this.mainPrefix) ? `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.` : "");
 
         this.commands.help = helpCommand(this);
     }
@@ -131,7 +129,6 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     userID = authenticatedUserID;
                     this.#sessionID = sessionID;
 
-                    if (this.welcomeMessage) this.sendMessage(this.welcomeMessage);
                     if (this.blockSelf) this.blockedSessionIDs.add(this.sessionID);
                 })
                 .on("auth-error", ({ reason }) => {
