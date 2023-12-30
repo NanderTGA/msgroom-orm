@@ -74,7 +74,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     ) {
         super();
 
-        this.validateNickname(name);
+        this.validateNickname(name, true);
         this.#name = name;
 
         const commandPrefixesArray = Array.isArray(commandPrefixes) ? commandPrefixes : [ commandPrefixes ];
