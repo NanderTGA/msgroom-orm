@@ -93,7 +93,7 @@ export interface ClientOptions {
 
     /**
      * A message to send when the bot joins.
-     * @default "Hi there! I'm ${client.name}. Send ${client.mainPrefix}help for a list of commands."
+     * @deprecated This option has been removed. As a general rule, bots should not send messages if the user doesn't explicitly ask for them.
      */
     welcomeMessage?: string,
 

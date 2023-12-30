@@ -41,7 +41,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     printErrors: boolean;
     helpSuffix: string;
     blockSelf: boolean;
-    welcomeMessage: string;
+    /** @deprecated This option has been removed. As a general rule, bots should not send messages if the user doesn't explicitly ask for them. */
+    welcomeMessage?: string;
     apikey?: string;
     unescapeMessages: boolean;
     helpCommandLimit: number;
@@ -92,7 +93,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         this.bot = options.bot ?? true;
         this.blockBots = options.blockBots ?? this.bot;
         this.blockSelf = options.blockSelf ?? this.bot;
-        this.welcomeMessage = options.welcomeMessage ?? ((this.bot && this.mainPrefix) ? `Hi there! I'm ${name}. Send ${this.mainPrefix}help for a list of commands.` : "");
+        if (options.welcomeMessage) console.warn("The welcomeMessage option has been removed. As a general rule, bots should not send messages if the user doesn't explicitly ask for them.");
 
         this.commands.help = helpCommand(this);
     }
@@ -131,7 +132,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     userID = authenticatedUserID;
                     this.#sessionID = sessionID;
 
-                    if (this.welcomeMessage) this.sendMessage(this.welcomeMessage);
+                    if (this.welcomeMessage) console.warn("The welcomeMessage option has been removed. As a general rule, bots should not send messages if the user doesn't explicitly ask for them.");
                     if (this.blockSelf) this.blockedSessionIDs.add(this.sessionID);
                 })
                 .on("auth-error", ({ reason }) => {
