@@ -261,7 +261,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
      */
     validateNickname(name: string, onJoin = false) {
         const maximumLength = onJoin ? 18 : 16;
-        if (name.length > 16) throw new Error(`Username is longer than ${maximumLength} characters.`);
+        if (name.length > maximumLength) throw new Error(`Username is longer than ${maximumLength} characters.`);
         if (name.length < 1) throw new Error("Username should be 1 character or more.");
     }
 
