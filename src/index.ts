@@ -157,8 +157,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                 .on("message", rawMessage => {
                     let message = transformMessage(rawMessage, this.users, this.unescapeMessages);
 
-                    const isBot = this.isBot(message.author.ID);
-                    if (this.isBlocked(message.author) && !isBot) return;
+                    if (this.isBlocked(message.author.ID, message.author.sessionID, false)) return;
 
                     const messageFromSocialMediaBridgeMatch = /^\[(\w+)\] <strong>(\w+) \((\d+)\)<\/strong>:\n(.*)/.exec(message.content);
                     if (messageFromSocialMediaBridgeMatch) {
@@ -190,7 +189,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                         };
                     }
 
-                    if (isBot) return;
+                    if (this.isBlocked(message.author)) return;
 
                     this.emit("message", message);
                     void this.processCommands({
@@ -209,38 +208,38 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     const nickChangeInfo = transformNickChangeInfo(rawNickChangeInfo, this.users);
 
                     if (nickChangeInfo.user.sessionID == this.sessionID) this.#name = nickChangeInfo.newNickname;
-                    if (this.isBlocked(nickChangeInfo.user)) return;
-
+                    
                     nickChangeInfo.user.nickname = nickChangeInfo.newNickname;
                     nickChangeInfo.user.escapedName = escapeName(nickChangeInfo.newNickname);
-
+                    
+                    if (this.isBlocked(nickChangeInfo.user)) return;
                     this.emit("nick-change", nickChangeInfo);
                 })
                 .on("user-join", rawUser => {
                     const user = transformUser(rawUser);
-                    if (this.isBlocked(user)) return;
-
                     this.users[user.sessionID] = user;
+
+                    if (this.isBlocked(user)) return;
                     this.emit("user-join", user);
                 })
                 .on("user-leave", userLeaveInfo => {
                     const user = this.users[userLeaveInfo.session_id];
-                    if (this.isBlocked(user)) return;
 
-                    this.emit("user-leave", user);
+                    if (!this.isBlocked(user)) this.emit("user-leave", user);
+
                     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
                     delete this.users[userLeaveInfo.session_id];
                 })
                 .on("user-update", userUpdateInfo => {
                     const user = this.users[userUpdateInfo.user];
-                    if (this.isBlocked(user)) return;
-
+                    
                     switch (userUpdateInfo.type) {
                         case "tag-add":
                             if (!userUpdateInfo.tag?.trim() || !userUpdateInfo.tagLabel) return;
 
                             if (!user.flags.includes(userUpdateInfo.tag)) user.flags.push(userUpdateInfo.tag);
 
+                            if (this.isBlocked(user)) return;
                             this.emit("tag-add", {
                                 user,
                                 newTag     : userUpdateInfo.tag,
