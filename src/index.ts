@@ -256,10 +256,12 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
      * Validates a nickname.
      * A nickname should be 1-16 characters.
      * @param name The nickname to validate.
+     * @param onJoin Whether the nickname is passed to the `auth` event, which checks for a length of 18 characters.
      * @throws An {@link Error} when the criteria has not been met.
      */
-    validateNickname(name: string) {
-        if (name.length > 16) throw new Error("Username is longer than 18 characters.");
+    validateNickname(name: string, onJoin = false) {
+        const maximumLength = onJoin ? 18 : 16;
+        if (name.length > 16) throw new Error(`Username is longer than ${maximumLength} characters.`);
         if (name.length < 1) throw new Error("Username should be 1 character or more.");
     }
 
