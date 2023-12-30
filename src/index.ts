@@ -590,38 +590,51 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
 
     /**
      * Checks whether the specified user is blocked.
-     * @param userID A user's session ID or an object with an ID and/or session ID in it.
+     * @param userID A user's ID or an object with an ID, sessionID, and/or blockBots property.
      * @param userSessionID A user's session ID.
+     * @param blockBots Whether to block bots too. Defaults to the blockBots option.
      * @returns A boolean value indicating whether the user is blocked.
      * @example
      * client.isBlocked("user-id-here", "session-id-here");
      * client.isBlocked({
-     *     id: "user-id-here", // you can leave any of these two out
-     *     sessionID: "session-id-here"
+     *     ID: "user-id-here", // you can leave any of these out
+     *     sessionID: "session-id-here",
+     *     blockBots: true,
      * });
      *
      * client.isBlocked("bad-user-id", "some session id"); // false
      * client.blockedIDs.add("bad-user-id");
      * client.isBlocked("bad-user-id", "some session id"); // true
      */
-    public isBlocked(userID: string, userSessionID?: string): boolean;
-    public isBlocked(userIDOrObject: { ID?: string, sessionID?: string }): boolean;
+    public isBlocked(userID: string, userSessionID?: string, blockBots?: boolean): boolean;
+    public isBlocked(userIDOrObject: { ID?: string, sessionID?: string, blockBots?: boolean }): boolean;
     public isBlocked(
-        userIDOrObject?: string | { ID?: string, sessionID?: string },
+        userIDOrObject: string | { ID?: string, sessionID?: string, blockBots?: boolean },
         userSessionID?: string,
+        blockBotsArg?: boolean,
     ): boolean {
+        let ID: string | undefined;
+        let sessionID: string | undefined;
+        let blockBots: boolean | undefined;
+        if (typeof userIDOrObject == "object") {
+            ID = userIDOrObject.ID;
+            sessionID = userIDOrObject.sessionID;
+            blockBots = userIDOrObject.blockBots;
+        } else {
+            ID = userIDOrObject;
+            sessionID = userSessionID;
+            blockBots = blockBotsArg;
+        }
+
+        blockBots ??= this.blockBots;
+
         let blocked = false;
 
-        if (typeof userIDOrObject == "string") blocked ||= this.blockedIDs.has(userIDOrObject);
-        else if (!(typeof userIDOrObject == "undefined")) blocked   ||= this.blockedIDs.has("" + userIDOrObject.ID)
-                                                                    ||  this.blockedSessionIDs.has("" + userIDOrObject.sessionID);
-
-        if (typeof userSessionID == "string") blocked ||= this.blockedSessionIDs.has(userSessionID);
-
-        if (this.blockBots) {
-            if (typeof userIDOrObject == "string") blocked ||= this.isBot(userIDOrObject);
-            else if (userIDOrObject?.ID) blocked ||= this.isBot(userIDOrObject.ID);
+        if (ID) {
+            blocked ||= this.blockedIDs.has(ID);
+            if (blockBots) blocked ||= this.isBot(ID);
         }
+        if (sessionID) blocked ||= this.blockedSessionIDs.has(sessionID);
 
         return blocked;
     }
