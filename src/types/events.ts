@@ -25,8 +25,8 @@ export interface Message {
         socialMediaUser: {
             name: string;
             ID: string;
-        }
-    }
+        };
+    };
 }
 
 export interface NickChangeInfo {
@@ -46,7 +46,7 @@ export interface SysMessage<Type extends SysMessageType = "info" | "error" | "su
 export interface TagAddInfo {
     user: User;
     newTag: string;
-    newTagLabel: string
+    newTagLabel: string;
 }
 
 /**

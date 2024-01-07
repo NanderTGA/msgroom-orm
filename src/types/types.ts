@@ -47,7 +47,7 @@ export type ModuleInitializeFunction =
     ( (client: Client) => ModuleInitializeFunctionReturnType ) |
     ( (client: Client) => Promise<ModuleInitializeFunctionReturnType> );
 export interface CommandFileExports {
-    default?: ModuleInitializeFunction | { default?: ModuleInitializeFunction }
+    default?: ModuleInitializeFunction | { default?: ModuleInitializeFunction };
 }
 
 export type WalkFunction = (
@@ -71,32 +71,32 @@ export interface ClientOptions {
      * The server to connect to.
      * @default "wss://msgroom.windows96.net"
      */
-    server?: string,
+    server?: string;
 
     /**
      * Whether to print errors to the console.
      * Will not stop printing of fatal errors while loading files.
      * @default true
      */
-    printErrors?: boolean,
+    printErrors?: boolean;
 
     /**
      * A suffix to add to the output of the help command.
      * @default ""
      */
-    helpSuffix?: string,
+    helpSuffix?: string;
 
     /**
      * Whether to ignore events triggered by the current user.
      * @default options.bot
      */
-    blockSelf?: boolean,
+    blockSelf?: boolean;
 
     /**
      * A message to send when the bot joins.
      * @deprecated This option has been removed. As a general rule, bots should not send messages if the user doesn't explicitly ask for them.
      */
-    welcomeMessage?: string,
+    welcomeMessage?: string;
 
     /**
      * The main prefix to use in commands (for example, the help command will use this to tell the user what prefix they should use).
@@ -104,20 +104,20 @@ export interface ClientOptions {
      * Set this to an empty string to disable the command system.
      * @default "The first prefix passed in the constructor."
      */
-    mainPrefix?: string | RegExp,
+    mainPrefix?: string | RegExp;
 
     /**
      * You can request one from ctrlz.
      * @default undefined
      */
-    apikey?: string
+    apikey?: string;
 
     /**
      * Unescapes the incoming messages, meant for use in bots.
      * It's recommended to disable this when making a custom client.
      * @default true
      */
-    unescapeMessages?: boolean
+    unescapeMessages?: boolean;
 
     /**
      * The amount of commands to show on one page of the help command.
@@ -130,13 +130,13 @@ export interface ClientOptions {
      * Cannot be changed after connecting.
      * @default true
      */
-    bot?: boolean
+    bot?: boolean;
 
     /**
      * Whether to block bots
      * @default options.bot
      */
-    blockBots?: boolean
+    blockBots?: boolean;
 
     /**
      * Options to pass to socket.io's io() function.

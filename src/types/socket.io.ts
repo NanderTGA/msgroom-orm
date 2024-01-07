@@ -76,14 +76,17 @@ export interface ServerToClientEvents {
     online: (users: RawUser[]) => void;
     "auth-error": (error: {
         /**
-         * "there is no auth-error lol" - ctrlz
+         * "there is no auth-error lol"
+         * -- ctrlz
          */
         reason: string;
     }) => void;
     "werror": (
-        /** A generic error, which doesn't cause disconnects. For example ratelimiting errors would send this event. Is currently never called by the server. */
+        /**
+         * A generic error, which doesn't cause disconnects. For example ratelimiting errors would send this event. Is currently never called by the server.
+         */
         // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-        reason: string | "You are doing this too much - please wait!"
+        reason: string | "You are doing this too much - please wait!",
     ) => void;
 }
 
@@ -109,7 +112,12 @@ export interface ClientToServerEvents {
         content: string;
     }) => void;
     
-    "change-user": (/** The new nickname you want. */newNick: string) => void;
+    "change-user": (
+        /**
+         * The new nickname you want.
+         */
+        newNick: string,
+    ) => void;
     
     online: () => void;
     
