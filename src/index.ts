@@ -57,6 +57,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     blockedSessionIDs = new Set<string>();
     bot: boolean;
     blockBots: boolean;
+    /** Cannot be changed after connecting. */
+    socketIOOptions: ClientOptions["socketIOOptions"];
 
     commands: CommandMap = {};
     erroredFiles = new Set<string>();
@@ -83,6 +85,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
 
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         this.server = options.server || "wss://msgroom.windows96.net";
+        this.socketIOOptions = options.socketIOOptions ?? {};
         this.printErrors = options.printErrors ?? true;
         this.helpSuffix = options.helpSuffix ?? "";
         this.apikey = options.apikey;
@@ -107,7 +110,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         return new Promise<void>( (resolve, reject) => {
             let userID: string;
 
-            this.socket = io(this.server);
+            this.socket = io(this.server, this.socketIOOptions);
             this.socket //! don't remove this line, you'd break the types
 
             //#region connecting to the server
