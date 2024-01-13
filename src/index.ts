@@ -179,7 +179,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                             date   : message.date,
                             author : {
                                 color      : message.author.color,
-                                flags      : [ "bridged", `bridgedFrom-${socialMediaApp}`, `bridgedBy-${message.author.ID}` ],
+                                flags      : [],
                                 ID         : bridgedID,
                                 sessionID  : `${bridgedID}-0`,
                                 nickname   : name,
