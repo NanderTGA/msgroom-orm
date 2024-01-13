@@ -126,7 +126,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     this.emit("disconnected");
                 })
                 .on("connect_error", () => {
-                    throw new ConnectionError();
+                    reject(new ConnectionError());
                 })
                 .on("auth-complete", (authenticatedUserID, sessionID) => {
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
