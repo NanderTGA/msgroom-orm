@@ -121,18 +121,34 @@ export interface ClientToServerEvents {
     
     online: () => void;
     
+    /**
+     * Emit this event to join the chatroom.
+     * @param options The data to send to the server.
+     */
     auth: (options: {
         /**
          * The username you want to use.
          */
         user: string;
+
         /**
-         * You can request one from ctrlz
+         * You can request one from ctrlz.
          */
         apikey?: string;
+
         /**
          * A proposed option to mark the user as a bot.
          */
         bot?: boolean;
+
+        /**
+         * Your staff key (MRCS).
+         */
+        staff?: string;
+
+        /**
+         * Your login key (MRCS).
+         */
+        loginkey?: string;
     }) => void;
 }

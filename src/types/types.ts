@@ -1,6 +1,7 @@
 import type { Message } from "#types/events.js";
 import type Client from "#client";
 import { ManagerOptions, SocketOptions } from "socket.io-client";
+import { ClientToServerEvents } from "./socket.io.js";
 
 export type LogFunction = (...args: string[]) => void;
 // I need to because typescript is behaving weirdly again
@@ -143,4 +144,9 @@ export interface ClientOptions {
      * @default {}
      */
     socketIOOptions?: Partial<ManagerOptions & SocketOptions>;
+
+    /**
+     * Options to pass to the auth event.
+     */
+    authOptions?: Omit<Partial<Parameters<ClientToServerEvents["auth"]>[0]>, "user" | "apikey" | "bot">;
 }

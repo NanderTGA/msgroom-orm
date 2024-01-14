@@ -59,6 +59,8 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     blockBots: boolean;
     /** Cannot be changed after connecting. */
     socketIOOptions: ClientOptions["socketIOOptions"];
+    /** Cannot be changed after connecting. */
+    authOptions: ClientOptions["authOptions"];
 
     commands: CommandMap = {};
     erroredFiles = new Set<string>();
@@ -72,7 +74,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
     constructor(
         name: string,
         commandPrefixes: string | RegExp | (string | RegExp)[] = [],
-        options: ClientOptions = {},
+        options: Partial<ClientOptions> = {},
     ) {
         super();
 
@@ -86,6 +88,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         this.server = options.server || "wss://msgroom.windows96.net";
         this.socketIOOptions = options.socketIOOptions ?? {};
+        this.authOptions = options.authOptions ?? {};
         this.printErrors = options.printErrors ?? true;
         this.helpSuffix = options.helpSuffix ?? "";
         this.apikey = options.apikey;
@@ -120,6 +123,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                         user  : this.name,
                         apikey: this.apikey,
                         bot   : this.bot,
+                        ...this.authOptions,
                     });
                 })
                 .on("disconnect", () => {
