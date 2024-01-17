@@ -41,6 +41,10 @@ jobs:
       - name: Setup repository
         uses: ./.github/actions/setup-repository
 
+      - name: Install website dependencies
+        working-directory: ./website
+        run: npm ci
+
       - name: Lint code
         run: npm run lint
 
