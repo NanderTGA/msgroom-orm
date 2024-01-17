@@ -92,6 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     needs: [ build ]
     if: github.ref == 'refs/heads/main' && github.repository == 'nandertga/msgroom-orm'
     steps:
