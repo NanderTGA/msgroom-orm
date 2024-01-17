@@ -1,21 +1,13 @@
 name: Test and build
 on:
   push:
-    paths:
-      - src/**
-      - package.json
-      - tsconfig.json
-      - .github/workflows/**
-      - README.md
+    paths-ignore:
+      - website/**
     branches:
       - main
   pull_request:
-    paths:
-      - src/**
-      - package.json
-      - tsconfig.json
-      - .github/workflows/**
-      - README.md
+    paths-ignore:
+      - website/**
     branches:
       - main
 
