@@ -1,0 +1,94 @@
+name: Test and build
+on:
+  push:
+    paths:
+      - src/**
+      - package.json
+      - tsconfig.json
+      - .github/workflows/**
+      - README.md
+    branches:
+      - main
+  pull_request:
+    paths:
+      - src/**
+      - package.json
+      - tsconfig.json
+      - .github/workflows/**
+      - README.md
+    branches:
+      - main
+
+jobs:
+  setup:
+    name: Setup repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup repository
+        uses: ./.github/actions/setup-repository
+  
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: [ setup ]
+    steps:
+      - name: Setup repository
+        uses: ./.github/actions/setup-repository
+
+      - name: Lint code
+        run: npm run lint
+
+  build:
+    name: Build and check types
+    runs-on: ubuntu-latest
+    needs: [ setup ]
+    steps:
+      - name: Setup repository
+        uses: ./.github/actions/setup-repository
+      
+      - name: Run build script
+        run: npm run build
+      
+      - name: Generate a tarball from the build results
+        if: '!cancelled()'
+        run: npm pack
+
+      - name: Upload the tarball as an artifact
+        if: '!cancelled()'
+        uses: actions/upload-artifact@v4
+        with:
+          path: msgroom-*.tgz
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    continue-on-error: true
+    steps:
+      - name: Setup repository
+        uses: ./.github/actions/setup-repository
+
+      - name: Run tests
+        run: npm test
+  
+  publish_nightly:
+    name: Publish nightly build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [ build ]
+    if: github.ref == 'refs/heads/main' && github.repository == 'nandertga/msgroom-orm'
+    steps:
+      - name: Setup repository
+        uses: ./.github/actions/setup-repository
+
+      - name: Bump version
+        run: npm version prerelease
+      
+      - name: Push the new version
+        run: git push origin main
+      
+      - name: Publish the nightly build to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
+        run: npm publish --provenance --tag nightly

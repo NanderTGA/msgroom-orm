@@ -1,0 +1,26 @@
+name: Prepare repository
+description: Prepares the repository for running CI jobs
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        registry-url: https://registry.npmjs.org/
+        cache: "npm"
+    
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+    
+    # Incase we make commits from the CI
+    - name: Setup git configuration
+      shell: bash
+      run: |
+        git config user.name "Github Actions Bot"
+        git config user.email "<>"
