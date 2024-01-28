@@ -1,6 +1,5 @@
-import type { hexColor } from "#types/socket.io.js";
-
-export type Flag = "staff" | "bot" | "bridged" | `bridgedFrom-${string}` | `bridgedBy-${string}`;
+import type { hexColor, flag as Flag } from "#types/socket.io.js";
+export { Flag };
 
 export interface User {
     color: hexColor;
