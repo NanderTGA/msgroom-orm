@@ -492,8 +492,10 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         return sheeshBots;
     }
 
-    public isBot(id: string): boolean {
-        return sheeshBots.includes(id);
+    public isBot(id?: string, sessionID?: string): boolean {
+        if (sessionID && this.users[sessionID].flags.includes("bot")) return true;
+        if (id && sheeshBots.includes(id)) return true;
+        return false;
     }
 
     /**
@@ -538,11 +540,9 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
 
         let blocked = false;
 
-        if (ID) {
-            blocked ||= this.blockedIDs.has(ID);
-            if (blockBots) blocked ||= this.isBot(ID);
-        }
+        if (ID) blocked ||= this.blockedIDs.has(ID);
         if (sessionID) blocked ||= this.blockedSessionIDs.has(sessionID);
+        if (blockBots) blocked ||= this.isBot(ID, sessionID);
 
         return blocked;
     }
