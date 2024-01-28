@@ -1,0 +1,30 @@
+diff --git a/node_modules/socket.io-client/build/esm/index.d.ts b/node_modules/socket.io-client/build/esm/index.d.ts
+index adfed24..a6dbcc3 100644
+--- a/node_modules/socket.io-client/build/esm/index.d.ts
++++ b/node_modules/socket.io-client/build/esm/index.d.ts
+@@ -1,5 +1,5 @@
+ import { Manager, ManagerOptions } from "./manager.js";
+-import { Socket, SocketOptions } from "./socket.js";
++import { Socket, SocketOptions, SocketReservedEvents } from "./socket.js";
+ /**
+  * Looks up an existing `Manager` for multiplexing.
+  * If the user summons:
+@@ -25,4 +25,4 @@ export { protocol } from "socket.io-parser";
+  *
+  * @public
+  */
+-export { Manager, ManagerOptions, Socket, SocketOptions, lookup as io, lookup as connect, lookup as default, };
++export { Manager, ManagerOptions, Socket, SocketReservedEvents, SocketOptions, lookup as io, lookup as connect, lookup as default, };
+diff --git a/node_modules/socket.io-client/build/esm/socket.d.ts b/node_modules/socket.io-client/build/esm/socket.d.ts
+index b613785..8be7b03 100644
+--- a/node_modules/socket.io-client/build/esm/socket.d.ts
++++ b/node_modules/socket.io-client/build/esm/socket.d.ts
+@@ -52,7 +52,7 @@ export declare type DisconnectDescription = Error | {
+     description: string;
+     context?: unknown;
+ };
+-interface SocketReservedEvents {
++export interface SocketReservedEvents {
+     connect: () => void;
+     connect_error: (err: Error) => void;
+     disconnect: (reason: Socket.DisconnectReason, description?: DisconnectDescription) => void;

@@ -1,11 +1,10 @@
-import type { Socket } from "socket.io-client";
+import type { Socket, SocketReservedEvents } from "socket.io-client";
 import type { EventNames } from "@socket.io/component-emitter";
 
 type MsgroomSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 export default MsgroomSocket;
 
-type ReservedEventNames = "connect" | "connect_error" | "disconnect";
-export type ServerToClientEventNames = EventNames<ServerToClientEvents> | ReservedEventNames;
+export type ServerToClientEventNames = EventNames<ServerToClientEvents> | keyof SocketReservedEvents;
 export type ClientToServerEventNames = EventNames<ClientToServerEvents>;
 
 /**
@@ -89,6 +88,8 @@ export interface ServerToClientEvents {
         reason: string | "You are doing this too much - please wait!",
     ) => void;
 }
+
+export type ServerToClientEventsWithReserved = ServerToClientEvents & SocketReservedEvents;
 
 /**
  * used to send events to the server
