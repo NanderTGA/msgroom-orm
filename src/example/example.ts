@@ -10,6 +10,7 @@ Some things may also seem broken when they are intentionally broken so I can tes
 Since it is completely useless, it will go offline once I'm done testing things.*
 `.trim(),
     blockSelf: true,
+    server   : "wss://msgroom.boomlings.xyz",
 });
 
 client.on("message", message => {
