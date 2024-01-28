@@ -1,0 +1,23 @@
+name: Build
+description: Runs the build script and uploads the results as an artifact
+
+runs:
+  using: composite
+  steps:
+    - name: Setup repository
+      uses: ./.github/actions/setup-repository
+
+    - name: Run build script
+      shell: bash
+      run: npm run build
+
+    - name: Generate a tarball from the build results
+      if: '!cancelled()'
+      shell: bash
+      run: npm pack
+
+    - name: Upload the tarball as an artifact
+      if: '!cancelled()'
+      uses: actions/upload-artifact@v4
+      with:
+        path: msgroom-*.tgz

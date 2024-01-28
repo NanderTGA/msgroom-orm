@@ -1,0 +1,17 @@
+name: Lint
+description: Lints the codebase
+
+runs:
+  using: composite
+  steps:
+    - name: Setup repository
+      uses: ./.github/actions/setup-repository
+
+    - name: Install website dependencies
+      working-directory: ./website
+      shell: bash
+      run: npm ci
+    
+    - name: Lint code
+      shell: bash
+      run: npm run lint
