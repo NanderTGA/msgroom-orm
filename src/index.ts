@@ -18,8 +18,9 @@ import type {
 } from "#types";
 
 import { AuthError, ConnectionError, NotConnectedError } from "./errors.js";
-import { escapeName, normalizeCommand, transformMessage, transformNickChangeInfo, transformSysMessage, transformUser, trimMessage } from "#utils/transforms.js";
+import { normalizeCommand, transformUser, trimMessage } from "#utils/transforms.js";
 import helpCommand from "./helpCommand.js";
+import { applyMainEventHandlers } from "./eventHandlers.js";
 
 let sheeshBots: string[] = [];
 setInterval( () => {
@@ -34,7 +35,7 @@ setInterval( () => {
 }, 10 * 60 * 1000);
 
 export default class Client extends (EventEmitter as unknown as new () => TypedEmitter.default<ClientEvents>) {
-    private socket?: MsgroomSocket;
+    socket?: MsgroomSocket;
     #name: string;
     server: string;
 
@@ -154,109 +155,7 @@ export default class Client extends (EventEmitter as unknown as new () => TypedE
                     resolve();
                 });
             //#endregion connecting to the server
-        }).then( () => {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.socket!
-
-            //#region main events
-                .on("werror", reason => {
-                    this.emit("werror", reason);
-                })
-                .on("message", rawMessage => {
-                    let message = transformMessage(rawMessage, this.users, this.unescapeMessages);
-
-                    if (this.isBlocked(message.author.ID, message.author.sessionID, false)) return;
-
-                    const messageFromSocialMediaBridgeMatch = /^\[(\w+)\] <strong>(\w+) \((\d+)\)<\/strong>:\n(.*)/.exec(message.content);
-                    if (messageFromSocialMediaBridgeMatch) {
-                        const [ , socialMediaApp, name, ID, extractedMessage ] = messageFromSocialMediaBridgeMatch;
-                        const originalMessage = message;
-                        const socialMediaUser = {
-                            name,
-                            ID,
-                        };
-                        const bridgedID = `BRIDGED-BY:${originalMessage.author.ID}-FROM:${socialMediaApp}-${socialMediaUser.name}-${socialMediaUser.ID}`;
-                        message = {
-                            type   : message.type,
-                            color  : message.color,
-                            content: extractedMessage,
-                            date   : message.date,
-                            author : {
-                                color      : message.author.color,
-                                flags      : [],
-                                ID         : bridgedID,
-                                sessionID  : `${bridgedID}-0`,
-                                nickname   : name,
-                                escapedName: escapeName(name),
-                            },
-                            bridged: {
-                                originalMessage,
-                                socialMediaApp,
-                                socialMediaUser,
-                            },
-                        };
-                    }
-
-                    if (this.isBlocked(message.author)) return;
-
-                    this.emit("message", message);
-                    void this.processCommands({
-                        message,
-                        send : (...args) => void this.sendMessage(...args),
-                        reply: (...args) => void this.sendMessage(`**@${message.author.escapedName}**`, ...args),
-                    });
-                })
-                .on("sys-message", rawSysMessage => {
-                    const sysMessage = transformSysMessage(rawSysMessage);
-                    this.emit("sys-message", sysMessage);
-                    //@ts-expect-error Don't worry, it's fine. Think about it, you'll understand.
-                    this.emit(`sys-message-${sysMessage.type}`, sysMessage);
-                })
-                .on("nick-changed", rawNickChangeInfo => {
-                    const nickChangeInfo = transformNickChangeInfo(rawNickChangeInfo, this.users);
-
-                    if (nickChangeInfo.user.sessionID == this.sessionID) this.#name = nickChangeInfo.newNickname;
-                    
-                    nickChangeInfo.user.nickname = nickChangeInfo.newNickname;
-                    nickChangeInfo.user.escapedName = escapeName(nickChangeInfo.newNickname);
-                    
-                    if (this.isBlocked(nickChangeInfo.user)) return;
-                    this.emit("nick-change", nickChangeInfo);
-                })
-                .on("user-join", rawUser => {
-                    const user = transformUser(rawUser);
-                    this.users[user.sessionID] = user;
-
-                    if (this.isBlocked(user)) return;
-                    this.emit("user-join", user);
-                })
-                .on("user-leave", userLeaveInfo => {
-                    const user = this.users[userLeaveInfo.session_id];
-
-                    if (!this.isBlocked(user)) this.emit("user-leave", user);
-
-                    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-                    delete this.users[userLeaveInfo.session_id];
-                })
-                .on("user-update", userUpdateInfo => {
-                    const user = this.users[userUpdateInfo.user];
-                    
-                    switch (userUpdateInfo.type) {
-                        case "tag-add":
-                            if (!userUpdateInfo.tag?.trim() || !userUpdateInfo.tagLabel) return;
-
-                            if (!user.flags.includes(userUpdateInfo.tag)) user.flags.push(userUpdateInfo.tag);
-
-                            if (this.isBlocked(user)) return;
-                            this.emit("tag-add", {
-                                user,
-                                newTag     : userUpdateInfo.tag,
-                                newTagLabel: userUpdateInfo.tagLabel,
-                            });
-                    }
-                });
-            //#endregion main events
-        });
+        }).then( () => void applyMainEventHandlers(this, name => this.#name = name));
     }
 
     /**
