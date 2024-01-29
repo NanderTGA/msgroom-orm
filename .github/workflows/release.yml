@@ -75,6 +75,7 @@ jobs:
         run: npx semantic-release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
           GH_TOKEN: ${{ steps.requestPAT.outputs.PAT }}
 
       - name: Generate a tarball from the build results
