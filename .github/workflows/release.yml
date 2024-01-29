@@ -65,12 +65,17 @@ jobs:
 
       - name: Setup repository
         uses: ./.github/actions/setup-repository
+      
+      - name: Request PAT from private key
+        id: requestPAT
+        run: |
+          node privateKeyToPAT.js ${{ secrets.RELEASE_BOT_KEY_BASE64 }} >> $GITHUB_OUTPUT
 
       - name: Create and publish a new release
         run: npx semantic-release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN_MSGROOM }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.requestPAT.outputs.PAT }}
 
       - name: Generate a tarball from the build results
         run: npm pack
