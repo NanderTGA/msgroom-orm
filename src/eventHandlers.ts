@@ -10,7 +10,7 @@ export type EventHandlersObject = {
 export type EventHandlerArguments<K extends keyof ServerToClientEventsWithReserved = keyof ServerToClientEventsWithReserved>
     = Parameters<ServerToClientEventsWithReserved[K]>;
 export type EventHandlerFunction<K extends keyof ServerToClientEventsWithReserved = keyof ServerToClientEventsWithReserved>
-    = (this: Client, ...args: [ ...EventHandlerArguments<K>, (name: string) => void ]) => void;
+    = (this: Client, ...args: [ ...EventHandlerArguments<K>, setCachedName: (name: string) => void ]) => void;
 
 const mainEventHandlers: EventHandlersObject = {
     werror(reason) {
