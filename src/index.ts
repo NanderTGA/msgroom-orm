@@ -22,18 +22,6 @@ import { normalizeCommand, transformUser, trimMessage } from "#utils/transforms.
 import helpCommand from "./helpCommand.js";
 import { applyMainEventHandlers } from "./eventHandlers.js";
 
-let sheeshBots: string[] = [];
-setInterval( () => {
-    fetch("https://sheesh.nolanwh.cf/api/bots.php", {
-        headers: {
-            Accept: "application/json",
-        },
-    })
-        .then( response => response.json())
-        .then( bots => sheeshBots = bots as string[])
-        .catch( () => []);
-}, 10 * 60 * 1000);
-
 export default class Client extends (EventEmitter as unknown as new () => TypedEmitter.default<ClientEvents>) {
     socket?: MsgroomSocket;
     #name: string;
@@ -485,17 +473,8 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         await Promise.all(modules);
     }
 
-    /**
-     * The currently cached list of bots retrieved from [Sheesh's bot API](https://sheesh.nolanwh.cf/api/bots.php)
-     */
-    public get _sheeshBots() {
-        return sheeshBots;
-    }
-
-    public isBot(id?: string, sessionID?: string): boolean {
-        if (sessionID && this.users[sessionID].flags.includes("bot")) return true;
-        if (id && sheeshBots.includes(id)) return true;
-        return false;
+    public isBot(sessionID: string): boolean {
+        return this.users[sessionID].flags.includes("bot");
     }
 
     /**
@@ -541,8 +520,10 @@ If it returns any other object, it will be assumed to be a CommandMap and all of
         let blocked = false;
 
         if (ID) blocked ||= this.blockedIDs.has(ID);
-        if (sessionID) blocked ||= this.blockedSessionIDs.has(sessionID);
-        if (blockBots) blocked ||= this.isBot(ID, sessionID);
+        if (sessionID) {
+            blocked ||= this.blockedSessionIDs.has(sessionID);
+            if (blockBots) blocked ||= this.isBot(sessionID);
+        }
 
         return blocked;
     }
