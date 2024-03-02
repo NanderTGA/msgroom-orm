@@ -7,16 +7,11 @@ export default MsgroomSocket;
 export type ServerToClientEventNames = EventNames<ServerToClientEvents> | keyof SocketReservedEvents;
 export type ClientToServerEventNames = EventNames<ClientToServerEvents>;
 
-/**
- * Hexadecimal color string
- * @example "#ff0000"
- */
-export type hexColor = `#${string}`;
-
 export type flag = "staff" | "bot";
 
 export interface RawUser {
-    color: hexColor;
+    /** A css color. */
+    color: string;
     flags: flag[];
     id: string;
     session_id: string;
@@ -24,7 +19,8 @@ export interface RawUser {
 }
 
 export interface RawMessage {
-    color: hexColor;
+    /** A css color. */
+    color: string;
     content: string;
     date: string;
     id: string;
