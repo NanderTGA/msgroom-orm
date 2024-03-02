@@ -1,8 +1,9 @@
-import type { hexColor, flag as Flag } from "#types/socket.io.js";
+import type { flag as Flag } from "#types/socket.io.js";
 export { Flag };
 
 export interface User {
-    color: hexColor;
+    /** A css color. */
+    color: string;
     flags: Flag[];
     ID: string;
     sessionID: string;
@@ -13,7 +14,8 @@ export interface User {
 export interface Message {
     type: "text";
 
-    color: hexColor;
+    /** A css color. */
+    color: string;
     content: string;
     date: Date;
     author: User;
