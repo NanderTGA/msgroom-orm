@@ -1,4 +1,4 @@
-import type { flag as Flag } from "#types/socket.io.js";
+import type { Flag } from "#types/socket.io.js";
 export { Flag };
 
 export interface User {

@@ -7,12 +7,12 @@ export default MsgroomSocket;
 export type ServerToClientEventNames = EventNames<ServerToClientEvents> | keyof SocketReservedEvents;
 export type ClientToServerEventNames = EventNames<ClientToServerEvents>;
 
-export type flag = "staff" | "bot";
+export type Flag = "staff" | "bot";
 
 export interface RawUser {
     /** A css color. */
     color: string;
-    flags: flag[];
+    flags: Flag[];
     id: string;
     session_id: string;
     user: string;
@@ -53,7 +53,7 @@ export interface RawUserUpdateInfo {
     user: string;
 
     type: "tag-add";
-    tag?: flag;
+    tag?: Flag;
     tagLabel?: string;
 }
 
