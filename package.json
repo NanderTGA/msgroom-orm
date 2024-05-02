@@ -141,7 +141,7 @@
     "ts-node": "^10.9.1",
     "tsd": "^0.31.0",
     "typescript": "^5.4.5",
-    "vite": "^5.2.9",
+    "vite": "^5.2.11",
     "vite-plugin-node-polyfills": "^0.21.0"
   },
   "tsd": {
