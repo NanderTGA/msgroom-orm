@@ -135,7 +135,7 @@
     "jsonwebtoken": "^9.0.2",
     "memfs": "^4.9.2",
     "rimraf": "^5.0.7",
-    "semantic-release": "^23.0.0",
+    "semantic-release": "^24.0.0",
     "semver": ">=7.6.2",
     "ts-jest": "^29.1.4",
     "ts-node": "^10.9.1",
