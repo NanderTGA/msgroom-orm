@@ -142,7 +142,7 @@
     "tsd": "^0.31.0",
     "typescript": "^5.4.5",
     "vite": "^5.2.12",
-    "vite-plugin-node-polyfills": "^0.21.0"
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
   "tsd": {
     "directory": "test/tsd"
