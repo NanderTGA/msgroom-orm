@@ -115,7 +115,7 @@
   "author": "NanderTGA (https://nandertga.ddns.net)",
   "license": "MIT",
   "dependencies": {
-    "@nodelib/fs.walk": "^2.0.0",
+    "@nodelib/fs.walk": "^3.0.1",
     "array-starts-with": "^1.1.15",
     "he": "^1.2.0",
     "patch-package": "^8.0.0",
