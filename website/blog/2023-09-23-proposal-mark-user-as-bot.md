@@ -10,6 +10,8 @@ I have been developing this library for a few months now, but there are a few pr
 One of these is [the issue of not knowing who is a bot and who isn't](https://github.com/NanderTGA/msgroom-orm/issues/63),
 which is the main reason why I'm making this proposal.
 
+<!-- truncate -->
+
 ## Problems
 
 1. The aforementioned issue is pretty annoying.
